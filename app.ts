@@ -6,6 +6,7 @@ const app: express.Application = express()
 
 const port = (process.env.PORT || '3000');
 app.set('port', port);
+console.log(process.env.NODE_ENV)
 
 app.use('', require('./poe_stash'))
 

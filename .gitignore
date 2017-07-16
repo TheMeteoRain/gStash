@@ -10,6 +10,7 @@ yarn-error.log*
 
 # Idea configuration
 .idea/
+.vscode/
 
 # Dependency directories
 node_modules/

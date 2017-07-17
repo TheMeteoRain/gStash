@@ -14,14 +14,14 @@ Function Check-Version {
     $current_version = & $application -v
 
     if ($current_version -lt $target_version) {
-      Write-Warning "["$name.ToUpper() "]Detected $current_version. Required $target_version"
+      Write-Warning "[$name] Detected $current_version. Required $target_version"
     }
     else {
-      Write-Host "["$name.ToUpper() "] OK - Detected $current_version. Required $target_version" -ForegroundColor "magenta"
+      Write-Host "[$name] OK - Detected $current_version. Required $target_version" -ForegroundColor "magenta"
     }
   }
   else {
-    Write-Warning "["$name.ToUpper() "] is missing!"
+    Write-Warning "[$name] is missing!"
     $application_missing = $TRUE
   }
 

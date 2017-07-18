@@ -2,10 +2,10 @@
   "name": "gstash",
   "version": "1.0.0",
   "description": "API made from Path of Exile stash API",
-  "main": "app.js",
+  "main": "app.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app.js",
+    "start": "ts-node app.ts",
     "start:dev": "pm2 ./ecosystem.config.js"
   },
   "keywords": [

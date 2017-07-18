@@ -1,0 +1,21 @@
+{
+  "name": "indexer",
+  "version": "1.0.0",
+  "description": "poe api indexer",
+  "main": "app.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "ts-node app.ts"
+  },
+  "keywords": [
+    "indexer",
+    "poe",
+    "api"
+  ],
+  "author": "Akash Singh",
+  "license": "ISC",
+  "dependencies": {
+    "@types/node-fetch": "^1.6.7",
+    "node-fetch": "^1.7.1"
+  }
+}

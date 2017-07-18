@@ -9,14 +9,18 @@ module.exports = {
       script: "npm",
       name: "gStash",
       cwd: "./api",
-      args: "run-script start"
-    }
+      args: "run-script start",
+      watch: true
+    },
 
-    /*    // Second application
+    // Second application
     {
-      name      : 'WEB',
-      script    : 'web.js'
-    }*/
+      script: "npm",
+      name: "indexer",
+      cwd: "./indexer",
+      args: "run-script start",
+      watch: true
+    }
   ]
 
   /**

@@ -14,7 +14,8 @@ Set-Location ..
 
 ### INDEXER
 Set-Location ./indexer
-# COMING SOON TM
+npm uninstall
+npm install
 Set-Location ..
 
 ### Start pm2 processes

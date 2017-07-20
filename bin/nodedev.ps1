@@ -8,12 +8,14 @@ pm2 kill
 
 ### API
 Set-Location ../api
+rm package-lock.json
 npm uninstall
 npm install
 Set-Location ..
 
 ### INDEXER
 Set-Location ./indexer
+rm package-lock.json
 npm uninstall
 npm install
 Set-Location ..

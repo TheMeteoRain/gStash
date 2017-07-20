@@ -1,6 +1,6 @@
 import 'dotenv/config'
 import * as express from 'express'
-import MyError from 'lib/MyError'
+import MyError from './class/MyError'
 
 const app: express.Application = express()
 

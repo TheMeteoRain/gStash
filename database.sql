@@ -32,7 +32,7 @@ CREATE TABLE ChangeId (
   processed smallint DEFAULT '0',
   PRIMARY KEY (id,nextChangeId)
 );
-
+INSERT INTO ChangeId(nextChangeId, processed) VALUES('0', '0');
 
 CREATE TABLE Leagues (
   leagueName varchar(128) NOT NULL DEFAULT '' PRIMARY KEY,

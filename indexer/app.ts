@@ -1,6 +1,9 @@
 import 'dotenv/config'
 import axios from 'axios'
+
 import Stash from './class/Stash'
+import account from './class/Account'
+import { Account } from './class/Account'
 import db from './db'
 import query from './query'
 
@@ -14,7 +17,7 @@ const POLL_SERVER_INTERVAL: number = 1000
  * Current next_change_id.
  * Change this to the last visited next_change_id to resume where indexer left off.
  */
-const ID: string = '0'
+let ID: string = '0'
 
 const config = {
     headers: {
@@ -23,17 +26,40 @@ const config = {
     responseType: 'json'
 }
 
+const saveAccountsTask = (stashes: any): any => {
+    return db.task((t: any) => {
+        const queries = stashes.map((stash: any) => {
+            return query.setAccount(t, account(stash))
+        })
+        return t.batch(queries)
+    }).then((events: any) => {
+        const stats = {
+            total: events.length,
+            saved: 0
+        }
+        events.map((event: any) => {
+            stats.saved = event.rowCount > 0 ? stats.saved + 1 : stats.saved
+        })
+
+        return stats
+    }).catch((error: any) => {
+        console.log(error)
+    })
+}
+
 const poll = (ID: string): void => {
+    console.log(" ")
+
     async function fetchData() {
         console.log(`Downloading data with ID [${ID}]`)
         console.time("Downloading took")
 
         try {
-            const { data: { next_change_id, stashes } } = await axios.get(`${process.env.POE_ENDPOINT}?id=${ID}`, config)
+            const { data: { next_change_id, stashes } }: { data: { next_change_id: string, stashes: any } } = await axios.get(`${process.env.POE_ENDPOINT}?id=${ID}`, config)
             console.timeEnd("Downloading took")
-            console.log(`Downloaded ${stashes.length} stashes`)
+            //console.log(`Downloaded ${stashes.length} stashes`)
             await query.updateCurrentNextChangeId(ID, 1)
-            poll(next_change_id)
+            saveData(next_change_id, stashes)
         } catch (error) {
             if (error.response) {
                 // The request was made and the server responded with a status code
@@ -51,11 +77,31 @@ const poll = (ID: string): void => {
                 console.log('Error', error.message);
             }
             console.log(error.config);
+            await query.updateCurrentNextChangeId(ID, 0)
             poll(ID)
+        }
+    }
+
+    async function saveData(next_change_id: string, stashes: any) {
+        console.time("Saving data took")
+
+        try {
+            const { total, saved } = await saveAccountsTask(stashes)
+            console.log(`Total downloaded: ${total}, saved: ${saved}, failed: ${total - saved}`)
+            console.timeEnd("Saving data took")
+            poll(next_change_id)
+        } catch (error) {
+            poll(ID)
+            console.log(error)
         }
     }
 
     setTimeout(fetchData, POLL_SERVER_INTERVAL)
 }
 
-poll(ID)
+query.getLatestNextChangeId().then((LATEST_ID: string) => {
+    ID = LATEST_ID ? LATEST_ID : '0'
+    poll(ID)
+}).catch((error) => {
+    console.log(error)
+})

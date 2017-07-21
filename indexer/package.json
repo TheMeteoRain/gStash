@@ -15,7 +15,10 @@
   "author": "Akash Singh",
   "license": "ISC",
   "dependencies": {
-    "@types/node-fetch": "^1.6.7",
-    "node-fetch": "^1.7.1"
+    "@types/dotenv": "^4.0.0",
+    "@types/pg-promise": "^5.4.3",
+    "axios": "^0.16.2",
+    "dotenv": "^4.0.0",
+    "pg-promise": "^6.3.5"
   }
 }

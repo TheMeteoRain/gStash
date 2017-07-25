@@ -33,12 +33,12 @@ foreach ($application in $applications) {
     Write-Host "Installing" $application[1] "..."
     switch ($application[1]) {
       "pm2" {
-        npm --silent install -g $application[1]
-        npm --silent install $application[1]@latest -g
+        npm install -g $application[1]
+        npm install $application[1]@latest -g
         & $application[0] update
       }
       "typescript" {
-        npm --silent install -g $application[1]@$application[2]
+        npm install -g $application[1]
       }
     }
     Write-Host "Done"

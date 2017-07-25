@@ -1,12 +1,13 @@
 
 
+SET FOREIGN_KEY_CHECKS=0
 
 DROP DATABASE IF EXISTS poe;
 CREATE DATABASE poe;
 \connect poe
 
 
-DROP TABLE IF EXISTS Stashes;
+DROP TABLE IF EXISTS Stashes CASCADE;
 DROP TABLE IF EXISTS Sockets;
 DROP TABLE IF EXISTS Requirements;
 DROP TABLE IF EXISTS Properties;
@@ -64,12 +65,15 @@ CREATE TABLE CurrencyStats (
   CONSTRAINT currencystats_ibfk_1 FOREIGN KEY (currencyKey) REFERENCES Currencies (currencyKey)
 );
 
+/*NormalStash/PremiumStash/QuadStash/EssenceStash/CurrencyStash (DivinationStash?)
+CREATE TYPE stashType AS ENUM ('NormalStash','PremiumStash','QuadStash','EssenceStash','CurrencyStash','DivinationStash');*/
 CREATE TABLE Stashes (
   stashId varchar(128) NOT NULL DEFAULT '' PRIMARY KEY,
   stashName varchar(128) DEFAULT NULL,
   stashType varchar(128) DEFAULT NULL,
-  publicStash smallint DEFAULT '0'
+  stashPublic boolean DEFAULT FALSE
 );
+
 
 CREATE TABLE Items (
   w smallint NOT NULL DEFAULT '0',
@@ -80,10 +84,10 @@ CREATE TABLE Items (
   itemId varchar(128) NOT NULL DEFAULT '' PRIMARY KEY,
   name varchar(128) DEFAULT NULL,
   typeLine varchar(128) DEFAULT NULL,
-  identified smallint NOT NULL DEFAULT '0',
-  verified smallint NOT NULL DEFAULT '0',
-  corrupted smallint NOT NULL DEFAULT '0',
-  lockedToCharacter smallint DEFAULT '0',
+  identified boolean NOT NULL DEFAULT FALSE,
+  verified boolean NOT NULL DEFAULT FALSE,
+  corrupted boolean NOT NULL DEFAULT FALSE,
+  lockedToCharacter boolean DEFAULT FALSE,
   frameType smallint DEFAULT '0',
   x smallint DEFAULT '0',
   y smallint DEFAULT '0',
@@ -145,4 +149,4 @@ CREATE TABLE Sockets (
   CONSTRAINT Sockets_ibfk_1 FOREIGN KEY (itemId) REFERENCES Items (itemId) ON DELETE CASCADE
 );
 
-
+SET FOREIGN_KEY_CHECKS=1

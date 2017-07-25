@@ -15,6 +15,7 @@ const transformAccount = (data: any): Account => {
     lastCharacterName: data.lastCharacterName,
     lastSeen: Date.now()
   }
+
   return account
 }
 

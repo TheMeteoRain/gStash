@@ -1,28 +1,29 @@
 import * as stringDecoder from 'string_decoder';
-import {Socket} from './socket'
+import { Socket } from './socket'
 
 export interface Item {
-  verified: boolean
   w: number
   h: number
   ilvl: number
   icon: string
   league: string
-  id: string
-  sockets: string[] //change this
+  itemId: string
   name: string
   typeLine: string
   identified: boolean
+  verified: boolean
   corrupted: boolean
   lockedToCharacter: boolean
-  requirements: string[] //change this
-  explicitMods: string[]
-  implicitMods: string[]
   frameType: number
   x: number
   y: number
   inventoryId: string
-  socketedItems: string[] //change this
+  accountName: string
+  stashId: string
+  socketAmount: number
+  linkAmount: number
+  available: number
+
   note?: string
   properties?: string[] //change this
   enchantMods?: string[]
@@ -44,6 +45,7 @@ export interface Item {
   prophecyText?: string
   isRelic?: boolean
 }
+
 
 /*export const transformItem = (
   {

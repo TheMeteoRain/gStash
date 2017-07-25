@@ -1,11 +1,11 @@
 import 'dotenv/config'
 import axios from 'axios'
 
-import Stash from './class/Stash'
-import account from './class/Account'
-import { Account } from './class/Account'
 import db from './db'
 import query from './query'
+
+import transformStash, { Stash } from './class/Stash'
+import transformAccount, { Account } from './class/Account'
 
 
 /**
@@ -28,10 +28,14 @@ const config = {
 
 const saveAccountsTask = (stashes: any): any => {
     return db.task((t: any) => {
-        const queries = stashes.map((stash: any) => {
-            return query.setAccount(t, account(stash))
+        const a = stashes.map((stash: any) => {
+            return query.setAccount(t, transformAccount(stash))
         })
-        return t.batch(queries)
+        const b = stashes.map((stash: any) => {
+            return query.setStash(t, transformStash(stash))
+        })
+
+        return t.batch([...a, ...b])
     }).then((events: any) => {
         const stats = {
             total: events.length,

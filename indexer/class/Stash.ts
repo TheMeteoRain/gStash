@@ -1,25 +1,21 @@
-import  {Item} from './Item'
+import { Item } from './Item'
 
 export interface Stash {
-  accountName: string
-  lastCharacterName: string
-  id: string
-  stash: string
+  stashId: string
+  stashName: string
   stashType: string
-  items: Item[]
-  public: boolean
+  stashPublic: boolean
 }
 
-const transformStash = (stash: any): Stash => {
-  return {
-      accountName: stash.accountName,
-      lastCharacterName: stash.lastCharacterName,
-      id: stash.id,
-      stash: stash.stash,
-      stashType: stash.stashType,
-      items: stash.items ? stash.items.map((item: Item) => item) : [],
-      public: stash.public
+const transformStash = (data: any): Stash => {
+  const stash: Stash = {
+    stashId: data.id,
+    stashName: data.stash,
+    stashType: data.stashType,
+    stashPublic: data.public,
   }
+
+  return stash
 }
 
 export default transformStash

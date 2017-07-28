@@ -1,5 +1,5 @@
 import db from './db'
-import { Stash, Account, Item } from './interface'
+import { Stash, Account, Item, Property, Requirement, Socket } from './interface'
 
 
 const queries = {
@@ -15,7 +15,16 @@ const queries = {
     t.result('INSERT INTO stashes(stashId, stashName, stashType, stashPublic) VALUES ($<stashId>, $<stashName>, $<stashType>, $<stashPublic>) ON CONFLICT (stashId) DO UPDATE SET stashName = EXCLUDED.stashName, stashType = EXCLUDED.stashType, stashPublic = EXCLUDED.stashPublic', stash),
 
   setItem: (t: any, item: Item): any =>
-    t.result('INSERT INTO items(w, h, ilvl, icon, league, itemId, name, typeLine, identified, verified, corrupted, lockedToCharacter, frameType, x, y, inventoryId, accountName, stashId, socketAmount, linkAmount, available, addedTs, updatedTs, flavourText, price, crafted) VALUES ($<w>, $<h>, $<ilvl>, $<icon>, $<league>, $<itemId>, $<name>, $<typeLine>, $<identified>, $<verified>, $<corrupted>, $<lockedToCharacter>, $<frameType>, $<x>, $<y>, $<inventoryId>, $<accountName>, $<stashId>, $<socketAmount>, $<linkAmount>, $<available>, $<addedTs>, $<updatedTs>, $<flavourText>, $<price>, $<crafted>) ON CONFLICT (itemId) DO UPDATE SET w = EXCLUDED.w, h = EXCLUDED.h, league = EXCLUDED.league, identified = EXCLUDED.identified, verified = EXCLUDED.verified, corrupted = EXCLUDED.corrupted, x = EXCLUDED.x, y = EXCLUDED.y, inventoryId = EXCLUDED.inventoryId, accountName = EXCLUDED.accountName, stashId = EXCLUDED.stashId, socketAmount = EXCLUDED.socketAmount, linkAmount = EXCLUDED.linkAmount, available = EXCLUDED.available, updatedTs = EXCLUDED.addedTs, price = EXCLUDED.price', item)
+    t.result('INSERT INTO items(w, h, ilvl, icon, league, itemId, name, typeLine, identified, verified, corrupted, lockedToCharacter, frameType, x, y, inventoryId, accountName, stashId, socketAmount, linkAmount, available, addedTs, updatedTs, flavourText, price, crafted) VALUES ($<w>, $<h>, $<ilvl>, $<icon>, $<league>, $<itemId>, $<name>, $<typeLine>, $<identified>, $<verified>, $<corrupted>, $<lockedToCharacter>, $<frameType>, $<x>, $<y>, $<inventoryId>, $<accountName>, $<stashId>, $<socketAmount>, $<linkAmount>, $<available>, $<addedTs>, $<updatedTs>, $<flavourText>, $<price>, $<crafted>) ON CONFLICT (itemId) DO UPDATE SET w = EXCLUDED.w, h = EXCLUDED.h, league = EXCLUDED.league, identified = EXCLUDED.identified, verified = EXCLUDED.verified, corrupted = EXCLUDED.corrupted, x = EXCLUDED.x, y = EXCLUDED.y, inventoryId = EXCLUDED.inventoryId, accountName = EXCLUDED.accountName, stashId = EXCLUDED.stashId, socketAmount = EXCLUDED.socketAmount, linkAmount = EXCLUDED.linkAmount, available = EXCLUDED.available, updatedTs = EXCLUDED.addedTs, price = EXCLUDED.price', item),
+
+  setProperty: (t: any, property: Property): any =>
+    t.result('INSERT INTO properties(itemId, propertyName, propertyValue1, propertyValue2, propertyKey) VALUES($<itemId>, $<propertyName>, $<propertyValue1>, $<propertyValue2>, $<propertyKey>)', property),
+
+  setRequirement: (t: any, requirement: Requirement): any =>
+    t.result('INSERT INTO requirements(itemId, requirementName, requirementValue, requirementKey) VALUES($<itemId>, $<requirementName>, $<requirementValue>, $<requirementKey>)', requirement),
+
+  setSocket: (t: any, socket: Socket): any =>
+    t.result('INSERT INTO sockets(itemId, socketGroup, socketAttr, socketKey) VALUES($<itemId>, $<socketGroup>, $<socketAttr>, $<socketKey>)', socket)
 }
 
 export default queries

@@ -6,9 +6,12 @@ import query from './query'
 
 import { Stash, Account, Item } from './interface'
 
-import transformStash from './class/Stash'
-import transformAccount from './class/Account'
-import transformItem from './class/Item'
+import transformStash from './transform/Stash'
+import transformAccount from './transform/Account'
+import transformItem from './transform/Item'
+import transformProperty from './transform/Property'
+import transformRequirement from './transform/Requirement'
+import transformSocket from './transform/Socket'
 
 /**
  * The amount of milliseconds when a new request is sent to the poe api.
@@ -38,10 +41,36 @@ const saveAccountsTask = (stashes: any): any => {
             batch.push(query.setStash(t, transformStash(stash)))
 
             for (const item of items) {
+                const { properties, requirements, sockets } = item
+                delete item['properties']
+                delete item['requirements']
+                delete item['sockets']
                 item.accountName = accountName
                 item.stashId = id
-                const i: Item = transformItem(item)
-                batch.push(query.setItem(t, i))
+                batch.push(query.setItem(t, transformItem(item)))
+
+                /*if (sockets) {
+                    //to-do fix propertyKey
+                    for (const socket of sockets) {
+                        socket.itemId = item.id
+                        batch.push(query.setSocket(t, transformSocket(socket)))
+                    }
+                }
+
+                if (properties) {
+                    //to-do fix propertyKey
+                    for (const property of properties) {
+                        property.itemId = item.id
+                        batch.push(query.setProperty(t, transformProperty(property)))
+                    }
+                }
+
+                if (requirements) {
+                    for (const requirement of requirements) {
+                        requirement.itemId = item.id
+                        batch.push(query.setRequirement(t, transformRequirement(requirement)))
+                    }
+                }*/
             }
         }
 

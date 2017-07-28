@@ -11,6 +11,28 @@ export interface Stash {
   stashPublic: boolean
 }
 
+export interface Property {
+  itemId: string
+  propertyName: string
+  propertyValue1: string
+  propertyValue2: string
+  propertyKey: string
+}
+
+export interface Requirement {
+  itemId: string
+  requirementName: string
+  requirementValue: string
+  requirementKey: string
+}
+
+export interface Socket {
+  itemId: string
+  socketGroup: number
+  socketAttr: string
+  socketKey: string
+}
+
 export interface Item {
   w: number
   h: number

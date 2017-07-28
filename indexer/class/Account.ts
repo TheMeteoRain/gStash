@@ -1,13 +1,4 @@
-export interface Account {
-  accountName: string
-  lastCharacterName: string
-  lastSeen: number
-}
-
-export interface Data {
-  next_change_id: string
-  stashes: Array<any>
-}
+import { Account } from '../interface'
 
 const transformAccount = (data: any): Account => {
   const account: Account = {

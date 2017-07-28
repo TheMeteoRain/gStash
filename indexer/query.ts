@@ -1,6 +1,6 @@
 import db from './db'
-import { Account } from './class/Account'
-import { Stash } from './class/Stash'
+import { Stash, Account, Item } from './interface'
+
 
 const queries = {
   updateCurrentNextChangeId: (next_change_id: string, processed: number = 0): Promise<any> =>
@@ -12,7 +12,10 @@ const queries = {
     account.accountName ? t.result('INSERT INTO accounts(accountName, lastCharacterName, lastSeen) VALUES ($<accountName>, $<lastCharacterName>, $<lastSeen>) ON CONFLICT (accountName) DO UPDATE SET lastSeen = EXCLUDED.lastSeen, lastCharacterName = EXCLUDED.lastCharacterName', account) : '',
 
   setStash: (t: any, stash: Stash): any =>
-    t.result('INSERT INTO stashes(stashId, stashName, stashType, stashPublic) VALUES ($<stashId>, $<stashName>, $<stashType>, $<stashPublic>) ON CONFLICT (stashId) DO UPDATE SET stashName = EXCLUDED.stashName, stashType = EXCLUDED.stashType, stashPublic = EXCLUDED.stashPublic', stash)
+    t.result('INSERT INTO stashes(stashId, stashName, stashType, stashPublic) VALUES ($<stashId>, $<stashName>, $<stashType>, $<stashPublic>) ON CONFLICT (stashId) DO UPDATE SET stashName = EXCLUDED.stashName, stashType = EXCLUDED.stashType, stashPublic = EXCLUDED.stashPublic', stash),
+
+  setItem: (t: any, item: Item): any =>
+    t.result('INSERT INTO items(w, h, ilvl, icon, league, itemId, name, typeLine, identified, verified, corrupted, lockedToCharacter, frameType, x, y, inventoryId, accountName, stashId, socketAmount, linkAmount, available, addedTs, updatedTs, flavourText, price, crafted) VALUES ($<w>, $<h>, $<ilvl>, $<icon>, $<league>, $<itemId>, $<name>, $<typeLine>, $<identified>, $<verified>, $<corrupted>, $<lockedToCharacter>, $<frameType>, $<x>, $<y>, $<inventoryId>, $<accountName>, $<stashId>, $<socketAmount>, $<linkAmount>, $<available>, $<addedTs>, $<updatedTs>, $<flavourText>, $<price>, $<crafted>) ON CONFLICT (itemId) DO UPDATE SET w = EXCLUDED.w, h = EXCLUDED.h, league = EXCLUDED.league, identified = EXCLUDED.identified, verified = EXCLUDED.verified, corrupted = EXCLUDED.corrupted, x = EXCLUDED.x, y = EXCLUDED.y, inventoryId = EXCLUDED.inventoryId, accountName = EXCLUDED.accountName, stashId = EXCLUDED.stashId, socketAmount = EXCLUDED.socketAmount, linkAmount = EXCLUDED.linkAmount, available = EXCLUDED.available, updatedTs = EXCLUDED.addedTs, price = EXCLUDED.price', item)
 }
 
 export default queries

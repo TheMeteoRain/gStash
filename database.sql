@@ -40,6 +40,14 @@ CREATE TABLE Leagues (
   active smallint DEFAULT '0',
   poeTradeId varchar(128) DEFAULT ''
 );
+INSERT INTO Leagues(leagueName, active) VALUES('Standard', '1');
+INSERT INTO Leagues(leagueName, active) VALUES('Hardcore', '1');
+INSERT INTO Leagues(leagueName, active) VALUES('SSF Standard', '1');
+INSERT INTO Leagues(leagueName, active) VALUES('SSF Hardcore', '1');
+INSERT INTO Leagues(leagueName, active) VALUES('Legacy', '1');
+INSERT INTO Leagues(leagueName, active) VALUES('Hardcore Legacy', '1');
+INSERT INTO Leagues(leagueName, active) VALUES('SSF Legacy', '1');
+INSERT INTO Leagues(leagueName, active) VALUES('SSF HC Legacy', '1');
 
 
 CREATE TABLE Currencies (
@@ -71,7 +79,7 @@ CREATE TABLE Stashes (
   stashId varchar(128) NOT NULL DEFAULT '' PRIMARY KEY,
   stashName varchar(128) DEFAULT NULL,
   stashType varchar(128) DEFAULT NULL,
-  stashPublic boolean DEFAULT FALSE
+  stashPublic boolean DEFAULT 'FALSE'
 );
 
 
@@ -84,10 +92,10 @@ CREATE TABLE Items (
   itemId varchar(128) NOT NULL DEFAULT '' PRIMARY KEY,
   name varchar(128) DEFAULT NULL,
   typeLine varchar(128) DEFAULT NULL,
-  identified boolean NOT NULL DEFAULT FALSE,
-  verified boolean NOT NULL DEFAULT FALSE,
-  corrupted boolean NOT NULL DEFAULT FALSE,
-  lockedToCharacter boolean DEFAULT FALSE,
+  identified boolean NOT NULL DEFAULT 'FALSE',
+  verified boolean NOT NULL DEFAULT 'FALSE',
+  corrupted boolean NOT NULL DEFAULT 'FALSE',
+  lockedToCharacter boolean DEFAULT 'FALSE',
   frameType smallint DEFAULT '0',
   x smallint DEFAULT '0',
   y smallint DEFAULT '0',
@@ -101,7 +109,7 @@ CREATE TABLE Items (
   updatedTs bigint DEFAULT '0',
   flavourText varchar(1024) DEFAULT NULL,
   price varchar(128) DEFAULT NULL,
-  crafted smallint DEFAULT '0',
+  crafted boolean DEFAULT 'FALSE',
   CONSTRAINT Items_ibfk_1 FOREIGN KEY (league) REFERENCES Leagues (leagueName),
   CONSTRAINT Items_ibfk_2 FOREIGN KEY (accountName) REFERENCES Accounts (accountName),
   CONSTRAINT Items_ibfk_3 FOREIGN KEY (stashId) REFERENCES Stashes (stashID)

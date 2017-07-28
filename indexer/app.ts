@@ -4,9 +4,11 @@ import axios from 'axios'
 import db from './db'
 import query from './query'
 
-import transformStash, { Stash } from './class/Stash'
-import transformAccount, { Account } from './class/Account'
+import { Stash, Account, Item } from './interface'
 
+import transformStash from './class/Stash'
+import transformAccount from './class/Account'
+import transformItem from './class/Item'
 
 /**
  * The amount of milliseconds when a new request is sent to the poe api.
@@ -28,14 +30,22 @@ const config = {
 
 const saveAccountsTask = (stashes: any): any => {
     return db.task((t: any) => {
-        const a = stashes.map((stash: any) => {
-            return query.setAccount(t, transformAccount(stash))
-        })
-        const b = stashes.map((stash: any) => {
-            return query.setStash(t, transformStash(stash))
-        })
+        let batch: Array<any> = []
+        for (const stash of stashes) {
+            const { accountName, id, items } = stash
+            delete stash['items']
+            batch.push(query.setAccount(t, transformAccount(stash)))
+            batch.push(query.setStash(t, transformStash(stash)))
 
-        return t.batch([...a, ...b])
+            for (const item of items) {
+                item.accountName = accountName
+                item.stashId = id
+                const i: Item = transformItem(item)
+                batch.push(query.setItem(t, i))
+            }
+        }
+
+        return t.batch(batch)
     }).then((events: any) => {
         const stats = {
             total: events.length,

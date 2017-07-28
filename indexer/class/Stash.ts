@@ -1,11 +1,4 @@
-import { Item } from './Item'
-
-export interface Stash {
-  stashId: string
-  stashName: string
-  stashType: string
-  stashPublic: boolean
-}
+import { Stash } from '../interface'
 
 const transformStash = (data: any): Stash => {
   const stash: Stash = {

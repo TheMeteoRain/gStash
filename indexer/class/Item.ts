@@ -1,221 +1,71 @@
-import * as stringDecoder from 'string_decoder';
-import { Socket } from './socket'
+import { Item } from '../interface'
 
-export interface Item {
-  w: number
-  h: number
-  ilvl: number
-  icon: string
-  league: string
-  itemId: string
-  name: string
-  typeLine: string
-  identified: boolean
-  verified: boolean
-  corrupted: boolean
-  lockedToCharacter: boolean
-  frameType: number
-  x: number
-  y: number
-  inventoryId: string
-  accountName: string
-  stashId: string
-  socketAmount: number
-  linkAmount: number
-  available: number
+const calculateLinks = (sockets: any): number => {
+  let groups: Array<number> = [0, 0, 0, 0, 0, 0]
+  for (const key of Object.keys(sockets)) {
+    switch (sockets[key].group) {
+      case 0:
+        groups[0]++
+        break
+      case 1:
+        groups[1]++
+        break
+      case 2:
+        groups[2]++
+        break
+      case 3:
+        groups[3]++
+        break
+      case 4:
+        groups[4]++
+        break
+      case 5:
+        groups[5]++
+        break
+    }
+  }
 
-  note?: string
-  properties?: string[] //change this
-  enchantMods?: string[]
-  craftedMods?: string[]
-  flavourText?: string[]
-  additionalProperties?: string[] //change this
-  secDescrText?: string
-  descrText?: string
-  artFilename?: string
-  duplicated?: boolean
-  maxStackSize?: number
-  nextLevelRequirements?: string[] //change this
-  stackSize?: number
-  talismanTier?: number
-  utilityMods?: string[]
-  support?: boolean
-  cosmeticMods?: string[]
-  prophecyDiffText?: string
-  prophecyText?: string
-  isRelic?: boolean
+  const biggest = groups.reduce((previous: number, current: number) => {
+    return previous > current ? previous : current
+  })
+
+  return biggest
 }
 
+const transformItem = (data: any): Item => {
+  const { sockets } = data
+  const linkAmount: number = sockets ? calculateLinks(sockets) : 0
 
-/*export const transformItem = (
-  {
-    verified,
-    w,
-    h,
-    ilvl,
-    icon,
-    league,
-    id,
-    sockets,
-    name,
-    typeLine,
-    identified,
-    corrupted,
-    lockedToCharacter,
-    requirements,
-    explicitMods,
-    implicitMods,
-    frameType,
-    x,
-    y,
-    inventoryId,
-    socketedItems,
-    note,
-    properties,
-    enchantMods,
-    craftedMods,
-    flavourText,
-    additionalProperties,
-    secDescrText,
-    descrText,
-    artFilename,
-    duplicated,
-    maxStackSize,
-    nextLevelRequirements,
-    stackSize,
-    talismanTier,
-    utilityMods,
-    support,
-    cosmeticMods,
-    prophecyDiffText,
-    prophecyText,
-    isRelic
-  } : {
-    verified: boolean
-    w: number
-    h: number
-    ilvl: number
-    icon: string
-    league: string
-    id: string
-    sockets: Socket[] //change this
-    name: string
-    typeLine: string
-    identified: boolean
-    corrupted: boolean
-    lockedToCharacter: boolean
-    requirements: string[] //change this
-    explicitMods: string[]
-    implicitMods: string[]
-    frameType: number
-    x: number
-    y: number
-    inventoryId: string
-    socketedItems: string[] //change this
-    note: string
-    properties?: string[] //change this
-    enchantMods?: string[]
-    craftedMods?: string[]
-    flavourText?: string[]
-    additionalProperties?: string[] //change this
-    secDescrText?: string
-    descrText?: string
-    artFilename?: string
-    duplicated?: boolean
-    maxStackSize?: number
-    nextLevelRequirements?: string[] //change this
-    stackSize?: number
-    talismanTier?: number
-    utilityMods?: string[]
-    support?: boolean
-    cosmeticMods?: string[]
-    prophecyDiffText?: string
-    prophecyText?: string
-    isRelic?: boolean}): Item => {
-  const item: any = {
-    verified,
-    w,
-    h,
-    ilvl,
-    icon,
-    league,
-    id,
-    sockets,
-    name,
-    typeLine,
-    identified,
-    corrupted,
-    lockedToCharacter,
-    requirements,
-    explicitMods,
-    implicitMods,
-    frameType,
-    x,
-    y,
-    inventoryId,
-    socketedItems,
-    note,
-    properties,
-    enchantMods,
-    craftedMods,
-    flavourText,
-    additionalProperties,
-    secDescrText,
-    descrText,
-    artFilename,
-    duplicated,
-    maxStackSize,
-    nextLevelRequirements,
-    stackSize,
-    talismanTier,
-    utilityMods,
-    support,
-    cosmeticMods,
-    prophecyDiffText,
-    prophecyText,
-    isRelic
+  const item: Item = {
+    w: data.w,
+    h: data.h,
+    ilvl: data.ilvl,
+    icon: data.icon,
+    league: data.league,
+    itemId: data.id,
+    name: data.name,
+    typeLine: data.typeLine,
+    identified: data.identified,
+    verified: data.verified,
+    corrupted: data.corrupted,
+    lockedToCharacter: data.lockedToCharacter,
+    frameType: data.frameType,
+    x: data.x,
+    y: data.y,
+    inventoryId: data.inventoryId,
+    accountName: data.accountName,
+    stashId: data.stashId,
+    socketAmount: sockets ? sockets.length : 0,
+    linkAmount,
+    available: data.available ? 1 : 0,
+    addedTs: Date.now(),
+    updatedTs: 0,
+    flavourText: data.flavourText,
+    price: data.price,
+    crafted: data.crafted,
   }
 
   return item
-}*/
+}
 
-/*verified, w,
-  h,
-  ilvl,
-  icon,
-  league,
-  id,
-  sockets,
-  name,
-  typeLine,
-  identified,
-  corrupted,
-  lockedToCharacter,
-  requirements,
-  explicitMods,
-  implicitMods,
-  frameType,
-  x,
-  y,
-  inventoryId,
-  socketedItems,
-  note,
-  properties,
-  enchantMods,
-  craftedMods,
-  flavourText,
-  additionalProperties,
-  secDescrText,
-  descrText,
-  artFilename,
-  duplicated,
-  maxStackSize,
-  nextLevelRequirements,
-  stackSize,
-  talismanTier,
-  utilityMods,
-  support,
-  cosmeticMods,
-  prophecyDiffText,
-  prophecyText,
-  isRelic*/
+export default transformItem

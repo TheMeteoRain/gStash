@@ -7,8 +7,7 @@ const transformProperty = (data: any): Property => {
     itemId: data.itemId,
     propertyName: data.name,
     propertyValue1: values.length > 0 ? values[0][0] : '0',
-    propertyValue2: values.length > 0 ? values[0][1] : '0',
-    propertyKey: data.type
+    propertyValue2: values.length > 0 ? values[0][1] : '0'
   }
 
   return property

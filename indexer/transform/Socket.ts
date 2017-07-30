@@ -6,8 +6,7 @@ const transformSocket = (data: any): Socket => {
   const socket: Socket = {
     itemId: data.itemId,
     socketGroup: data.group,
-    socketAttr: data.attr,
-    socketKey: data.type
+    socketAttr: data.attr
   }
 
   return socket

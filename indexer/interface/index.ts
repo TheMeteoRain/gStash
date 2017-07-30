@@ -16,21 +16,36 @@ export interface Property {
   propertyName: string
   propertyValue1: string
   propertyValue2: string
-  propertyKey: string
+  propertyKey?: string
 }
 
 export interface Requirement {
   itemId: string
   requirementName: string
   requirementValue: string
-  requirementKey: string
+  requirementKey?: string
 }
 
 export interface Socket {
   itemId: string
   socketGroup: number
   socketAttr: string
-  socketKey: string
+  socketKey?: string
+}
+
+export enum ModType {
+  'EXPLICIT', 'IMPLICIT', 'CRAFTED', 'ENCHANTED'
+}
+
+export interface Mod {
+  itemId: string
+  modName: string
+  modValue1: string
+  modValue2: string
+  modValue3: string
+  modValue4: string
+  modType: string
+  modKey?: string
 }
 
 export interface Item {
@@ -54,10 +69,11 @@ export interface Item {
   stashId: string
   socketAmount: number
   linkAmount: number
-  available: number
+  available: boolean
   addedTs: number
   updatedTs: number
   flavourText: string
   price: string
+  enchanted: boolean
   crafted: boolean
 }

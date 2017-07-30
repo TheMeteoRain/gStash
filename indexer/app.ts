@@ -4,7 +4,7 @@ import axios from 'axios'
 import db from './db'
 import query from './query'
 
-import { Stash, Account, Item } from './interface'
+import { Stash, Account, Item, ModType } from './interface'
 
 import transformStash from './transform/Stash'
 import transformAccount from './transform/Account'
@@ -12,6 +12,7 @@ import transformItem from './transform/Item'
 import transformProperty from './transform/Property'
 import transformRequirement from './transform/Requirement'
 import transformSocket from './transform/Socket'
+import transformMod from './transform/Mod'
 
 /**
  * The amount of milliseconds when a new request is sent to the poe api.
@@ -41,16 +42,17 @@ const saveAccountsTask = (stashes: any): any => {
             batch.push(query.setStash(t, transformStash(stash)))
 
             for (const item of items) {
-                const { properties, requirements, sockets } = item
+                const { properties, requirements, sockets, explicitMods, implicitMods, enchantMods, craftedMods } = item
+
                 delete item['properties']
                 delete item['requirements']
-                delete item['sockets']
+                delete item['explicitMods']
+                delete item['implicitMods']
                 item.accountName = accountName
                 item.stashId = id
                 batch.push(query.setItem(t, transformItem(item)))
 
-                /*if (sockets) {
-                    //to-do fix propertyKey
+                if (sockets) {
                     for (const socket of sockets) {
                         socket.itemId = item.id
                         batch.push(query.setSocket(t, transformSocket(socket)))
@@ -58,7 +60,6 @@ const saveAccountsTask = (stashes: any): any => {
                 }
 
                 if (properties) {
-                    //to-do fix propertyKey
                     for (const property of properties) {
                         property.itemId = item.id
                         batch.push(query.setProperty(t, transformProperty(property)))
@@ -70,11 +71,37 @@ const saveAccountsTask = (stashes: any): any => {
                         requirement.itemId = item.id
                         batch.push(query.setRequirement(t, transformRequirement(requirement)))
                     }
-                }*/
+                }
+
+                if (explicitMods) {
+                    for (const mod of explicitMods) {
+                        batch.push(query.setMod(t, transformMod(mod, item.id, ModType[ModType.EXPLICIT])))
+                    }
+                }
+
+                if (implicitMods) {
+                    for (const mod of implicitMods) {
+                        batch.push(query.setMod(t, transformMod(mod, item.id, ModType[ModType.IMPLICIT])))
+                    }
+                }
+
+                if (enchantMods) {
+                    for (const mod of enchantMods) {
+                        batch.push(query.setMod(t, transformMod(mod, item.id, ModType[ModType.ENCHANTED])))
+                    }
+                }
+
+                if (craftedMods) {
+                    for (const mod of craftedMods) {
+                        batch.push(query.setMod(t, transformMod(mod, item.id, ModType[ModType.CRAFTED])))
+                    }
+                }
             }
         }
 
-        return t.batch(batch)
+        return t.batch(batch, (index: any, success: boolean, result: any, delay: any) => {
+            //console.log(index, success, delay)
+        })
     }).then((events: any) => {
         const stats = {
             total: events.length,

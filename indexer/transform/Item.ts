@@ -1,26 +1,23 @@
 import { Item } from '../interface'
 
+/**
+ * Return the biggest link number on an single item.
+ *
+ * @param sockets array of sockets of an item
+ */
 const calculateLinks = (sockets: any): number => {
-  let groups: Array<number> = [0, 0, 0, 0, 0, 0]
+  let groups: Array<number> = [0, 0, 0, 0, 0]
   for (const key of Object.keys(sockets)) {
     switch (sockets[key].group) {
-      case 0:
-        groups[0]++
+      case 0: groups[0]++
         break
-      case 1:
-        groups[1]++
+      case 1: groups[1]++
         break
-      case 2:
-        groups[2]++
+      case 2: groups[2]++
         break
-      case 3:
-        groups[3]++
+      case 3: groups[2]++
         break
-      case 4:
-        groups[4]++
-        break
-      case 5:
-        groups[5]++
+      case 4: groups[2]++
         break
     }
   }
@@ -33,8 +30,20 @@ const calculateLinks = (sockets: any): number => {
 }
 
 const transformItem = (data: any): Item => {
-  const { sockets } = data
-  const linkAmount: number = sockets ? calculateLinks(sockets) : 0
+  let enchanted: boolean = false
+  if (data.hasOwnProperty('enchantMods')) {
+    enchanted = data.enchantMods.length > 0 ? true : false
+  }
+  let crafted: boolean = false
+  if (data.hasOwnProperty('craftedMods')) {
+    crafted = data.craftedMods.length > 0 ? true : false
+  }
+  let linkAmount: number = 0
+  let socketAmount: number = 0
+  if (data.hasOwnProperty('sockets')) {
+    linkAmount = calculateLinks(data.sockets)
+    socketAmount = data.sockets.length
+  }
 
   const item: Item = {
     w: data.w,
@@ -55,14 +64,15 @@ const transformItem = (data: any): Item => {
     inventoryId: data.inventoryId,
     accountName: data.accountName,
     stashId: data.stashId,
-    socketAmount: sockets ? sockets.length : 0,
+    socketAmount,
     linkAmount,
-    available: data.available ? 1 : 0,
+    available: true,
     addedTs: Date.now(),
     updatedTs: 0,
     flavourText: data.flavourText,
     price: data.price,
-    crafted: data.crafted,
+    enchanted,
+    crafted
   }
 
   return item

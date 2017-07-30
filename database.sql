@@ -72,8 +72,7 @@ CREATE TABLE CurrencyStats (
   CONSTRAINT currencystats_ibfk_1 FOREIGN KEY (currencyKey) REFERENCES Currencies (currencyKey)
 );
 
-/*NormalStash/PremiumStash/QuadStash/EssenceStash/CurrencyStash (DivinationStash?)
-CREATE TYPE stashType AS ENUM ('NormalStash','PremiumStash','QuadStash','EssenceStash','CurrencyStash','DivinationStash');*/
+CREATE TYPE stashType AS ENUM ('NormalStash','PremiumStash','QuadStash','EssenceStash','CurrencyStash','DivinationStash');
 CREATE TABLE Stashes (
   stashId varchar(128) NOT NULL DEFAULT '' PRIMARY KEY,
   stashName varchar(128) DEFAULT NULL,
@@ -103,11 +102,12 @@ CREATE TABLE Items (
   stashId varchar(128) NOT NULL DEFAULT '',
   socketAmount smallint NOT NULL DEFAULT '0',
   linkAmount smallint NOT NULL DEFAULT '0',
-  available smallint NOT NULL DEFAULT '0',
+  available boolean NOT NULL DEFAULT TRUE,
   addedTs bigint DEFAULT '0',
   updatedTs bigint DEFAULT '0',
   flavourText varchar(1024) DEFAULT NULL,
   price varchar(128) DEFAULT NULL,
+  enchanted boolean DEFAULT 'FALSE',
   crafted boolean DEFAULT 'FALSE',
   CONSTRAINT Items_ibfk_1 FOREIGN KEY (league) REFERENCES Leagues (leagueName),
   CONSTRAINT Items_ibfk_2 FOREIGN KEY (accountName) REFERENCES Accounts (accountName),
@@ -133,7 +133,7 @@ CREATE TABLE Properties (
   propertyName varchar(128) NOT NULL DEFAULT '0',
   propertyValue1 varchar(128) DEFAULT '0',
   propertyValue2 varchar(128) DEFAULT '0',
-  propertyKey varchar(128) NOT NULL DEFAULT '' UNIQUE,
+  propertyKey SERIAL NOT NULL,
   CONSTRAINT Properties_ibfk_1 FOREIGN KEY (itemId) REFERENCES Items (itemId) ON DELETE CASCADE
 );
 
@@ -142,7 +142,7 @@ CREATE TABLE Requirements (
   itemId varchar(128) DEFAULT NULL,
   requirementName varchar(128) NOT NULL DEFAULT '0',
   requirementValue smallint DEFAULT '0',
-  requirementKey varchar(128) NOT NULL DEFAULT '' UNIQUE,
+  requirementKey SERIAL NOT NULL,
   CONSTRAINT Requirements_ibfk_1 FOREIGN KEY (itemId) REFERENCES Items (itemId) ON DELETE CASCADE
 );
 
@@ -151,6 +151,8 @@ CREATE TABLE Sockets (
   itemId varchar(128) DEFAULT NULL,
   socketGroup smallint DEFAULT '0',
   socketAttr char(1) DEFAULT NULL,
-  socketKey varchar(128) NOT NULL DEFAULT '' UNIQUE,
+  socketKey SERIAL NOT NULL,
   CONSTRAINT Sockets_ibfk_1 FOREIGN KEY (itemId) REFERENCES Items (itemId) ON DELETE CASCADE
 );
+
+CREATE UNIQUE INDEX item ON Items USING BTREE (itemId);

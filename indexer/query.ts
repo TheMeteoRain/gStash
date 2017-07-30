@@ -1,5 +1,5 @@
 import db from './db'
-import { Stash, Account, Item, Property, Requirement, Socket } from './interface'
+import { Stash, Account, Item, Property, Requirement, Socket, Mod } from './interface'
 
 
 const queries = {
@@ -18,13 +18,16 @@ const queries = {
     t.result('INSERT INTO items(w, h, ilvl, icon, league, itemId, name, typeLine, identified, verified, corrupted, lockedToCharacter, frameType, x, y, inventoryId, accountName, stashId, socketAmount, linkAmount, available, addedTs, updatedTs, flavourText, price, crafted) VALUES ($<w>, $<h>, $<ilvl>, $<icon>, $<league>, $<itemId>, $<name>, $<typeLine>, $<identified>, $<verified>, $<corrupted>, $<lockedToCharacter>, $<frameType>, $<x>, $<y>, $<inventoryId>, $<accountName>, $<stashId>, $<socketAmount>, $<linkAmount>, $<available>, $<addedTs>, $<updatedTs>, $<flavourText>, $<price>, $<crafted>) ON CONFLICT (itemId) DO UPDATE SET w = EXCLUDED.w, h = EXCLUDED.h, league = EXCLUDED.league, identified = EXCLUDED.identified, verified = EXCLUDED.verified, corrupted = EXCLUDED.corrupted, x = EXCLUDED.x, y = EXCLUDED.y, inventoryId = EXCLUDED.inventoryId, accountName = EXCLUDED.accountName, stashId = EXCLUDED.stashId, socketAmount = EXCLUDED.socketAmount, linkAmount = EXCLUDED.linkAmount, available = EXCLUDED.available, updatedTs = EXCLUDED.addedTs, price = EXCLUDED.price', item),
 
   setProperty: (t: any, property: Property): any =>
-    t.result('INSERT INTO properties(itemId, propertyName, propertyValue1, propertyValue2, propertyKey) VALUES($<itemId>, $<propertyName>, $<propertyValue1>, $<propertyValue2>, $<propertyKey>)', property),
+    t.result('INSERT INTO properties(itemId, propertyName, propertyValue1, propertyValue2) VALUES($<itemId>, $<propertyName>, $<propertyValue1>, $<propertyValue2>)', property),
 
   setRequirement: (t: any, requirement: Requirement): any =>
-    t.result('INSERT INTO requirements(itemId, requirementName, requirementValue, requirementKey) VALUES($<itemId>, $<requirementName>, $<requirementValue>, $<requirementKey>)', requirement),
+    t.result('INSERT INTO requirements(itemId, requirementName, requirementValue) VALUES($<itemId>, $<requirementName>, $<requirementValue>)', requirement),
 
   setSocket: (t: any, socket: Socket): any =>
-    t.result('INSERT INTO sockets(itemId, socketGroup, socketAttr, socketKey) VALUES($<itemId>, $<socketGroup>, $<socketAttr>, $<socketKey>)', socket)
+    t.result('INSERT INTO sockets(itemId, socketGroup, socketAttr) VALUES($<itemId>, $<socketGroup>, $<socketAttr>)', socket),
+
+  setMod: (t: any, mod: Mod): any =>
+    t.result('INSERT INTO mods(itemId, modName, modValue1, modValue2, modValue3, modValue4, modType) VALUES($<itemId>, $<modName>, $<modValue1>, $<modValue2>, $<modValue3>, $<modValue4>, $<modType>)', mod)
 }
 
 export default queries

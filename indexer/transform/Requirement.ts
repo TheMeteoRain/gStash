@@ -6,8 +6,7 @@ const transformRequirement = (data: any): Requirement => {
   const requirement: Requirement = {
     itemId: data.itemId,
     requirementName: data.name,
-    requirementValue: values.length > 0 ? values[0][0] : '0',
-    requirementKey: data.type
+    requirementValue: values.length > 0 ? values[0][0] : '0'
   }
 
   return requirement

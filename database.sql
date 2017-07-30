@@ -20,9 +20,9 @@ DROP TABLE IF EXISTS Accounts;
 
 
 CREATE TABLE Accounts (
-  accountName varchar(128) DEFAULT '' PRIMARY KEY,
-  lastCharacterName varchar(128) DEFAULT NULL,
-  lastSeen bigint DEFAULT 0
+  account_name varchar(128) DEFAULT '' PRIMARY KEY,
+  last_character_name varchar(128) DEFAULT NULL,
+  last_seen bigint DEFAULT 0
 );
 
 
@@ -72,12 +72,12 @@ CREATE TABLE CurrencyStats (
   CONSTRAINT currencystats_ibfk_1 FOREIGN KEY (currencyKey) REFERENCES Currencies (currencyKey)
 );
 
-CREATE TYPE stashType AS ENUM ('NormalStash','PremiumStash','QuadStash','EssenceStash','CurrencyStash','DivinationStash');
+CREATE TYPE StashType AS ENUM ('NormalStash','PremiumStash','QuadStash','EssenceStash','CurrencyStash','DivinationStash');
 CREATE TABLE Stashes (
-  stashId varchar(128) NOT NULL DEFAULT '' PRIMARY KEY,
-  stashName varchar(128) DEFAULT NULL,
-  stashType varchar(128) DEFAULT NULL,
-  stashPublic boolean DEFAULT 'FALSE'
+  stash_id varchar(128) NOT NULL DEFAULT '' PRIMARY KEY,
+  stash_name varchar(128) DEFAULT NULL,
+  stash_type varchar(128) DEFAULT NULL,
+  stash_public boolean DEFAULT 'FALSE'
 );
 
 
@@ -87,72 +87,72 @@ CREATE TABLE Items (
   ilvl smallint NOT NULL DEFAULT '0',
   icon varchar(1024) DEFAULT NULL,
   league varchar(128) NOT NULL DEFAULT '',
-  itemId varchar(128) NOT NULL DEFAULT '' PRIMARY KEY,
+  item_id varchar(128) NOT NULL DEFAULT '' PRIMARY KEY,
   name varchar(128) DEFAULT NULL,
-  typeLine varchar(128) DEFAULT NULL,
+  type_line varchar(128) DEFAULT NULL,
   identified boolean NOT NULL DEFAULT 'FALSE',
   verified boolean NOT NULL DEFAULT 'FALSE',
   corrupted boolean NOT NULL DEFAULT 'FALSE',
-  lockedToCharacter boolean DEFAULT 'FALSE',
-  frameType smallint DEFAULT '0',
+  locked_to_character boolean DEFAULT 'FALSE',
+  frame_type smallint DEFAULT '0',
   x smallint DEFAULT '0',
   y smallint DEFAULT '0',
-  inventoryId varchar(128) DEFAULT NULL,
-  accountName varchar(128) NOT NULL DEFAULT '',
-  stashId varchar(128) NOT NULL DEFAULT '',
-  socketAmount smallint NOT NULL DEFAULT '0',
-  linkAmount smallint NOT NULL DEFAULT '0',
+  inventory_id varchar(128) DEFAULT NULL,
+  account_name varchar(128) NOT NULL DEFAULT '',
+  stash_id varchar(128) NOT NULL DEFAULT '',
+  socket_amount smallint NOT NULL DEFAULT '0',
+  link_amount smallint NOT NULL DEFAULT '0',
   available boolean NOT NULL DEFAULT TRUE,
-  addedTs bigint DEFAULT '0',
-  updatedTs bigint DEFAULT '0',
-  flavourText varchar(1024) DEFAULT NULL,
+  added_ts bigint DEFAULT '0',
+  updated_ts bigint DEFAULT '0',
+  flavour_text varchar(1024) DEFAULT NULL,
   price varchar(128) DEFAULT NULL,
   enchanted boolean DEFAULT 'FALSE',
   crafted boolean DEFAULT 'FALSE',
   CONSTRAINT Items_ibfk_1 FOREIGN KEY (league) REFERENCES Leagues (leagueName),
-  CONSTRAINT Items_ibfk_2 FOREIGN KEY (accountName) REFERENCES Accounts (accountName),
-  CONSTRAINT Items_ibfk_3 FOREIGN KEY (stashId) REFERENCES Stashes (stashID)
+  CONSTRAINT Items_ibfk_2 FOREIGN KEY (account_name) REFERENCES Accounts (account_name),
+  CONSTRAINT Items_ibfk_3 FOREIGN KEY (stash_id) REFERENCES Stashes (stash_id)
 );
 
-CREATE TYPE modType AS ENUM ('EXPLICIT','IMPLICIT','CRAFTED','ENCHANTED');
+CREATE TYPE mod_type AS ENUM ('EXPLICIT','IMPLICIT','CRAFTED','ENCHANTED');
 CREATE TABLE Mods (
-  itemId varchar(128) DEFAULT NULL,
-  modName varchar(256) NOT NULL DEFAULT '0',
-  modValue1 varchar(256) DEFAULT '0',
-  modValue2 varchar(128) DEFAULT '0',
-  modValue3 varchar(128) DEFAULT '0',
-  modValue4 varchar(128) DEFAULT '0',
-  modType modType DEFAULT 'IMPLICIT',
-  modKey varchar(128) DEFAULT NULL UNIQUE,
-  CONSTRAINT Mods_ibfk_1 FOREIGN KEY (itemId) REFERENCES Items (itemId) ON DELETE CASCADE
+  item_id varchar(128) DEFAULT NULL,
+  mod_name varchar(256) NOT NULL DEFAULT '0',
+  mod_value1 varchar(256) DEFAULT '0',
+  mod_value2 varchar(128) DEFAULT '0',
+  mod_value3 varchar(128) DEFAULT '0',
+  mod_value4 varchar(128) DEFAULT '0',
+  mod_type mod_type DEFAULT 'IMPLICIT',
+  mod_key varchar(128) DEFAULT NULL UNIQUE,
+  CONSTRAINT Mods_ibfk_1 FOREIGN KEY (item_id) REFERENCES Items (item_id) ON DELETE CASCADE
 );
 
 
 CREATE TABLE Properties (
-  itemId varchar(128) DEFAULT NULL,
-  propertyName varchar(128) NOT NULL DEFAULT '0',
-  propertyValue1 varchar(128) DEFAULT '0',
-  propertyValue2 varchar(128) DEFAULT '0',
-  propertyKey SERIAL NOT NULL,
-  CONSTRAINT Properties_ibfk_1 FOREIGN KEY (itemId) REFERENCES Items (itemId) ON DELETE CASCADE
+  item_id varchar(128) DEFAULT NULL,
+  property_name varchar(128) NOT NULL DEFAULT '0',
+  property_value1 varchar(128) DEFAULT '0',
+  property_value2 varchar(128) DEFAULT '0',
+  property_key SERIAL NOT NULL,
+  CONSTRAINT Properties_ibfk_1 FOREIGN KEY (item_id) REFERENCES Items (item_id) ON DELETE CASCADE
 );
 
 
 CREATE TABLE Requirements (
-  itemId varchar(128) DEFAULT NULL,
-  requirementName varchar(128) NOT NULL DEFAULT '0',
-  requirementValue smallint DEFAULT '0',
-  requirementKey SERIAL NOT NULL,
-  CONSTRAINT Requirements_ibfk_1 FOREIGN KEY (itemId) REFERENCES Items (itemId) ON DELETE CASCADE
+  item_id varchar(128) DEFAULT NULL,
+  requirement_name varchar(128) NOT NULL DEFAULT '0',
+  requirement_value smallint DEFAULT '0',
+  requirement_key SERIAL NOT NULL,
+  CONSTRAINT Requirements_ibfk_1 FOREIGN KEY (item_id) REFERENCES Items (item_id) ON DELETE CASCADE
 );
 
 
 CREATE TABLE Sockets (
-  itemId varchar(128) DEFAULT NULL,
-  socketGroup smallint DEFAULT '0',
-  socketAttr char(1) DEFAULT NULL,
-  socketKey SERIAL NOT NULL,
-  CONSTRAINT Sockets_ibfk_1 FOREIGN KEY (itemId) REFERENCES Items (itemId) ON DELETE CASCADE
+  item_id varchar(128) DEFAULT NULL,
+  socket_group smallint DEFAULT '0',
+  socket_attr char(1) DEFAULT NULL,
+  socket_key SERIAL NOT NULL,
+  CONSTRAINT Sockets_ibfk_1 FOREIGN KEY (item_id) REFERENCES Items (item_id) ON DELETE CASCADE
 );
 
-CREATE UNIQUE INDEX item ON Items USING BTREE (itemId);
+CREATE UNIQUE INDEX item ON Items USING BTREE (item_id);

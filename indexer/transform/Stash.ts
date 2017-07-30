@@ -2,10 +2,10 @@ import { Stash } from '../interface'
 
 const transformStash = (data: any): Stash => {
   const stash: Stash = {
-    stashId: data.id,
-    stashName: data.stash,
-    stashType: data.stashType,
-    stashPublic: data.public,
+    stash_id: data.id,
+    stash_name: data.stash,
+    stash_type: data.stashType,
+    stash_public: data.public,
   }
 
   return stash

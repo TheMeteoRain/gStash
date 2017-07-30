@@ -2,7 +2,7 @@
 const options = {
   promiseLib: bluebird,
 }*/
-const pgp = require('pg-promise')()
-const db = pgp(process.env.DATABASE)
-
-export default db
+export const pgp = require('pg-promise')({
+  capSQL: true
+})
+export const db = pgp(process.env.DATABASE)

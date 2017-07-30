@@ -1,36 +1,36 @@
 export interface Account {
-  accountName: string
-  lastCharacterName: string
-  lastSeen: number
+  account_name: string
+  last_character_name: string
+  last_seen: number
 }
 
 export interface Stash {
-  stashId: string
-  stashName: string
-  stashType: string
-  stashPublic: boolean
+  stash_id: string
+  stash_name: string
+  stash_type: string
+  stash_public: boolean
 }
 
 export interface Property {
-  itemId: string
-  propertyName: string
-  propertyValue1: string
-  propertyValue2: string
-  propertyKey?: string
+  item_id: string
+  property_name: string
+  property_value1: string
+  property_value2: string
+  property_key?: string
 }
 
 export interface Requirement {
-  itemId: string
-  requirementName: string
-  requirementValue: string
-  requirementKey?: string
+  item_id: string
+  requirement_name: string
+  requirement_value: string
+  requirement_key?: string
 }
 
 export interface Socket {
-  itemId: string
-  socketGroup: number
-  socketAttr: string
-  socketKey?: string
+  item_id: string
+  socket_group: number
+  socket_attr: string
+  socket_key?: string
 }
 
 export enum ModType {
@@ -38,14 +38,14 @@ export enum ModType {
 }
 
 export interface Mod {
-  itemId: string
-  modName: string
-  modValue1: string
-  modValue2: string
-  modValue3: string
-  modValue4: string
-  modType: string
-  modKey?: string
+  item_id: string
+  mod_name: string
+  mod_value1: string
+  mod_value2: string
+  mod_value3: string
+  mod_value4: string
+  mod_type: string
+  mod_key?: string
 }
 
 export interface Item {
@@ -54,25 +54,25 @@ export interface Item {
   ilvl: number
   icon: string
   league: string
-  itemId: string
+  item_id: string
   name: string
-  typeLine: string
+  type_line: string
   identified: boolean
   verified: boolean
   corrupted: boolean
-  lockedToCharacter: boolean
-  frameType: number
+  locked_to_character: boolean
+  frame_type: number
   x: number
   y: number
-  inventoryId: string
-  accountName: string
-  stashId: string
-  socketAmount: number
-  linkAmount: number
+  inventory_id: string
+  account_name: string
+  stash_id: string
+  socket_amount: number
+  link_amount: number
   available: boolean
-  addedTs: number
-  updatedTs: number
-  flavourText: string
+  added_ts: number
+  updated_ts: number
+  flavour_text: string
   price: string
   enchanted: boolean
   crafted: boolean

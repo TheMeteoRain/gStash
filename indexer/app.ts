@@ -1,10 +1,10 @@
 import 'dotenv/config'
 import axios from 'axios'
 
-import db from './db'
-import query from './query'
+import { pgp, db } from './db'
+import query, { tables } from './query'
 
-import { Stash, Account, Item, ModType } from './interface'
+import { Stash, Account, Item, Socket, Requirement, Property, Mod, ModType } from './interface'
 
 import transformStash from './transform/Stash'
 import transformAccount from './transform/Account'
@@ -32,89 +32,116 @@ const config = {
     responseType: 'json'
 }
 
-const saveAccountsTask = (stashes: any): any => {
-    return db.task((t: any) => {
-        let batch: Array<any> = []
-        for (const stash of stashes) {
-            const { accountName, id, items } = stash
-            delete stash['items']
-            batch.push(query.setAccount(t, transformAccount(stash)))
-            batch.push(query.setStash(t, transformStash(stash)))
+const saveAccountsTask = async (stashes: any): Promise<any> => {
 
-            for (const item of items) {
-                const { properties, requirements, sockets, explicitMods, implicitMods, enchantMods, craftedMods } = item
+    const batchAccount: Array<Account> = []
+    const batchStash: Array<Stash> = []
+    const batchItem: Array<Item> = []
+    const batchSocket: Array<Socket> = []
+    const batchProperty: Array<Property> = []
+    const batchRequirement: Array<Requirement> = []
+    const batchMod: Array<Mod> = []
 
-                delete item['properties']
-                delete item['requirements']
-                delete item['explicitMods']
-                delete item['implicitMods']
-                item.accountName = accountName
-                item.stashId = id
-                batch.push(query.setItem(t, transformItem(item)))
+    for (const stash of stashes) {
+        const { accountName: account_name, id: stash_id, items }: { accountName: string, id: string, items: any } = stash
+        delete stash['items']
 
-                if (sockets) {
-                    for (const socket of sockets) {
-                        socket.itemId = item.id
-                        batch.push(query.setSocket(t, transformSocket(socket)))
-                    }
+        if (stash.accountName !== null) {
+            let add: boolean = false
+            for (let i = 0; i < batchAccount.length && !add; i++) {
+                if (batchAccount[i].account_name === account_name) {
+                    batchAccount.splice(i, 1, transformAccount(stash))
+                    add = true
                 }
 
-                if (properties) {
-                    for (const property of properties) {
-                        property.itemId = item.id
-                        batch.push(query.setProperty(t, transformProperty(property)))
-                    }
-                }
+            }
 
-                if (requirements) {
-                    for (const requirement of requirements) {
-                        requirement.itemId = item.id
-                        batch.push(query.setRequirement(t, transformRequirement(requirement)))
-                    }
-                }
+            if (!add) {
+                batchAccount.push(transformAccount(stash))
 
-                if (explicitMods) {
-                    for (const mod of explicitMods) {
-                        batch.push(query.setMod(t, transformMod(mod, item.id, ModType[ModType.EXPLICIT])))
-                    }
-                }
+            }
 
-                if (implicitMods) {
-                    for (const mod of implicitMods) {
-                        batch.push(query.setMod(t, transformMod(mod, item.id, ModType[ModType.IMPLICIT])))
-                    }
-                }
+            batchStash.push(transformStash(stash))
 
-                if (enchantMods) {
-                    for (const mod of enchantMods) {
-                        batch.push(query.setMod(t, transformMod(mod, item.id, ModType[ModType.ENCHANTED])))
-                    }
-                }
+            if (items.length > 0) {
+                for (const item of items) {
+                    const { id: item_id, properties, requirements, sockets, explicitMods, implicitMods, enchantMods, craftedMods } = item
 
-                if (craftedMods) {
-                    for (const mod of craftedMods) {
-                        batch.push(query.setMod(t, transformMod(mod, item.id, ModType[ModType.CRAFTED])))
+                    delete item['properties']
+                    delete item['requirements']
+                    delete item['explicitMods']
+                    delete item['implicitMods']
+                    item.account_name = account_name
+                    item.stash_id = stash_id
+                    batchItem.push(transformItem(item))
+
+                    if (sockets) {
+                        for (const socket of sockets) {
+                            batchSocket.push(transformSocket(socket, item_id))
+                        }
+                    }
+
+                    if (properties) {
+                        for (const property of properties) {
+                            batchProperty.push(transformProperty(property, item_id))
+                        }
+                    }
+
+                    if (requirements) {
+                        for (const requirement of requirements) {
+                            batchRequirement.push(transformRequirement(requirement, item_id))
+                        }
+                    }
+
+                    if (explicitMods) {
+                        for (const mod of explicitMods) {
+                            batchMod.push(transformMod(mod, item.id, ModType[ModType.EXPLICIT]))
+                        }
+                    }
+                    if (implicitMods) {
+                        for (const mod of implicitMods) {
+                            batchMod.push(transformMod(mod, item.id, ModType[ModType.IMPLICIT]))
+                        }
+                    }
+                    if (enchantMods) {
+                        for (const mod of enchantMods) {
+                            batchMod.push(transformMod(mod, item.id, ModType[ModType.ENCHANTED]))
+                        }
+                    }
+                    if (craftedMods) {
+                        for (const mod of craftedMods) {
+                            batchMod.push(transformMod(mod, item.id, ModType[ModType.CRAFTED]))
+                        }
                     }
                 }
             }
         }
 
-        return t.batch(batch, (index: any, success: boolean, result: any, delay: any) => {
-            //console.log(index, success, delay)
-        })
-    }).then((events: any) => {
-        const stats = {
-            total: events.length,
-            saved: 0
-        }
-        events.map((event: any) => {
-            stats.saved = event.rowCount > 0 ? stats.saved + 1 : stats.saved
-        })
+    }
+    console.log('Total length', stashes.length)
 
-        return stats
-    }).catch((error: any) => {
-        console.log(error)
-    })
+    const resultAccount = await query.insert(batchAccount, tables.accounts)
+    const resultStash = await query.insert(batchStash, tables.stashes)
+    const resultItem = batchItem.length > 0 ? await query.insert(batchItem, tables.items) : []
+    const resultSocket = batchSocket.length > 0 ? await query.insert(batchSocket, tables.sockets) : []
+    const resultProperty = batchProperty.length > 0 ? await query.insert(batchProperty, tables.properties) : []
+    const resultRequirement = batchRequirement.length > 0 ? await query.insert(batchRequirement, tables.requirements) : []
+    const resultMod = batchMod.length > 0 ? await query.insert(batchMod, tables.mods) : []
+    console.log('Accounts', resultAccount.rowCount)
+    console.log('Stashes', resultStash.rowCount)
+    console.log('Items', resultItem.rowCount)
+    console.log('Sockets', resultSocket.rowCount)
+    console.log('Properties', resultProperty.rowCount)
+    console.log('Requirements', resultRequirement.rowCount)
+    console.log('Mods', resultMod.rowCount)
+    const stats = {
+        total: 0,
+        saved: 0
+    }
+
+    stats.total = batchItem.length + batchSocket.length + batchProperty.length + batchRequirement.length + batchMod.length
+    stats.saved = resultAccount.rowCount + resultStash.rowCount + resultItem ? resultItem.rowCount : 0 + resultSocket ? resultSocket.rowCount : 0 + resultProperty ? resultProperty.rowCount : 0 + resultRequirement ? resultRequirement.rowCount : 0 + resultMod ? resultMod.rowCount : 0
+    return stats
 }
 
 const poll = (ID: string): void => {

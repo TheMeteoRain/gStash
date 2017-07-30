@@ -2,9 +2,9 @@ import { Account } from '../interface'
 
 const transformAccount = (data: any): Account => {
   const account: Account = {
-    accountName: data.accountName,
-    lastCharacterName: data.lastCharacterName,
-    lastSeen: Date.now()
+    account_name: data.accountName,
+    last_character_name: data.lastCharacterName,
+    last_seen: Date.now()
   }
 
   return account

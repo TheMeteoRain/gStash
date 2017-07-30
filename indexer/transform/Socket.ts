@@ -1,12 +1,10 @@
 import { Socket } from '../interface'
 
-const transformSocket = (data: any): Socket => {
-  const { values } = data
-
+const transformSocket = (data: any, item_id: string): Socket => {
   const socket: Socket = {
-    itemId: data.itemId,
-    socketGroup: data.group,
-    socketAttr: data.attr
+    item_id,
+    socket_group: data.group,
+    socket_attr: data.attr
   }
 
   return socket

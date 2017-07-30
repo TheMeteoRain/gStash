@@ -38,11 +38,11 @@ const transformItem = (data: any): Item => {
   if (data.hasOwnProperty('craftedMods')) {
     crafted = data.craftedMods.length > 0 ? true : false
   }
-  let linkAmount: number = 0
-  let socketAmount: number = 0
+  let link_amount: number = 0
+  let socket_amount: number = 0
   if (data.hasOwnProperty('sockets')) {
-    linkAmount = calculateLinks(data.sockets)
-    socketAmount = data.sockets.length
+    link_amount = calculateLinks(data.sockets)
+    socket_amount = data.sockets.length
   }
 
   const item: Item = {
@@ -51,25 +51,25 @@ const transformItem = (data: any): Item => {
     ilvl: data.ilvl,
     icon: data.icon,
     league: data.league,
-    itemId: data.id,
+    item_id: data.id,
     name: data.name,
-    typeLine: data.typeLine,
+    type_line: data.typeLine,
     identified: data.identified,
     verified: data.verified,
     corrupted: data.corrupted,
-    lockedToCharacter: data.lockedToCharacter,
-    frameType: data.frameType,
+    locked_to_character: data.lockedToCharacter,
+    frame_type: data.frameType,
     x: data.x,
     y: data.y,
-    inventoryId: data.inventoryId,
-    accountName: data.accountName,
-    stashId: data.stashId,
-    socketAmount,
-    linkAmount,
+    inventory_id: data.inventoryId,
+    account_name: data.account_name,
+    stash_id: data.stash_id,
+    socket_amount,
+    link_amount,
     available: true,
-    addedTs: Date.now(),
-    updatedTs: 0,
-    flavourText: data.flavourText,
+    added_ts: Date.now(),
+    updated_ts: 0,
+    flavour_text: data.flavourText,
     price: data.price,
     enchanted,
     crafted

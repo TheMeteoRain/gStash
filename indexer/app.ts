@@ -4,15 +4,10 @@ import axios from 'axios'
 import { pgp, db } from './db'
 import query, { tables } from './query'
 
-import { Stash, Account, Item, Socket, Requirement, Property, Mod, ModType } from './interface'
+import { ModType } from './enum'
+import { Stash, Account, Item, Socket, Requirement, Property, Mod } from './interface'
+import { transformStash, transformAccount, transformItem, transformProperty, transformRequirement, transformSocket, transformMod } from './transform'
 
-import transformStash from './transform/Stash'
-import transformAccount from './transform/Account'
-import transformItem from './transform/Item'
-import transformProperty from './transform/Property'
-import transformRequirement from './transform/Requirement'
-import transformSocket from './transform/Socket'
-import transformMod from './transform/Mod'
 
 /**
  * The amount of milliseconds when a new request is sent to the poe api.
@@ -32,7 +27,7 @@ const config = {
     responseType: 'json'
 }
 
-const saveAccountsTask = async (stashes: any): Promise<any> => {
+const saveStashes = async (stashes: any): Promise<any> => {
 
     const batchAccount: Array<Account> = []
     const batchStash: Array<Stash> = []
@@ -42,20 +37,37 @@ const saveAccountsTask = async (stashes: any): Promise<any> => {
     const batchRequirement: Array<Requirement> = []
     const batchMod: Array<Mod> = []
 
+    /**
+     * Start parsing stashes
+     */
     for (const stash of stashes) {
         const { accountName: account_name, id: stash_id, items }: { accountName: string, id: string, items: any } = stash
         delete stash['items']
 
+        /**
+         * Check if account name is null and skip it.
+         */
         if (stash.accountName !== null) {
             let add: boolean = false
+
+            /**
+             * Check if account name already exist on an array,
+             * if so overwrite it to avoid duplicates.
+             */
+            const a = batchAccount.find((account: Account) => {
+                return account.account_name === account_name
+            })
+            console.log(a)
             for (let i = 0; i < batchAccount.length && !add; i++) {
                 if (batchAccount[i].account_name === account_name) {
                     batchAccount.splice(i, 1, transformAccount(stash))
                     add = true
                 }
-
             }
 
+            /**
+             * If no overwriting happened, add account to an array.
+             */
             if (!add) {
                 batchAccount.push(transformAccount(stash))
 
@@ -71,9 +83,7 @@ const saveAccountsTask = async (stashes: any): Promise<any> => {
                     delete item['requirements']
                     delete item['explicitMods']
                     delete item['implicitMods']
-                    item.account_name = account_name
-                    item.stash_id = stash_id
-                    batchItem.push(transformItem(item))
+                    batchItem.push(transformItem(item, account_name, stash_id))
 
                     if (sockets) {
                         for (const socket of sockets) {
@@ -118,6 +128,7 @@ const saveAccountsTask = async (stashes: any): Promise<any> => {
         }
 
     }
+
     console.log('Total length', stashes.length)
 
     const resultAccount = await query.insert(batchAccount, tables.accounts)
@@ -139,8 +150,8 @@ const saveAccountsTask = async (stashes: any): Promise<any> => {
         saved: 0
     }
 
-    stats.total = batchItem.length + batchSocket.length + batchProperty.length + batchRequirement.length + batchMod.length
-    stats.saved = resultAccount.rowCount + resultStash.rowCount + resultItem ? resultItem.rowCount : 0 + resultSocket ? resultSocket.rowCount : 0 + resultProperty ? resultProperty.rowCount : 0 + resultRequirement ? resultRequirement.rowCount : 0 + resultMod ? resultMod.rowCount : 0
+    stats.total = batchAccount.length + batchStash.length + batchItem.length + batchSocket.length + batchProperty.length + batchRequirement.length + batchMod.length
+    stats.saved = resultAccount.rowCount + resultStash.rowCount + resultItem.rowCount + resultSocket.rowCount + resultProperty.rowCount + resultRequirement.rowCount + resultMod.rowCount
     return stats
 }
 
@@ -183,7 +194,7 @@ const poll = (ID: string): void => {
         console.time("Saving data took")
 
         try {
-            const { total, saved } = await saveAccountsTask(stashes)
+            const { total, saved } = await saveStashes(stashes)
             console.log(`Total downloaded: ${total}, saved: ${saved}, failed: ${total - saved}`)
             console.timeEnd("Saving data took")
             poll(next_change_id)

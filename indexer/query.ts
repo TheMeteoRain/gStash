@@ -11,10 +11,15 @@ const COLUMN_SET_MODS = new pgp.helpers.ColumnSet(['item_id', 'mod_name', 'mod_v
 
 export const tables = {
   accounts: (accounts: Array<Account>) => pgp.helpers.insert(accounts, COLUMN_SET_ACCOUNTS) + 'ON CONFLICT (account_name) DO UPDATE SET last_seen = EXCLUDED.last_seen, last_character_name = EXCLUDED.last_character_name',
+
   stashes: (stashes: Array<Stash>) => pgp.helpers.insert(stashes, COLUMN_SET_STASHES) + 'ON CONFLICT (stash_id) DO UPDATE SET stash_name = EXCLUDED.stash_name, stash_type = EXCLUDED.stash_type, stash_public = EXCLUDED.stash_public',
+
   items: (items: Array<Item>) => pgp.helpers.insert(items, COLUMN_SET_ITEMS) + 'ON CONFLICT (item_id) DO UPDATE SET w = EXCLUDED.w, h = EXCLUDED.h, league = EXCLUDED.league, identified = EXCLUDED.identified, verified = EXCLUDED.verified, corrupted = EXCLUDED.corrupted, x = EXCLUDED.x, y = EXCLUDED.y, inventory_id = EXCLUDED.inventory_id, account_name = EXCLUDED.account_name, stash_id = EXCLUDED.stash_id, socket_amount = EXCLUDED.socket_amount, link_amount = EXCLUDED.link_amount, available = EXCLUDED.available, updated_ts = EXCLUDED.added_ts, price = EXCLUDED.price',
+
   sockets: (sockets: Array<Socket>) => pgp.helpers.insert(sockets, COLUMN_SET_SOCKETS),
+
   properties: (properties: Array<Property>) => pgp.helpers.insert(properties, COLUMN_SET_PROPERTIES),
+
   requirements: (requirements: Array<Requirement>) => pgp.helpers.insert(requirements, COLUMN_SET_REQUIREMENTS),
   mods: (mods: Array<Mod>) => pgp.helpers.insert(mods, COLUMN_SET_MODS),
 }
@@ -23,13 +28,12 @@ export const tables = {
 
 const queries = {
   insert: (data: Array<any>, table: any) => db.result(table(data)),
+
   updateCurrentNextChangeId: (next_change_id: string, processed: number = 0): Promise<any> =>
     db.result('INSERT INTO changeid(nextChangeId, processed) VALUES($<next_change_id>, $<processed>) ON CONFLICT (nextChangeId) DO UPDATE SET (processed) = (EXCLUDED.processed)', { next_change_id, processed: 1 }),
+
   getLatestNextChangeId: (): Promise<string> =>
     db.one('SELECT nextChangeId FROM changeId WHERE processed = 0 OR processed = 1 ORDER BY id DESC LIMIT 1').then((data: any): Promise<string> => data.nextchangeid),
-
-  setMod: (t: any, mod: Mod): any =>
-    t.result('INSERT INTO mods(item_id, mod_name, mod_value1, mod_value2, mod_value3, mod_value4, mod_type) VALUES($<item_id>, $<mod_name>, $<mod_value1>, $<mod_value2>, $<mod_value3>, $<mod_value4>, $<mod_type>)', mod)
 }
 
 export default queries

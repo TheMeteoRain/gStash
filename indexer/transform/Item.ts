@@ -29,7 +29,7 @@ const calculateLinks = (sockets: any): number => {
   return biggest
 }
 
-const transformItem = (data: any): Item => {
+const transformItem = (data: any, account_name: string, stash_id: string): Item => {
   let enchanted: boolean = false
   if (data.hasOwnProperty('enchantMods')) {
     enchanted = data.enchantMods.length > 0 ? true : false
@@ -62,8 +62,8 @@ const transformItem = (data: any): Item => {
     x: data.x,
     y: data.y,
     inventory_id: data.inventoryId,
-    account_name: data.account_name,
-    stash_id: data.stash_id,
+    account_name,
+    stash_id,
     socket_amount,
     link_amount,
     available: true,

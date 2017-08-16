@@ -29,7 +29,7 @@ CREATE TABLE Accounts (
 CREATE TABLE ChangeId (
   id SERIAL NOT NULL,
   nextChangeId varchar(128) NOT NULL DEFAULT '' UNIQUE,
-  processed smallint DEFAULT '0',
+  processed boolean DEFAULT 'false',
   PRIMARY KEY (id,nextChangeId)
 );
 INSERT INTO ChangeId(nextChangeId, processed) VALUES('0', '0');

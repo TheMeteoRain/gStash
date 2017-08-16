@@ -29,7 +29,7 @@ export const tables = {
 const queries = {
   insert: (data: Array<any>, table: any) => db.result(table(data)),
 
-  updateCurrentNextChangeId: (next_change_id: string, processed: number = 0): Promise<any> =>
+  upsertCurrentNextChangeId: (next_change_id: string, processed: number = 0): Promise<any> =>
     db.result('INSERT INTO changeid(nextChangeId, processed) VALUES($<next_change_id>, $<processed>) ON CONFLICT (nextChangeId) DO UPDATE SET (processed) = (EXCLUDED.processed)', { next_change_id, processed: 1 }),
 
   getLatestNextChangeId: (): Promise<string> =>

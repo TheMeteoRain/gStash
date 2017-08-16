@@ -11,14 +11,9 @@ import { transformStash, transformAccount, transformItem, transformProperty, tra
 
 /**
  * The amount of milliseconds when a new request is sent to the poe api.
+ * New poll cycle will being only after the previous has finished.
  */
-const POLL_SERVER_INTERVAL: number = 1000
-
-/**
- * Current next_change_id.
- * Change this to the last visited next_change_id to resume where indexer left off.
- */
-let ID: string = '0'
+const POLL_CYCLE: number = 1000
 
 const config = {
     headers: {
@@ -27,7 +22,24 @@ const config = {
     responseType: 'json'
 }
 
-const saveStashes = async (stashes: any): Promise<any> => {
+/**
+ * Check for account duplicates in an array and replace them.
+ *
+ * If there is an duplicate, replace it with the new one.
+ */
+const replaceDuplicateAccount = (account_name: string, stash: any, accountArray: Array<Account>): void => {
+    const accountIndex = accountArray.findIndex((account: Account) => {
+        return account.account_name === account_name
+    })
+
+    if (accountIndex > -1)
+        accountArray.splice(accountIndex, 1, transformAccount(stash))
+    else
+        accountArray.push(transformAccount(stash))
+}
+
+
+const saveData = async (stashes: any): Promise<any> => {
 
     const batchAccount: Array<Account> = []
     const batchStash: Array<Stash> = []
@@ -48,30 +60,7 @@ const saveStashes = async (stashes: any): Promise<any> => {
          * Check if account name is null and skip it.
          */
         if (stash.accountName !== null) {
-            let add: boolean = false
-
-            /**
-             * Check if account name already exist on an array,
-             * if so overwrite it to avoid duplicates.
-             */
-            const a = batchAccount.find((account: Account) => {
-                return account.account_name === account_name
-            })
-            console.log(a)
-            for (let i = 0; i < batchAccount.length && !add; i++) {
-                if (batchAccount[i].account_name === account_name) {
-                    batchAccount.splice(i, 1, transformAccount(stash))
-                    add = true
-                }
-            }
-
-            /**
-             * If no overwriting happened, add account to an array.
-             */
-            if (!add) {
-                batchAccount.push(transformAccount(stash))
-
-            }
+            replaceDuplicateAccount(account_name, stash, batchAccount)
 
             batchStash.push(transformStash(stash))
 
@@ -155,19 +144,24 @@ const saveStashes = async (stashes: any): Promise<any> => {
     return stats
 }
 
-const poll = (ID: string): void => {
+
+const poll = (LATEST_ID: string): void => {
     console.log(" ")
 
-    async function fetchData() {
-        console.log(`Downloading data with ID [${ID}]`)
+    const fetchData = async (): Promise<void> => {
+        console.log(`Downloading data with ID [${LATEST_ID}]`)
         console.time("Downloading took")
 
         try {
-            const { data: { next_change_id, stashes } }: { data: { next_change_id: string, stashes: any } } = await axios.get(`${process.env.POE_ENDPOINT}?id=${ID}`, config)
+            const { data: { next_change_id, stashes } }: { data: { next_change_id: string, stashes: any } } = await axios.get(`${process.env.POE_ENDPOINT}?id=${LATEST_ID}`, config)
             console.timeEnd("Downloading took")
             //console.log(`Downloaded ${stashes.length} stashes`)
-            await query.updateCurrentNextChangeId(ID, 1)
-            saveData(next_change_id, stashes)
+            console.time("Saving data took")
+            const { total, saved } = await saveData(stashes)
+            console.log(`Total downloaded: ${total}, saved: ${saved}, failed: ${total - saved}`)
+            console.timeEnd("Saving data took")
+            await query.upsertCurrentNextChangeId(LATEST_ID, 1)
+            poll(next_change_id)
         } catch (error) {
             if (error.response) {
                 // The request was made and the server responded with a status code
@@ -185,31 +179,23 @@ const poll = (ID: string): void => {
                 console.log('Error', error.message);
             }
             console.log(error.config);
-            await query.updateCurrentNextChangeId(ID, 0)
-            poll(ID)
+            await query.upsertCurrentNextChangeId(LATEST_ID, 0)
+            poll(LATEST_ID)
         }
     }
 
-    async function saveData(next_change_id: string, stashes: any) {
-        console.time("Saving data took")
-
-        try {
-            const { total, saved } = await saveStashes(stashes)
-            console.log(`Total downloaded: ${total}, saved: ${saved}, failed: ${total - saved}`)
-            console.timeEnd("Saving data took")
-            poll(next_change_id)
-        } catch (error) {
-            poll(ID)
-            console.log(error)
-        }
-    }
-
-    setTimeout(fetchData, POLL_SERVER_INTERVAL)
+    setTimeout(fetchData, POLL_CYCLE)
 }
 
-query.getLatestNextChangeId().then((LATEST_ID: string) => {
-    ID = LATEST_ID ? LATEST_ID : '0'
-    poll(ID)
-}).catch((error) => {
-    console.log(error)
+/**
+ * Main starting point of this application.
+ *
+ * Fetches newest latest_id from database that is not processed,
+ * and begins to poll server.
+ */
+(async () => {
+    const LATEST_ID = await query.getLatestNextChangeId()
+    poll(LATEST_ID)
+})().catch(error => {
+    console.error(error)
 })

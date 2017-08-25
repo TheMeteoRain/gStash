@@ -1,3 +1,3 @@
 export enum ModType {
-  'EXPLICIT', 'IMPLICIT', 'CRAFTED', 'ENCHANTED'
+  'EXPLICIT', 'IMPLICIT', 'CRAFTED', 'ENCHANTED',
 }

@@ -6,19 +6,19 @@ import { Item } from '../interface'
  * @param sockets array of sockets of an item
  */
 const calculateLinks = (sockets: any): number => {
-  let groups: Array<number> = [0, 0, 0, 0, 0]
+  const groups: number[] = [0, 0, 0, 0, 0]
   for (const key of Object.keys(sockets)) {
     switch (sockets[key].group) {
       case 0: groups[0]++
-        break
+              break
       case 1: groups[1]++
-        break
+              break
       case 2: groups[2]++
-        break
+              break
       case 3: groups[2]++
-        break
+              break
       case 4: groups[2]++
-        break
+              break
     }
   }
 
@@ -72,7 +72,7 @@ const transformItem = (data: any, account_name: string, stash_id: string): Item 
     flavour_text: data.flavourText,
     price: data.price,
     enchanted,
-    crafted
+    crafted,
   }
 
   return item

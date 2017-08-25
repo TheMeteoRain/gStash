@@ -1,13 +1,12 @@
-import 'dotenv/config'
 import axios from 'axios'
+import 'dotenv/config'
 
-import { pgp, db } from './db'
+import { db, pgp } from './db'
 import query, { tables } from './query'
 
 import { ModType } from './enum'
-import { Stash, Account, Item, Socket, Requirement, Property, Mod } from './interface'
-import { transformStash, transformAccount, transformItem, transformProperty, transformRequirement, transformSocket, transformMod } from './transform'
-
+import { Account, Item, Mod, Property, Requirement, Socket, Stash } from './interface'
+import { transformAccount, transformItem, transformMod, transformProperty, transformRequirement, transformSocket, transformStash } from './transform'
 
 /**
  * The amount of milliseconds when a new request is sent to the poe api.
@@ -17,9 +16,9 @@ const POLL_CYCLE: number = 1000
 
 const config = {
     headers: {
-        'Accept-Encoding': 'gzip'
+        'Accept-Encoding': 'gzip',
     },
-    responseType: 'json'
+    responseType: 'json',
 }
 
 /**
@@ -27,7 +26,7 @@ const config = {
  *
  * If there is an duplicate, replace it with the new one.
  */
-const replaceDuplicateAccount = (account_name: string, stash: any, accountArray: Array<Account>): void => {
+const replaceDuplicateAccount = (account_name: string, stash: any, accountArray: Account[]): void => {
     const accountIndex = accountArray.findIndex((account: Account) => {
         return account.account_name === account_name
     })
@@ -38,23 +37,22 @@ const replaceDuplicateAccount = (account_name: string, stash: any, accountArray:
         accountArray.push(transformAccount(stash))
 }
 
-
 const saveData = async (stashes: any): Promise<any> => {
 
-    const batchAccount: Array<Account> = []
-    const batchStash: Array<Stash> = []
-    const batchItem: Array<Item> = []
-    const batchSocket: Array<Socket> = []
-    const batchProperty: Array<Property> = []
-    const batchRequirement: Array<Requirement> = []
-    const batchMod: Array<Mod> = []
+    const batchAccount: Account[] = []
+    const batchStash: Stash[] = []
+    const batchItem: Item[] = []
+    const batchSocket: Socket[] = []
+    const batchProperty: Property[] = []
+    const batchRequirement: Requirement[] = []
+    const batchMod: Mod[] = []
 
     /**
      * Start parsing stashes
      */
     for (const stash of stashes) {
         const { accountName: account_name, id: stash_id, items }: { accountName: string, id: string, items: any } = stash
-        delete stash['items']
+        delete stash.items
 
         /**
          * Check if account name is null and skip it.
@@ -68,10 +66,10 @@ const saveData = async (stashes: any): Promise<any> => {
                 for (const item of items) {
                     const { id: item_id, properties, requirements, sockets, explicitMods, implicitMods, enchantMods, craftedMods } = item
 
-                    delete item['properties']
-                    delete item['requirements']
-                    delete item['explicitMods']
-                    delete item['implicitMods']
+                    delete item.properties
+                    delete item.requirements
+                    delete item.explicitMods
+                    delete item.implicitMods
                     batchItem.push(transformItem(item, account_name, stash_id))
 
                     if (sockets) {
@@ -136,7 +134,7 @@ const saveData = async (stashes: any): Promise<any> => {
     console.log('Mods', resultMod.rowCount)
     const stats = {
         total: 0,
-        saved: 0
+        saved: 0,
     }
 
     stats.total = batchAccount.length + batchStash.length + batchItem.length + batchSocket.length + batchProperty.length + batchRequirement.length + batchMod.length
@@ -144,41 +142,40 @@ const saveData = async (stashes: any): Promise<any> => {
     return stats
 }
 
-
 const poll = (LATEST_ID: string): void => {
-    console.log(" ")
+    console.log(' ')
 
     const fetchData = async (): Promise<void> => {
         console.log(`Downloading data with ID [${LATEST_ID}]`)
-        console.time("Downloading took")
+        console.time('Downloading took')
 
         try {
             const { data: { next_change_id, stashes } }: { data: { next_change_id: string, stashes: any } } = await axios.get(`${process.env.POE_ENDPOINT}?id=${LATEST_ID}`, config)
-            console.timeEnd("Downloading took")
+            console.timeEnd('Downloading took')
             //console.log(`Downloaded ${stashes.length} stashes`)
-            console.time("Saving data took")
+            console.time('Saving data took')
             const { total, saved } = await saveData(stashes)
             console.log(`Total downloaded: ${total}, saved: ${saved}, failed: ${total - saved}`)
-            console.timeEnd("Saving data took")
+            console.timeEnd('Saving data took')
             await query.upsertCurrentNextChangeId(LATEST_ID, 1)
             poll(next_change_id)
         } catch (error) {
             if (error.response) {
                 // The request was made and the server responded with a status code
                 // that falls out of the range of 2xx
-                console.log(error.response.data);
-                console.log(error.response.status);
-                console.log(error.response.headers);
+                console.log(error.response.data)
+                console.log(error.response.status)
+                console.log(error.response.headers)
             } else if (error.request) {
                 // The request was made but no response was received
                 // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
                 // http.ClientRequest in node.js
-                console.log(error.request);
+                console.log(error.request)
             } else {
                 // Something happened in setting up the request that triggered an Error
-                console.log('Error', error.message);
+                console.log('Error', error.message)
             }
-            console.log(error.config);
+            console.log(error.config)
             await query.upsertCurrentNextChangeId(LATEST_ID, 0)
             poll(LATEST_ID)
         }
@@ -196,6 +193,6 @@ const poll = (LATEST_ID: string): void => {
 (async () => {
     const LATEST_ID = await query.getLatestNextChangeId()
     poll(LATEST_ID)
-})().catch(error => {
+})().catch((error) => {
     console.error(error)
 })

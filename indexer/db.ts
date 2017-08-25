@@ -3,7 +3,7 @@ const options = {
   promiseLib: bluebird,
 }*/
 const options = {
-  capSQL: true
+  capSQL: true,
 }
 
 export const pgp = require('pg-promise')(options)

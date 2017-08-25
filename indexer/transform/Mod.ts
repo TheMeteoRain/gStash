@@ -1,7 +1,6 @@
 import { ModType } from '../enum'
 import { Mod } from '../interface'
 
-
 const RE_SELECT_NUMBERS_DOT_DASH_ROUND_BRACKETS = /[(\d.\-)]+/g
 const RE_SELECT_NUMBERS_DOT = /[\d.]+/g
 
@@ -17,7 +16,7 @@ const transformMod = (data: string, item_id: string, mod_type: string = ModType[
     mod_value2: values ? values[1] : null,
     mod_value3: values ? values[2] : null,
     mod_value4: values ? values[3] : null,
-    mod_type
+    mod_type,
   }
 
   return mod

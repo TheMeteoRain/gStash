@@ -13,7 +13,16 @@
             true,
             "single",
             "jsx-double"
-        ]
+        ],
+        "indent": [
+            true,
+            "spaces",
+            2
+        ],
+        "no-console": false,
+        "ordered-imports": true,
+        "eofline": true,
+        "no-submodule-imports": false
     },
     "rulesDirectory": []
 }

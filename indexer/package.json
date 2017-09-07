@@ -16,10 +16,12 @@
   "license": "ISC",
   "dependencies": {
     "@types/dotenv": "^4.0.0",
+    "@types/node": "^8.0.27",
     "@types/pg-promise": "^5.4.3",
     "axios": "^0.16.2",
     "dotenv": "^4.0.0",
     "pg-monitor": "^0.8.2",
-    "pg-promise": "^6.3.5"
+    "pg-promise": "^6.3.5",
+    "ts-node": "^3.3.0"
   }
 }

@@ -27,7 +27,7 @@ CREATE TABLE Accounts (
 
 
 CREATE TABLE ChangeId (
-  id SERIAL NOT NULL,
+  id BIGSERIAL NOT NULL,
   nextChangeId varchar(128) NOT NULL DEFAULT '' UNIQUE,
   processed boolean DEFAULT 'false',
   PRIMARY KEY (id,nextChangeId)
@@ -50,7 +50,7 @@ INSERT INTO Leagues(leagueName, active) VALUES('SSF HC Legacy', '1');
 
 
 CREATE TABLE Currencies (
-  id SERIAL NOT NULL,
+  id BIGSERIAL NOT NULL,
   timestamp bigint NOT NULL DEFAULT '0',
   league varchar(128) NOT NULL DEFAULT '',
   sell varchar(128) NOT NULL DEFAULT '',
@@ -61,7 +61,7 @@ CREATE TABLE Currencies (
 
 
 CREATE TABLE CurrencyStats (
-  id SERIAL NOT NULL PRIMARY KEY,
+  id BIGSERIAL NOT NULL PRIMARY KEY,
   buy varchar(128) NOT NULL DEFAULT '',
   mean real DEFAULT '0',
   median real DEFAULT '0',
@@ -133,7 +133,7 @@ CREATE TABLE Properties (
   property_name varchar(128) NOT NULL DEFAULT '0',
   property_value1 varchar(128) DEFAULT '0',
   property_value2 varchar(128) DEFAULT '0',
-  property_key SERIAL NOT NULL,
+  property_key BIGSERIAL NOT NULL,
   CONSTRAINT Properties_ibfk_1 FOREIGN KEY (item_id) REFERENCES Items (item_id) ON DELETE CASCADE
 );
 
@@ -142,7 +142,7 @@ CREATE TABLE Requirements (
   item_id varchar(128) DEFAULT NULL,
   requirement_name varchar(128) NOT NULL DEFAULT '0',
   requirement_value smallint DEFAULT '0',
-  requirement_key SERIAL NOT NULL,
+  requirement_key BIGSERIAL NOT NULL,
   CONSTRAINT Requirements_ibfk_1 FOREIGN KEY (item_id) REFERENCES Items (item_id) ON DELETE CASCADE
 );
 
@@ -151,7 +151,7 @@ CREATE TABLE Sockets (
   item_id varchar(128) DEFAULT NULL,
   socket_group smallint DEFAULT '0',
   socket_attr char(1) DEFAULT NULL,
-  socket_key SERIAL NOT NULL,
+  socket_key BIGSERIAL NOT NULL,
   CONSTRAINT Sockets_ibfk_1 FOREIGN KEY (item_id) REFERENCES Items (item_id) ON DELETE CASCADE
 );
 

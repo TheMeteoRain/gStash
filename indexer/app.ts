@@ -12,7 +12,7 @@ import { transformAccount, transformItem, transformMod, transformProperty, trans
  * The amount of milliseconds when a new request is sent to the poe api.
  * New poll cycle will being only after the previous has finished.
  */
-const POLL_CYCLE: number = 1000
+const POLL_CYCLE: number = 10000
 
 const config = {
     headers: {
@@ -113,32 +113,34 @@ const saveData = async (stashes: any): Promise<any> => {
                 }
             }
         }
-
     }
+
+    db.task(async (t: any) => {
+
+        return t.batch(
+            [await query.insert(batchAccount, tables.accounts, t),
+            await query.insert(batchStash, tables.stashes, t),
+            batchItem.length > 0 ? await query.insert(batchItem, tables.items, t) : undefined,
+            batchSocket.length > 0 ? await query.insert(batchSocket, tables.sockets, t) : undefined,
+            batchProperty.length > 0 ? await query.insert(batchProperty, tables.properties, t) : undefined,
+            batchRequirement.length > 0 ? await query.insert(batchRequirement, tables.requirements, t) : undefined,
+            batchMod.length > 0 ? await query.insert(batchMod, tables.mods, t) : undefined])
+    }).then((ctx: any) => {
+        console.log(ctx)
+        console.log("TASK DURATION " + ctx.duration)
+    }).catch((err: any) => {
+        console.error(err)
+    })
 
     console.log('Total length', stashes.length)
 
-    const resultAccount = await query.insert(batchAccount, tables.accounts)
-    const resultStash = await query.insert(batchStash, tables.stashes)
-    const resultItem = batchItem.length > 0 ? await query.insert(batchItem, tables.items) : []
-    const resultSocket = batchSocket.length > 0 ? await query.insert(batchSocket, tables.sockets) : []
-    const resultProperty = batchProperty.length > 0 ? await query.insert(batchProperty, tables.properties) : []
-    const resultRequirement = batchRequirement.length > 0 ? await query.insert(batchRequirement, tables.requirements) : []
-    const resultMod = batchMod.length > 0 ? await query.insert(batchMod, tables.mods) : []
-    console.log('Accounts', resultAccount.rowCount)
-    console.log('Stashes', resultStash.rowCount)
-    console.log('Items', resultItem.rowCount)
-    console.log('Sockets', resultSocket.rowCount)
-    console.log('Properties', resultProperty.rowCount)
-    console.log('Requirements', resultRequirement.rowCount)
-    console.log('Mods', resultMod.rowCount)
     const stats = {
         total: 0,
         saved: 0,
     }
 
-    stats.total = batchAccount.length + batchStash.length + batchItem.length + batchSocket.length + batchProperty.length + batchRequirement.length + batchMod.length
-    stats.saved = resultAccount.rowCount + resultStash.rowCount + resultItem.rowCount + resultSocket.rowCount + resultProperty.rowCount + resultRequirement.rowCount + resultMod.rowCount
+    stats.total = 1
+    stats.saved = 1
     return stats
 }
 
@@ -157,7 +159,7 @@ const poll = (LATEST_ID: string): void => {
             const { total, saved } = await saveData(stashes)
             console.log(`Total downloaded: ${total}, saved: ${saved}, failed: ${total - saved}`)
             console.timeEnd('Saving data took')
-            await query.upsertCurrentNextChangeId(LATEST_ID, 1)
+            await query.upsertCurrentNextChangeId(LATEST_ID, true)
             poll(next_change_id)
         } catch (error) {
             if (error.response) {
@@ -176,7 +178,7 @@ const poll = (LATEST_ID: string): void => {
                 console.log('Error', error.message)
             }
             console.log(error.config)
-            await query.upsertCurrentNextChangeId(LATEST_ID, 0)
+            await query.upsertCurrentNextChangeId(LATEST_ID, false)
             poll(LATEST_ID)
         }
     }
@@ -191,7 +193,7 @@ const poll = (LATEST_ID: string): void => {
  * and begins to poll server.
  */
 (async () => {
-    const LATEST_ID = await query.getLatestNextChangeId()
+    const LATEST_ID: string = await query.getLatestNextChangeId()
     poll(LATEST_ID)
 })().catch((error) => {
     console.error(error)

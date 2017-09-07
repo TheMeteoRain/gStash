@@ -25,13 +25,13 @@ export const tables = {
 }
 
 const queries = {
-  insert: (data: any[], table: any) => db.result(table(data)),
+  insert: (data: any[], table: any, t: any) => t.result(table(data)),
 
-  upsertCurrentNextChangeId: (next_change_id: string, processed: number = 0): Promise<any> =>
-    db.result('INSERT INTO changeid(nextChangeId, processed) VALUES($<next_change_id>, $<processed>) ON CONFLICT (nextChangeId) DO UPDATE SET (processed) = (EXCLUDED.processed)', { next_change_id, processed: 1 }),
+  upsertCurrentNextChangeId: (next_change_id: string, processed: boolean = false): Promise<any> =>
+    db.result('INSERT INTO changeid(nextChangeId, processed) VALUES($<next_change_id>, $<processed>) ON CONFLICT (nextChangeId) DO UPDATE SET (processed) = (EXCLUDED.processed)', { next_change_id, processed: true }),
 
   getLatestNextChangeId: (): Promise<string> =>
-    db.one('SELECT nextChangeId FROM changeId WHERE processed = 0 OR processed = 1 ORDER BY id DESC LIMIT 1').then((data: any): Promise<string> => data.nextchangeid),
+    db.one('SELECT nextChangeId FROM changeId WHERE processed = false OR processed = true ORDER BY id DESC LIMIT 1').then((data: any): Promise<string> => data.nextchangeid),
 }
 
 export default queries

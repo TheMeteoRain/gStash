@@ -28,10 +28,10 @@ const queries = {
   insert: (data: any[], table: any, t: any) => t.result(table(data)),
 
   upsertCurrentNextChangeId: (next_change_id: string, processed: boolean = false): Promise<any> =>
-    db.result('INSERT INTO changeid(nextChangeId, processed) VALUES($<next_change_id>, $<processed>) ON CONFLICT (nextChangeId) DO UPDATE SET (processed) = (EXCLUDED.processed)', { next_change_id, processed: true }),
+    db.result('INSERT INTO changeid(next_change_id, processed) VALUES($<next_change_id>, $<processed>) ON CONFLICT (next_change_id) DO UPDATE SET (processed) = (EXCLUDED.processed)', { next_change_id, processed: true }),
 
   getLatestNextChangeId: (): Promise<string> =>
-    db.one('SELECT nextChangeId FROM changeId WHERE processed = false OR processed = true ORDER BY id DESC LIMIT 1').then((data: any): Promise<string> => data.nextchangeid),
+    db.one('SELECT next_change_id FROM changeId WHERE processed = false OR processed = true ORDER BY id DESC LIMIT 1').then((data: any): Promise<string> => data.next_change_id),
 }
 
 export default queries

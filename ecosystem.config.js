@@ -20,6 +20,16 @@ module.exports = {
       cwd: "./indexer",
       args: "run-script start",
       watch: true
+    },
+
+
+    // Front application
+    {
+      script: "npm",
+      name: "front",
+      cwd: "./front",
+      args: "run-script start",
+      watch: true
     }
   ]
 

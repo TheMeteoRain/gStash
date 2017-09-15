@@ -28,25 +28,29 @@ CREATE TABLE Accounts (
 
 CREATE TABLE ChangeId (
   id BIGSERIAL NOT NULL,
-  nextChangeId varchar(128) NOT NULL DEFAULT '' UNIQUE,
+  next_change_id varchar(128) NOT NULL DEFAULT '' UNIQUE,
   processed boolean DEFAULT 'false',
-  PRIMARY KEY (id,nextChangeId)
+  PRIMARY KEY (id,next_change_id)
 );
-INSERT INTO ChangeId(nextChangeId, processed) VALUES('0', '0');
+INSERT INTO ChangeId(next_change_id, processed) VALUES('0', '0');
 
 CREATE TABLE Leagues (
-  leagueName varchar(128) NOT NULL DEFAULT '' PRIMARY KEY,
+  league_name varchar(128) NOT NULL DEFAULT '' PRIMARY KEY,
   active smallint DEFAULT '0',
   poeTradeId varchar(128) DEFAULT ''
 );
-INSERT INTO Leagues(leagueName, active) VALUES('Standard', '1');
-INSERT INTO Leagues(leagueName, active) VALUES('Hardcore', '1');
-INSERT INTO Leagues(leagueName, active) VALUES('SSF Standard', '1');
-INSERT INTO Leagues(leagueName, active) VALUES('SSF Hardcore', '1');
-INSERT INTO Leagues(leagueName, active) VALUES('Legacy', '1');
-INSERT INTO Leagues(leagueName, active) VALUES('Hardcore Legacy', '1');
-INSERT INTO Leagues(leagueName, active) VALUES('SSF Legacy', '1');
-INSERT INTO Leagues(leagueName, active) VALUES('SSF HC Legacy', '1');
+INSERT INTO Leagues(league_name, active) VALUES('Standard', '1');
+INSERT INTO Leagues(league_name, active) VALUES('Hardcore', '1');
+INSERT INTO Leagues(league_name, active) VALUES('SSF Standard', '1');
+INSERT INTO Leagues(league_name, active) VALUES('SSF Hardcore', '1');
+INSERT INTO Leagues(league_name, active) VALUES('Harbinger', '1');
+INSERT INTO Leagues(league_name, active) VALUES('Hardcore Harbinger', '1');
+INSERT INTO Leagues(league_name, active) VALUES('SSF Harbinger', '1');
+INSERT INTO Leagues(league_name, active) VALUES('SSF Harbinger HC', '1');
+INSERT INTO Leagues(league_name, active) VALUES('Legacy', '1');
+INSERT INTO Leagues(league_name, active) VALUES('Hardcore Legacy', '1');
+INSERT INTO Leagues(league_name, active) VALUES('SSF Legacy', '1');
+INSERT INTO Leagues(league_name, active) VALUES('SSF HC Legacy', '1');
 
 
 CREATE TABLE Currencies (
@@ -54,9 +58,9 @@ CREATE TABLE Currencies (
   timestamp bigint NOT NULL DEFAULT '0',
   league varchar(128) NOT NULL DEFAULT '',
   sell varchar(128) NOT NULL DEFAULT '',
-  currencyKey varchar(128) NOT NULL DEFAULT '' UNIQUE,
-  PRIMARY KEY (currencyKey,id),
-  CONSTRAINT Currencies_ibfk_1 FOREIGN KEY (league) REFERENCES Leagues (leagueName)
+  currency_key varchar(128) NOT NULL DEFAULT '' UNIQUE,
+  PRIMARY KEY (currency_key,id),
+  CONSTRAINT Currencies_ibfk_1 FOREIGN KEY (league) REFERENCES Leagues (league_name)
 );
 
 
@@ -68,8 +72,8 @@ CREATE TABLE CurrencyStats (
   mode real DEFAULT '0',
   min real DEFAULT '0',
   max real DEFAULT '0',
-  currencyKey varchar(128) NOT NULL DEFAULT '',
-  CONSTRAINT currencystats_ibfk_1 FOREIGN KEY (currencyKey) REFERENCES Currencies (currencyKey)
+  currency_key varchar(128) NOT NULL DEFAULT '',
+  CONSTRAINT currencystats_ibfk_1 FOREIGN KEY (currency_key) REFERENCES Currencies (currency_key)
 );
 
 CREATE TYPE StashType AS ENUM ('NormalStash','PremiumStash','QuadStash','EssenceStash','CurrencyStash','DivinationStash');
@@ -109,7 +113,7 @@ CREATE TABLE Items (
   price varchar(128) DEFAULT NULL,
   enchanted boolean DEFAULT 'FALSE',
   crafted boolean DEFAULT 'FALSE',
-  CONSTRAINT Items_ibfk_1 FOREIGN KEY (league) REFERENCES Leagues (leagueName),
+  CONSTRAINT Items_ibfk_1 FOREIGN KEY (league) REFERENCES Leagues (league_name),
   CONSTRAINT Items_ibfk_2 FOREIGN KEY (account_name) REFERENCES Accounts (account_name),
   CONSTRAINT Items_ibfk_3 FOREIGN KEY (stash_id) REFERENCES Stashes (stash_id)
 );

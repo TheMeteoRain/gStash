@@ -8,6 +8,13 @@
   },
   "dependencies": {},
   "devDependencies": {
+    "eslint-config-standard": "^10.2.1",
+    "eslint-config-standard-preact": "^1.1.6",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-node": "^5.1.1",
+    "eslint-plugin-promise": "^3.5.0",
+    "eslint-plugin-react": "^7.3.0",
+    "eslint-plugin-standard": "^3.0.1",
     "tslint": "^5.7.0",
     "typescript": "^2.5.2"
   },

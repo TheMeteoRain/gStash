@@ -1,0 +1,99 @@
+{
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended"
+  ],
+  "env": {
+    "browser": true,
+    "commonjs": true,
+    "es6": true,
+    "node": true,
+    "worker": true,
+    "jest": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true,
+      "experimentalObjectRestSpread": true,
+      "experimentalDecorators": true
+    }
+  },
+  "settings": {
+    "react": {
+      "pragma": "h"
+    }
+  },
+  "rules": {
+    "comma-dangle": [
+      "error",
+      "always-multiline"
+    ],
+    "indent": [
+      "error",
+      2
+    ],
+    "no-console": [
+      "error",
+      {
+        "allow": [
+          "warn",
+          "error"
+        ]
+      }
+    ],
+    "no-const-assign": "error",
+    "no-empty-pattern": "error",
+    "no-else-return": "error",
+    "no-irregular-whitespace": "error",
+    "no-this-before-super": "warn",
+    "no-undef": "error",
+    "no-unreachable": "error",
+    "no-unused-vars": "warn",
+    "no-trailing-spaces": "error",
+    "constructor-super": "warn",
+    "quotes": [
+      "error",
+      "single",
+      {
+        "allowTemplateLiterals": true
+      }
+    ],
+    "quote-props": [
+      "error",
+      "as-needed"
+    ],
+    "semi": [
+      2,
+      "never"
+    ],
+    "valid-typeof": "warn",
+    "vars-on-top": "warn",
+    "react/jsx-handler-names": "error",
+    "react/jsx-no-undef": "error",
+    "react/jsx-uses-react": "error",
+    "react/jsx-uses-vars": "error",
+    "react/prefer-es6-class": "warn",
+    "react/no-array-index-key": "error",
+    "react/jsx-no-bind": [
+      "warn",
+      {
+        "ignoreRefs": true
+      }
+    ],
+    "react/react-in-jsx-scope": "error",
+    "react/jsx-wrap-multilines": "error",
+    "react/prefer-stateless-function": "warn",
+    "react/prop-types": [
+      "warn",
+      {
+        "skipUndeclared": true
+      }
+    ],
+    "react/self-closing-comp": "error"
+  },
+  "plugins": [
+    "react"
+  ]
+}

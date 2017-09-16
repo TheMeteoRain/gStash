@@ -12,8 +12,14 @@ yarn-error.log*
 .idea/
 .vscode/
 
+.DS_STORE
+
 # Dependency directories
 node_modules/
+
+# build directories
+dist
+build
 
 # dotenv environment variables file
 .env

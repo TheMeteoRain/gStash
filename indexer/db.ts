@@ -2,7 +2,7 @@
 const options = {
   promiseLib: bluebird,
 }*/
-const monitor = require('pg-monitor')
+import * as monitor from 'pg-monitor'
 
 const options = {
   capSQL: true,

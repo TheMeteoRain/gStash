@@ -16,13 +16,7 @@
     "sourceType": "module",
     "ecmaFeatures": {
       "jsx": true,
-      "experimentalObjectRestSpread": true,
-      "experimentalDecorators": true
-    }
-  },
-  "settings": {
-    "react": {
-      "pragma": "h"
+      "experimentalObjectRestSpread": true
     }
   },
   "rules": {
@@ -84,7 +78,7 @@
     ],
     "react/react-in-jsx-scope": "error",
     "react/jsx-wrap-multilines": "error",
-    "react/prefer-stateless-function": "warn",
+    //"react/prefer-stateless-function": "warn",
     "react/prop-types": [
       "warn",
       {

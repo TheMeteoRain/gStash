@@ -5,13 +5,13 @@ module.exports = {
    */
   apps: [
     // First application
-    {
-      script: "npm",
-      name: "gStash",
-      cwd: "./api",
-      args: "run-script start",
-      watch: true
-    },
+    /* {
+      script: 'npm',
+      name: 'gStash',
+      cwd: './api',
+      args: 'run-script start',
+      watch: true,
+    },*/
 
     // Second application
     {
@@ -22,13 +22,12 @@ module.exports = {
       watch: true
     },
 
-
     // Front application
     {
       script: "npm",
       name: "front",
       cwd: "./front",
-      args: "run-script start",
+      args: "run-script run dev",
       watch: true
     }
   ]

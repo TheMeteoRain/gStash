@@ -32,9 +32,7 @@ const calculateLinks = (sockets: any): number => {
     }
   }
 
-  const biggest = groups.reduce((previous: number, current: number) => {
-    return previous > current ? previous : current
-  })
+  const biggest = groups.reduce((previous: number, current: number) => previous > current ? previous : current)
 
   return biggest
 }
@@ -42,11 +40,15 @@ const calculateLinks = (sockets: any): number => {
 const transformItem = (data: any, account_name: string, stash_id: string): Item => {
   let enchanted: boolean = false
   if (data.hasOwnProperty('enchantMods')) {
-    enchanted = data.enchantMods.length > 0 ? true : false
+    enchanted = data.enchantMods ? true : false
   }
   let crafted: boolean = false
   if (data.hasOwnProperty('craftedMods')) {
-    crafted = data.craftedMods.length > 0 ? true : false
+    crafted = data.craftedMods ? true : false
+  }
+  let corrupted: boolean = false
+  if (data.hasOwnProperty('corrupted')) {
+    corrupted = data.corrupted ? true : false
   }
   let link_amount: number = 0
   let socket_amount: number = 0
@@ -54,15 +56,16 @@ const transformItem = (data: any, account_name: string, stash_id: string): Item 
     link_amount = calculateLinks(data.sockets)
     socket_amount = data.sockets.length
   }
+  const flavourText = data.flavourText ? JSON.stringify(data.flavourText) : ''
 
   const item: Item = {
     account_name,
     added_ts: Date.now(),
     available: true,
-    corrupted: data.corrupted,
+    corrupted,
     crafted,
     enchanted,
-    flavour_text: data.flavourText,
+    flavour_text: flavourText,
     frame_type: data.frameType,
     h: data.h,
     icon: data.icon,
@@ -74,7 +77,7 @@ const transformItem = (data: any, account_name: string, stash_id: string): Item 
     link_amount,
     locked_to_character: data.lockedToCharacter,
     name: data.name,
-    price: data.price,
+    price: data.note,
     socket_amount,
     stash_id,
     type_line: data.typeLine,

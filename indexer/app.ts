@@ -12,7 +12,7 @@ import { transformAccount, transformItem, transformMod, transformProperty, trans
  * The amount of milliseconds when a new request is sent to the poe api.
  * New poll cycle will being only after the previous has finished.
  */
-const POLL_CYCLE: number = 5000
+const POLL_CYCLE: number = 10000
 
 const config = {
   headers: {
@@ -132,8 +132,8 @@ const saveData = async (stashes: any): Promise<any> => {
 
   db.task('SavingData', async (t: any) => {
     const queries = [
-      await query.insert(batchAccount, tables.accounts, t),
-      await query.insert(batchStash, tables.stashes, t),
+      batchAccount.length > 0 ? await query.insert(batchAccount, tables.accounts, t) : undefined,
+      batchStash.length > 0 ? await query.insert(batchStash, tables.stashes, t) : undefined,
       batchItem.length > 0 ? await query.insert(batchItem, tables.items, t) : undefined,
       batchSocket.length > 0 ? await query.insert(batchSocket, tables.sockets, t) : undefined,
       batchProperty.length > 0 ? await query.insert(batchProperty, tables.properties, t) : undefined,
@@ -155,6 +155,8 @@ const saveData = async (stashes: any): Promise<any> => {
       )
       console.timeEnd('Saving data took')
       console.log(' ')
+    }).catch((error: any) => {
+      console.log(error)
     })
 }
 
@@ -162,23 +164,27 @@ const calculateStatistics = (events: any) => {
   const calculateTotal = (property: any) => {
     let total = 0
     for (const event of events) {
-      total = total + event[property]
+      total = total + event ? event[property] : 0
     }
 
     return total
   }
 
+  const getRow = (event: any) => {
+    return event ? event.rowCount : 0
+  }
+
   const statistics = {
-    accounts: events[0].rowCount,
+    accounts: getRow(events[0]),
     duration: calculateTotal('duration'),
     failed: 0,
-    items: events[2].rowCount,
-    mods: events[6].rowCount,
-    properties: events[4].rowCount,
-    requirements: events[5].rowCount,
+    items: getRow(events[2]),
+    mods: getRow(events[6]),
+    properties: getRow(events[4]),
+    requirements: getRow(events[5]),
     saved: calculateTotal('rowCount'),
-    sockets: events[3].rowCount,
-    stashes: events[1].rowCount,
+    sockets: getRow(events[3]),
+    stashes: getRow(events[1]),
   }
 
   return statistics

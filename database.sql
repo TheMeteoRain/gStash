@@ -1,5 +1,5 @@
 
-
+begin;
 
 DROP DATABASE IF EXISTS poe;
 CREATE DATABASE poe;
@@ -127,7 +127,7 @@ CREATE TABLE Mods (
   mod_value3 varchar(128) DEFAULT '0',
   mod_value4 varchar(128) DEFAULT '0',
   mod_type mod_type DEFAULT 'IMPLICIT',
-  mod_key varchar(128) DEFAULT NULL UNIQUE,
+  mod_key BIGSERIAL NOT NULL,
   CONSTRAINT Mods_ibfk_1 FOREIGN KEY (item_id) REFERENCES Items (item_id) ON DELETE CASCADE
 );
 
@@ -160,3 +160,22 @@ CREATE TABLE Sockets (
 );
 
 CREATE UNIQUE INDEX item ON Items USING BTREE (item_id);
+
+CREATE FUNCTION search_items(league_name VARCHAR DEFAULT 'Standard', search TEXT DEFAULT '',
+  socket_amount_min INT DEFAULT 0, socket_amount_max INT DEFAULT 6, link_amount_min INT DEFAULT 0,
+  link_amount_max INT DEFAULT 6, item_lvl_min INT DEFAULT 0, item_lvl_max INT DEFAULT 100,
+  is_identified BOOLEAN DEFAULT FALSE, is_verified BOOLEAN DEFAULT FALSE, is_corrupted BOOLEAN DEFAULT FALSE,
+  is_enchanted BOOLEAN DEFAULT FALSE, is_crafted BOOLEAN DEFAULT FALSE) RETURNS SETOF items AS $$
+SELECT *
+FROM items
+WHERE
+    league LIKE league_name AND (type_line ILIKE('%' || search || '%') OR name ILIKE('%' || search || '%')) AND
+    socket_amount >= socket_amount_min AND socket_amount <= socket_amount_max AND
+    link_amount >= link_amount_min AND link_amount <= link_amount_max AND
+    ilvl >= item_lvl_min AND ilvl <= item_lvl_max AND
+    identified = is_identified AND verified = is_verified AND corrupted = is_corrupted AND
+    enchanted = is_enchanted AND
+    crafted = is_crafted
+$$ LANGUAGE SQL STABLE;
+
+commit;

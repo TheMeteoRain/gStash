@@ -1,5 +1,7 @@
 import { Item } from '../interface'
 
+const RE_CLEAN_NAME = /(<<set:\w+>>)+/g
+
 /**
  * Return the biggest link number on an single item.
  *
@@ -56,6 +58,7 @@ const transformItem = (data: any, account_name: string, stash_id: string): Item 
     link_amount = calculateLinks(data.sockets)
     socket_amount = data.sockets.length
   }
+  const typeLine = data.typeLine.replace(RE_CLEAN_NAME, '')
   const flavourText = data.flavourText ? JSON.stringify(data.flavourText) : ''
 
   const item: Item = {
@@ -80,7 +83,7 @@ const transformItem = (data: any, account_name: string, stash_id: string): Item 
     price: data.note,
     socket_amount,
     stash_id,
-    type_line: data.typeLine,
+    type_line: typeLine,
     updated_ts: 0,
     verified: data.verified,
     w: data.w,

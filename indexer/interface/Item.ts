@@ -10,7 +10,6 @@ export interface Item {
   identified: boolean
   verified: boolean
   corrupted: boolean
-  locked_to_character: boolean
   frame_type: number
   x: number
   y: number
@@ -27,3 +26,22 @@ export interface Item {
   enchanted: boolean
   crafted: boolean
 }
+
+/**
+ * verified is whether the player still has the item
+ * verified boolean as to whether or not the item is actually
+ * owned by the player at the time (irrelevant for the Stash Tab API)
+ *
+ * support set to true for every item except non-support gems IIRC. A weird artificat, only relevant for gems.
+ *
+ * The set tags are localizations and almost always should be stripped out and ignored.
+ *
+ * name is prefix and typeLine is suffix. Together they form the actual item name.
+ *
+ * lockedToCharacter - I'm 90% sure this is a BS tag, it's never actually properly set to true for items
+ * that should be locked to the character that I've seen. Ignore it.
+ *
+ * The flavour text helps strengthen the identity of an item,
+ * and makes the player feel like they have uncovered something ancient and special.
+ * Finding Unique items in the world can also reveal pieces of the puzzle that is Wraeclast’s mysterious past.
+ */

@@ -59,6 +59,7 @@ const transformItem = (data: any, account_name: string, stash_id: string): Item 
     socket_amount = data.sockets.length
   }
   const typeLine = data.typeLine.replace(RE_CLEAN_NAME, '')
+  const name = data.name.replace(RE_CLEAN_NAME, '')
   const flavourText = data.flavourText ? JSON.stringify(data.flavourText) : ''
 
   const item: Item = {
@@ -78,8 +79,7 @@ const transformItem = (data: any, account_name: string, stash_id: string): Item 
     item_id: data.id,
     league: data.league,
     link_amount,
-    locked_to_character: data.lockedToCharacter,
-    name: data.name,
+    name,
     price: data.note,
     socket_amount,
     stash_id,

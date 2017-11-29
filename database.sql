@@ -1,6 +1,4 @@
 
-begin;
-
 DROP DATABASE IF EXISTS poe;
 CREATE DATABASE poe;
 \connect poe
@@ -17,6 +15,7 @@ DROP TABLE IF EXISTS Currencies;
 DROP TABLE IF EXISTS Leagues;
 DROP TABLE IF EXISTS ChangeId;
 DROP TABLE IF EXISTS Accounts;
+DROP FUNCTION IF EXISTS search_items(VARCHAR, TEXT, INT, INT, INT, INT, INT, INT, BOOLEAN, BOOLEAN, BOOLEAN, BOOLEAN, BOOLEAN);
 
 
 CREATE TABLE Accounts (
@@ -76,11 +75,11 @@ CREATE TABLE CurrencyStats (
   CONSTRAINT currencystats_ibfk_1 FOREIGN KEY (currency_key) REFERENCES Currencies (currency_key)
 );
 
-CREATE TYPE StashType AS ENUM ('NormalStash','PremiumStash','QuadStash','EssenceStash','CurrencyStash','DivinationStash');
+CREATE TYPE stash_type AS ENUM ('NormalStash','PremiumStash','QuadStash','EssenceStash','CurrencyStash','DivinationStash');
 CREATE TABLE Stashes (
   stash_id varchar(128) NOT NULL DEFAULT '' PRIMARY KEY,
   stash_name varchar(128) DEFAULT NULL,
-  stash_type varchar(128) DEFAULT NULL,
+  stash_type stash_type DEFAULT 'NormalStash',
   stash_public boolean DEFAULT 'FALSE'
 );
 
@@ -113,6 +112,7 @@ CREATE TABLE Items (
   price varchar(128) DEFAULT NULL,
   enchanted boolean DEFAULT 'FALSE',
   crafted boolean DEFAULT 'FALSE',
+  document TSVECTOR DEFAULT NULL,
   CONSTRAINT Items_ibfk_1 FOREIGN KEY (league) REFERENCES Leagues (league_name),
   CONSTRAINT Items_ibfk_2 FOREIGN KEY (account_name) REFERENCES Accounts (account_name),
   CONSTRAINT Items_ibfk_3 FOREIGN KEY (stash_id) REFERENCES Stashes (stash_id)
@@ -143,10 +143,11 @@ CREATE TABLE Properties (
 
 
 CREATE TABLE Requirements (
-  item_id varchar(128) DEFAULT NULL,
+  item_id varchar(128) NOT NULL DEFAULT '',
   requirement_name varchar(128) NOT NULL DEFAULT '0',
   requirement_value smallint DEFAULT '0',
   requirement_key BIGSERIAL NOT NULL,
+  PRIMARY KEY (item_id, requirement_name),
   CONSTRAINT Requirements_ibfk_1 FOREIGN KEY (item_id) REFERENCES Items (item_id) ON DELETE CASCADE
 );
 
@@ -160,22 +161,35 @@ CREATE TABLE Sockets (
 );
 
 CREATE UNIQUE INDEX item ON Items USING BTREE (item_id);
+SET DEFAULT_TEXT_SEARCH_CONFIG = 'english';
+DROP FUNCTION IF EXISTS search_items(VARCHAR, TEXT, INT, INT, INT, INT, INT, INT, BOOLEAN, BOOLEAN, BOOLEAN, BOOLEAN, BOOLEAN);
 
+-- regexp finds every whitespace BETWEEN words document @@ to_tsquery(regexp_replace(search, '(?!^ +\w)\s+((?= ?\w))', ' & ', 'g')) OR  --
 CREATE FUNCTION search_items(league_name VARCHAR DEFAULT 'Standard', search TEXT DEFAULT '',
   socket_amount_min INT DEFAULT 0, socket_amount_max INT DEFAULT 6, link_amount_min INT DEFAULT 0,
   link_amount_max INT DEFAULT 6, item_lvl_min INT DEFAULT 0, item_lvl_max INT DEFAULT 100,
-  is_identified BOOLEAN DEFAULT FALSE, is_verified BOOLEAN DEFAULT FALSE, is_corrupted BOOLEAN DEFAULT FALSE,
-  is_enchanted BOOLEAN DEFAULT FALSE, is_crafted BOOLEAN DEFAULT FALSE) RETURNS SETOF items AS $$
+  is_identified BOOLEAN DEFAULT NULL, is_verified BOOLEAN DEFAULT NULL, is_corrupted BOOLEAN DEFAULT NULL,
+  is_enchanted BOOLEAN DEFAULT NULL, is_crafted BOOLEAN DEFAULT NULL) RETURNS SETOF items AS $$
 SELECT *
 FROM items
 WHERE
-    league LIKE league_name AND (type_line ILIKE('%' || search || '%') OR name ILIKE('%' || search || '%')) AND
-    socket_amount >= socket_amount_min AND socket_amount <= socket_amount_max AND
-    link_amount >= link_amount_min AND link_amount <= link_amount_max AND
-    ilvl >= item_lvl_min AND ilvl <= item_lvl_max AND
-    identified = is_identified AND verified = is_verified AND corrupted = is_corrupted AND
-    enchanted = is_enchanted AND
-    crafted = is_crafted
+    league LIKE league_name AND (document @@ to_tsquery(search)) AND
+    (socket_amount BETWEEN socket_amount_min AND socket_amount_max) AND
+    (link_amount BETWEEN link_amount_min AND link_amount_max) AND
+    (ilvl BETWEEN item_lvl_min AND item_lvl_max) AND
+    identified NOT IN (is_identified)
 $$ LANGUAGE SQL STABLE;
 
-commit;
+CREATE FUNCTION create_document_on_item() RETURNS TRIGGER AS $create_document_on_item$
+    BEGIN
+
+        -- Remember who changed the payroll when
+        NEW.document := to_tsvector(NEW.name || '. ' || NEW.type_line);
+        RETURN NEW;
+    END;
+$create_document_on_item$ LANGUAGE plpgsql;
+
+CREATE TRIGGER create_document_on_item BEFORE INSERT ON items
+    FOR EACH ROW EXECUTE PROCEDURE create_document_on_item();
+
+CREATE INDEX idx_fts_search ON items USING gin(document);

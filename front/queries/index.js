@@ -26,7 +26,6 @@ const queries = {
           icon
           name
           typeLine
-          lockedToCharacter
           frameType
           x
           y
@@ -55,7 +54,8 @@ const queries = {
               itemId
                 requirementName
                 requirementValue
-                requirementKey
+                requirementValueType
+                requirementDisplayMode
             }
           }
           modsByItemId {
@@ -66,7 +66,6 @@ const queries = {
               modValue3
               modValue4
               modType
-              modKey
             }
           }
           socketsByItemId {
@@ -77,10 +76,10 @@ const queries = {
           }
           propertiesByItemId {
             nodes {
-              propertyKey
               propertyName
-              propertyValue1
-              propertyValue2
+              propertyValue
+              propertyValueType
+              propertyDisplayMode
             }
           }
         }

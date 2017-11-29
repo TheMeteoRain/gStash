@@ -38,19 +38,27 @@ CREATE TABLE Leagues (
   active smallint DEFAULT '0',
   poeTradeId varchar(128) DEFAULT ''
 );
-INSERT INTO Leagues(league_name, active) VALUES('Standard', '1');
-INSERT INTO Leagues(league_name, active) VALUES('Hardcore', '1');
-INSERT INTO Leagues(league_name, active) VALUES('SSF Standard', '1');
-INSERT INTO Leagues(league_name, active) VALUES('SSF Hardcore', '1');
-INSERT INTO Leagues(league_name, active) VALUES('Harbinger', '1');
-INSERT INTO Leagues(league_name, active) VALUES('Hardcore Harbinger', '1');
-INSERT INTO Leagues(league_name, active) VALUES('SSF Harbinger', '1');
-INSERT INTO Leagues(league_name, active) VALUES('SSF Harbinger HC', '1');
-INSERT INTO Leagues(league_name, active) VALUES('Legacy', '1');
-INSERT INTO Leagues(league_name, active) VALUES('Hardcore Legacy', '1');
-INSERT INTO Leagues(league_name, active) VALUES('SSF Legacy', '1');
-INSERT INTO Leagues(league_name, active) VALUES('SSF HC Legacy', '1');
+INSERT INTO Leagues(league_name, active)
+VALUES ('Standard', '1'), ('Hardcore', '1'), ('SSF Standard', '1'), ('SSF Hardcore', '1'),
+('Harbinger', '1'), ('Hardcore Harbinger', '1'), ('SSF Harbinger', '1'), ('SSF Harbinger HC', '1'),
+('Legacy', '1'), ('Hardcore Legacy', '1'), ('SSF Legacy', '1'), ('SSF HC Legacy', '1');
 
+CREATE TYPE frame_type AS ENUM ('Normal', 'Magic', 'Rare', 'Unique', 'Gem', 'Currency', 'Divination card', 'Quest item', 'Prophecy', 'Relic');
+CREATE TABLE FrameType (
+  id SMALLINT PRIMARY KEY,
+  frame_type_value frame_type NOT NULL
+);
+INSERT INTO FrameType(id, frame_type_value)
+VALUES (0, 'Normal'), (1, 'Magic'), (2, 'Rare'), (3, 'Unique'), (4, 'Gem'), (5,'Currency'), (6, 'Divination card'),
+(7,'Quest item'), (8, 'Prophecy'), (9, 'Relic');
+
+CREATE TYPE value_type AS ENUM ('Default', 'Augmented', 'Unmet', 'Physical','Fire', 'Cold', 'Lightning', 'Chaos');
+CREATE TABLE ValueType (
+  id SMALLINT PRIMARY KEY,
+  value_type value_type NOT NULL
+);
+INSERT INTO ValueType
+VALUES (0, 'Default'), (1, 'Augmented'), (2, 'Unmet'), (3, 'Physical'), (4, 'Fire'), (5, 'Cold'), (6, 'Lightning'), (7, 'Chaos');
 
 CREATE TABLE Currencies (
   id BIGSERIAL NOT NULL,
@@ -96,10 +104,9 @@ CREATE TABLE Items (
   identified boolean NOT NULL DEFAULT 'FALSE',
   verified boolean NOT NULL DEFAULT 'FALSE',
   corrupted boolean NOT NULL DEFAULT 'FALSE',
-  locked_to_character boolean DEFAULT 'FALSE',
-  frame_type smallint DEFAULT '0',
-  x smallint DEFAULT '0',
-  y smallint DEFAULT '0',
+  frame_type smallint DEFAULT 0,
+  x smallint DEFAULT 0,
+  y smallint DEFAULT 0,
   inventory_id varchar(128) DEFAULT NULL,
   account_name varchar(128) NOT NULL DEFAULT '',
   stash_id varchar(128) NOT NULL DEFAULT '',
@@ -135,8 +142,10 @@ CREATE TABLE Mods (
 CREATE TABLE Properties (
   item_id varchar(128) DEFAULT NULL,
   property_name varchar(128) NOT NULL DEFAULT '0',
-  property_value1 varchar(128) DEFAULT '0',
-  property_value2 varchar(128) DEFAULT '0',
+  property_value varchar(128) DEFAULT '0',
+  property_value_type smallint DEFAULT 0,
+  property_display_mode smallint DEFAULT 0,
+  property_progress decimal DEFAULT NULL,
   property_key BIGSERIAL NOT NULL,
   CONSTRAINT Properties_ibfk_1 FOREIGN KEY (item_id) REFERENCES Items (item_id) ON DELETE CASCADE
 );
@@ -145,7 +154,9 @@ CREATE TABLE Properties (
 CREATE TABLE Requirements (
   item_id varchar(128) NOT NULL DEFAULT '',
   requirement_name varchar(128) NOT NULL DEFAULT '0',
-  requirement_value smallint DEFAULT '0',
+  requirement_value varchar(128) DEFAULT '0',
+  requirement_value_type smallint DEFAULT 0,
+  requirement_display_mode smallint DEFAULT 0,
   requirement_key BIGSERIAL NOT NULL,
   PRIMARY KEY (item_id, requirement_name),
   CONSTRAINT Requirements_ibfk_1 FOREIGN KEY (item_id) REFERENCES Items (item_id) ON DELETE CASCADE
@@ -172,9 +183,7 @@ SELECT *
 FROM items
 WHERE
     league LIKE league_name AND ((LENGTH(TRIM(search)) = 0 AND type_line ILIKE '%' || search || '%') OR (document @@ to_tsquery(REGEXP_REPLACE(TRIM(search), '\s+', '&', 'g')))) AND
-    (socket_amount BETWEEN socket_amount_min AND socket_amount_max) AND
-    (link_amount BETWEEN link_amount_min AND link_amount_max) AND
-    (ilvl BETWEEN item_lvl_min AND item_lvl_max) AND
+    (socket_amount BETWEEN socket_amount_min AND socket_amount_max) AND (link_amount BETWEEN link_amount_min AND link_amount_max) AND (ilvl BETWEEN item_lvl_min AND item_lvl_max) AND
     ((is_identified IS NULL AND identified IS NOT NULL) OR (is_identified IS TRUE AND identified IS TRUE) OR (is_identified IS FALSE AND identified IS FALSE)) AND
     ((is_verified IS NULL AND identified IS NOT NULL) OR (is_verified IS TRUE AND identified IS TRUE) OR (is_verified IS FALSE AND identified IS FALSE)) AND
     ((is_corrupted IS NULL AND identified IS NOT NULL) OR (is_corrupted IS TRUE AND identified IS TRUE) OR (is_corrupted IS FALSE AND identified IS FALSE)) AND

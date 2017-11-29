@@ -63,58 +63,51 @@ const saveData = async (stashes: any): Promise<any> => {
 
       if (items.length > 0) {
         for (const item of items) {
-          const {
-            id: item_id,
-            properties,
-            requirements,
-            sockets,
-            explicitMods,
-            implicitMods,
-            enchantMods,
-            craftedMods,
-          } = item
+          const { id: itemId } = item
 
-          delete item.properties
-          delete item.requirements
-          delete item.explicitMods
-          delete item.implicitMods
           batchItem.push(transformItem(item, account_name, stash_id))
 
-          if (sockets) {
-            for (const socket of sockets) {
-              batchSocket.push(transformSocket(socket, item_id))
+          if (item.sockets) {
+            for (const socket of item.sockets) {
+              batchSocket.push(transformSocket(socket, itemId))
             }
           }
 
-          if (properties) {
-            for (const property of properties) {
-              batchProperty.push(transformProperty(property, item_id))
+          if (item.properties) {
+            for (const property of item.properties) {
+              batchProperty.push(transformProperty(property, itemId))
             }
           }
 
-          if (requirements) {
-            for (const requirement of requirements) {
-              batchRequirement.push(transformRequirement(requirement, item_id))
+          if (item.additionalProperties) {
+            for (const additionalProperty of item.additionalProperties) {
+              batchProperty.push(transformProperty(additionalProperty, itemId))
             }
           }
 
-          if (explicitMods) {
-            for (const mod of explicitMods) {
+          if (item.requirements) {
+            for (const requirement of item.requirements) {
+              batchRequirement.push(transformRequirement(requirement, itemId))
+            }
+          }
+
+          if (item.explicitMods) {
+            for (const mod of item.explicitMods) {
               batchMod.push(transformMod(mod, item.id, ModType[ModType.EXPLICIT]))
             }
           }
-          if (implicitMods) {
-            for (const mod of implicitMods) {
+          if (item.implicitMods) {
+            for (const mod of item.implicitMods) {
               batchMod.push(transformMod(mod, item.id, ModType[ModType.IMPLICIT]))
             }
           }
-          if (enchantMods) {
-            for (const mod of enchantMods) {
+          if (item.enchantMods) {
+            for (const mod of item.enchantMods) {
               batchMod.push(transformMod(mod, item.id, ModType[ModType.ENCHANTED]))
             }
           }
-          if (craftedMods) {
-            for (const mod of craftedMods) {
+          if (item.craftedMods) {
+            for (const mod of item.craftedMods) {
               batchMod.push(transformMod(mod, item.id, ModType[ModType.CRAFTED]))
             }
           }

@@ -16,7 +16,7 @@ DROP TABLE IF EXISTS Leagues;
 DROP TABLE IF EXISTS ChangeId;
 DROP TABLE IF EXISTS Accounts;
 DROP FUNCTION IF EXISTS search_items(VARCHAR, TEXT, INT, INT, INT, INT, INT, INT, BOOLEAN, BOOLEAN, BOOLEAN, BOOLEAN, BOOLEAN);
-
+SET DEFAULT_TEXT_SEARCH_CONFIG = 'english';
 
 CREATE TABLE Accounts (
   account_name varchar(128) DEFAULT '' PRIMARY KEY,
@@ -161,10 +161,8 @@ CREATE TABLE Sockets (
 );
 
 CREATE UNIQUE INDEX item ON Items USING BTREE (item_id);
-SET DEFAULT_TEXT_SEARCH_CONFIG = 'english';
 DROP FUNCTION IF EXISTS search_items(VARCHAR, TEXT, INT, INT, INT, INT, INT, INT, BOOLEAN, BOOLEAN, BOOLEAN, BOOLEAN, BOOLEAN);
 
--- regexp finds every whitespace BETWEEN words document @@ to_tsquery(regexp_replace(search, '(?!^ +\w)\s+((?= ?\w))', ' & ', 'g')) OR  --
 CREATE FUNCTION search_items(league_name VARCHAR DEFAULT 'Standard', search TEXT DEFAULT '',
   socket_amount_min INT DEFAULT 0, socket_amount_max INT DEFAULT 6, link_amount_min INT DEFAULT 0,
   link_amount_max INT DEFAULT 6, item_lvl_min INT DEFAULT 0, item_lvl_max INT DEFAULT 100,
@@ -173,13 +171,19 @@ CREATE FUNCTION search_items(league_name VARCHAR DEFAULT 'Standard', search TEXT
 SELECT *
 FROM items
 WHERE
-    league LIKE league_name AND (document @@ to_tsquery(search)) AND
+    league LIKE league_name AND ((LENGTH(TRIM(search)) = 0 AND type_line ILIKE '%' || search || '%') OR (document @@ to_tsquery(REGEXP_REPLACE(TRIM(search), '\s+', '&', 'g')))) AND
     (socket_amount BETWEEN socket_amount_min AND socket_amount_max) AND
     (link_amount BETWEEN link_amount_min AND link_amount_max) AND
     (ilvl BETWEEN item_lvl_min AND item_lvl_max) AND
-    identified NOT IN (is_identified)
+    ((is_identified IS NULL AND identified IS NOT NULL) OR (is_identified IS TRUE AND identified IS TRUE) OR (is_identified IS FALSE AND identified IS FALSE)) AND
+    ((is_verified IS NULL AND identified IS NOT NULL) OR (is_verified IS TRUE AND identified IS TRUE) OR (is_verified IS FALSE AND identified IS FALSE)) AND
+    ((is_corrupted IS NULL AND identified IS NOT NULL) OR (is_corrupted IS TRUE AND identified IS TRUE) OR (is_corrupted IS FALSE AND identified IS FALSE)) AND
+    ((is_enchanted IS NULL AND identified IS NOT NULL) OR (is_enchanted IS TRUE AND identified IS TRUE) OR (is_enchanted IS FALSE AND identified IS FALSE)) AND
+    ((is_crafted IS NULL AND identified IS NOT NULL) OR (is_crafted IS TRUE AND identified IS TRUE) OR (is_crafted IS FALSE AND identified IS FALSE))
 $$ LANGUAGE SQL STABLE;
 
+-- Create trigger when a new item is inserted
+-- update document(ts_vector) column on a new item to match item's: name and type_line
 CREATE FUNCTION create_document_on_item() RETURNS TRIGGER AS $create_document_on_item$
     BEGIN
 

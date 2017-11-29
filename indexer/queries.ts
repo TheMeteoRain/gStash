@@ -20,8 +20,9 @@ export const tables = {
 
   properties: (properties: Property[]) => pgp.helpers.insert(properties, COLUMN_SET_PROPERTIES),
 
-  requirements: (requirements: Requirement[]) => pgp.helpers.insert(requirements, COLUMN_SET_REQUIREMENTS),
   mods: (mods: Mod[]) => pgp.helpers.insert(mods, COLUMN_SET_MODS),
+
+  requirements: (requirements: Requirement[]) => pgp.helpers.insert(requirements, COLUMN_SET_REQUIREMENTS) + ' ON CONFLICT (item_id, requirement_name) DO UPDATE SET requirement_value = EXCLUDED.requirement_value',
 }
 
 const queries = {

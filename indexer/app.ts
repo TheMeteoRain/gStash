@@ -1,8 +1,8 @@
-import axios from 'axios'
 import 'dotenv/config'
 
 import { db, pgp } from './db'
-import query, { tables } from './query'
+import queries, { tables } from './queries'
+import requests from './requests'
 
 import { ModType } from './enum'
 import { Account, Item, Mod, Property, Requirement, Socket, Stash } from './interface'
@@ -13,13 +13,6 @@ import { transformAccount, transformItem, transformMod, transformProperty, trans
  * New poll cycle will being only after the previous has finished.
  */
 const POLL_CYCLE: number = 10000
-
-const config = {
-  headers: {
-    'Accept-Encoding': 'gzip',
-  },
-  responseType: 'json',
-}
 
 /**
  * Check for account duplicates in an array and replace them.
@@ -61,7 +54,7 @@ const saveData = async (stashes: any): Promise<any> => {
     delete stash.items
 
     /**
-     * Check if account name is not null, if it is skip it.
+     * Account name has to be present. Otherwise skip entry.
      */
     if (stash.accountName !== null) {
       replaceDuplicateAccount(account_name, stash, batchAccount)
@@ -131,27 +124,27 @@ const saveData = async (stashes: any): Promise<any> => {
   }
 
   db.task('SavingData', async (t: any) => {
-    const queries = [
-      batchAccount.length > 0 ? await query.insert(batchAccount, tables.accounts, t) : undefined,
-      batchStash.length > 0 ? await query.insert(batchStash, tables.stashes, t) : undefined,
-      batchItem.length > 0 ? await query.insert(batchItem, tables.items, t) : undefined,
-      batchSocket.length > 0 ? await query.insert(batchSocket, tables.sockets, t) : undefined,
-      batchProperty.length > 0 ? await query.insert(batchProperty, tables.properties, t) : undefined,
-      batchRequirement.length > 0 ? await query.insert(batchRequirement, tables.requirements, t) : undefined,
-      batchMod.length > 0 ? await query.insert(batchMod, tables.mods, t) : undefined,
+    const queryBatch = [
+      batchAccount.length > 0 ? await queries.insert(batchAccount, tables.accounts, t) : undefined,
+      batchStash.length > 0 ? await queries.insert(batchStash, tables.stashes, t) : undefined,
+      batchItem.length > 0 ? await queries.insert(batchItem, tables.items, t) : undefined,
+      batchSocket.length > 0 ? await queries.insert(batchSocket, tables.sockets, t) : undefined,
+      batchProperty.length > 0 ? await queries.insert(batchProperty, tables.properties, t) : undefined,
+      batchRequirement.length > 0 ? await queries.insert(batchRequirement, tables.requirements, t) : undefined,
+      batchMod.length > 0 ? await queries.insert(batchMod, tables.mods, t) : undefined,
     ]
 
-    return t.batch(queries)
+    return t.batch(queryBatch)
   }).then(calculateStatistics)
     .then((stats: any) => {
       console.log(
-        `Total downloaded: ${0}, saved: ${stats.saved}, failed: ${0 - 0}\n`,
-        `Accounts: saved: ${stats.accounts}, failed: ${batchAccount.length - stats.accounts}\n`,
-        `Stashes: saved: ${stats.stashes}, failed: ${batchStash.length - stats.stashes}\n`,
-        `Items: saved: ${stats.items}, failed: ${batchItem.length - stats.items}\n`,
-        `Properties: saved: ${stats.properties}, failed: ${batchProperty.length - stats.properties}\n`,
-        `Requirements: saved: ${stats.requirements}, failed: ${batchRequirement.length - stats.requirements}\n`,
-        `Mods: saved: ${stats.mods}, failed: ${batchMod.length - stats.mods}\n`,
+        `Total downloaded: ${0}, saved: ${stats.saved} \n`,
+        `Accounts: saved: ${stats.accounts} \n`,
+        `Stashes: saved: ${stats.stashes} \n`,
+        `Items: saved: ${stats.items} \n`,
+        `Properties: saved: ${stats.properties} \n`,
+        `Requirements: saved: ${stats.requirements} \n`,
+        `Mods: saved: ${stats.mods} \n`,
       )
       console.timeEnd('Saving data took')
       console.log(' ')
@@ -199,11 +192,11 @@ const poll = (LATEST_ID: string): void => {
     console.time('Downloading took')
 
     try {
-      const { data: { next_change_id, stashes } }: { data: { next_change_id: string, stashes: any } } = await axios.get(`${process.env.POE_ENDPOINT}?id=${LATEST_ID}`, config)
+      const { next_change_id, stashes }: { next_change_id: string, stashes: any } = await requests.getStashes(LATEST_ID)
       console.timeEnd('Downloading took')
       // console.log(`Downloaded ${stashes.length} stashes`)
       await saveData(stashes)
-      await query.upsertCurrentNextChangeId(LATEST_ID, true)
+      await queries.upsertCurrentNextChangeId(LATEST_ID, true)
 
       poll(next_change_id)
     } catch (error) {
@@ -223,7 +216,7 @@ const poll = (LATEST_ID: string): void => {
         console.log('Error', error.message)
       }
       console.log(error.config)
-      await query.upsertCurrentNextChangeId(LATEST_ID, false)
+      await queries.upsertCurrentNextChangeId(LATEST_ID, false)
       poll(LATEST_ID)
     }
   }
@@ -238,7 +231,9 @@ const poll = (LATEST_ID: string): void => {
  * and begins to poll server.
  */
 (async () => {
-  const LATEST_ID: string = await query.getLatestNextChangeId()
+  console.log('Fetching latest change id')
+  const LATEST_ID: string = await queries.getLatestNextChangeId()
+  console.log('Fetching done.')
   poll(LATEST_ID)
 })().catch((error) => {
   console.error(error)

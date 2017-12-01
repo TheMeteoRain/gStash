@@ -49,9 +49,16 @@ const queries = {
           corrupted
           linkAmount
           socketAmount
+          stashByStashId {
+            stashName
+          }
+          accountByAccountName {
+            lastCharacterName
+          }
           requirementsByItemId {
             nodes {
               itemId
+                requirementKey
                 requirementName
                 requirementValue
                 requirementValueType
@@ -60,6 +67,7 @@ const queries = {
           }
           modsByItemId {
             nodes {
+              modKey
               modName
               modValue1
               modValue2
@@ -76,9 +84,11 @@ const queries = {
           }
           propertiesByItemId {
             nodes {
+              propertyKey
               propertyName
-              propertyValue
-              propertyValueType
+              propertyValue1
+              propertyValue2
+              propertyValueTypes
               propertyDisplayMode
             }
           }

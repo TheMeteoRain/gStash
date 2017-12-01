@@ -142,8 +142,9 @@ CREATE TABLE Mods (
 CREATE TABLE Properties (
   item_id varchar(128) DEFAULT NULL,
   property_name varchar(128) NOT NULL DEFAULT '0',
-  property_value varchar(128) DEFAULT '0',
-  property_value_type smallint DEFAULT 0,
+  property_value1 varchar(128) DEFAULT '0',
+  property_value2 varchar(128) DEFAULT '0',
+  property_value_types json DEFAULT NULL,
   property_display_mode smallint DEFAULT 0,
   property_progress decimal DEFAULT NULL,
   property_key BIGSERIAL NOT NULL,

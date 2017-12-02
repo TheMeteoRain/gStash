@@ -18,49 +18,155 @@ Useful information
 4. It's safe to ignore the "lockedToCharacter" field. It should probably be removed from the output it if it's false... A good point!
 5. There's a few parts to this one! "displayMode" can be four things: 0 means name should go before the values. 1 means name should go after the values. 2 is a progress bar (for skill gem experience). 3 means that the name should have occurances of %1, %2, etc replaced with the values. "type" is an internal thing to keep track of what the property is actually referencing (name can be localised). The last value in "values" is the display style, which dictates which colour should be used when displaying the value. I've included all the relevant information here before. 0 = Default #FFFFFF 1 = Augmented #8888FF 2 = Unmet #D20000 3 = Physical Damage #FFFFFF 4 = Fire Damage #960000 5 = Cold Damage #366492 6 = Lightning Damage #FFD700 7 = Chaos Damage #D02090 "frameType" is reasonably self explanatory, the "x" and "y" is the location of the item inside the stash tab. 0 = Normal 1 = Magic 2 = Rare 3 = Unique 4 = Gem 5 = Currency 6 = Divination Card 7 = Quest 8 = Prophecy
 
-## Database
+When a change is made to a stash, the entire stash is sent in an update. If you wish to track historical items, you will need to compare the previous items in the stash to the current items in the stash, otherwise you can simply delete any items matching the stash id and insert the new items.
 
-### Item
-| Column                  | Type                   |      Description      |
-| ----------------------- |:----------------------:| ---------------------:|
-| additional_properties   | see properties table   | see properties table |
-| art_filename            | string                 | divination card ar |
-| corrupted               | boolean                | |
-| cosmetic_mods           | see mods table         | see mods table |
-| crafted_mods            | see mods table         | master mods |
-| descr_text              | string                 | description text |
-| duplicated              | boolean                | item is mirrored   |
-| enchanted_mods          | see mods table         | labyrinth mods |
-| explicit_mods           | see mods table         | $1 |
-| flavour_text            | string                 | flavour text is present on unique items |
-| frame_type              | smallint               | item rarity (0 = Normal 1 = Magic 2 = Rare 3 = Unique 4 = Gem 5 = Currency 6 = Divination Card 7 = Quest 8 = Prophecy) |
-| h                       | smallint               | slot height |
-| icon                    | string                 | item picture art |
-| item_id                 | string                 | item id, will change if you use currency on it |
-| identified              | boolean                | $1 |
-| ilvl                    | smallint               | item level  |
-| implicit_mods           | see mods table         | $1 |
-| inventory_id            | string                 | $ |
-| is_relic                | boolean                | $1 |
-| league                  | string                 | standard/hardcore |
-| locked_to_character     | boolean                | $1 |
-| max_stack_size          | smallint               | $1 |
-| name                    | string                 | unique item's name |
-| next_level_requirements | see requirements table | $1 |
-| note                    | string                 | usually used to display price |
-| properties              | see properties table   | see properties table |
-| prophecy_diff_text      | string                 | $1 |
-| prophecy_text           | string                 | $1 |
-| requirements            | see requirements table | $1 |
-| sec_description_text    | string                 | $1 |
-| socketed_items          | are                    | $1 |
-| sockets                 | see sockets table      | $1 |
-| stack_size              | smallint               | $1 |
-| support                 | boolean                | $1 |
-| talisman_tier           | smallint               | $1 |
-| type_line               | string                 | $1 |
-| utility_mods            | see mods table         | $1 |
-| verified                | boolean                | whether or not the item is actually owned by the player at the time (irrelevant for the Stash Tab API) |
-| w                       | smallint               | slow width |
-| x                       | smallint               | stash position x |
-| y                       | smallint               | $1 |
+Sources:
+https://pathofexile.gamepedia.com/Item
+https://pathofexile.gamepedia.com/Public_stash_tab_API
+https://www.reddit.com/r/pathofexiledev/comments/55xrd7/how_to_get_started_reading_the_stash_api/
+https://www.reddit.com/r/pathofexile/comments/6q941j/discussion_the_publicstashtabs_api_is_a_good/
+http://poe.trade/html/tags.html
+
+# Database
+
+## Item
+
+### additional_properties
+See properties
+Current item experience, required experience for next level and progress in percents.
+
+### art_filename
+Divination card art url.
+
+### corrupted
+Self explanatory.
+
+### cosmetic_mods
+See mods
+Self explanatory.
+
+### crafted_mods
+See mods
+Master mods.
+
+### descr_text
+Description text.
+
+### duplicated
+Is item mirrored.
+
+### enchanted_mods
+See mods
+Labyrinth mods.
+
+### explicit_mods
+See mods
+
+### flavour_text
+Flavour text is present on unique items, to make them feel more distinct.
+
+### frame_type
+Item rarity (0 = Normal, 1 = Magic, 2 = Rare, 3 = Unique, 4 = Gem, 5 = Currency, 6 = Divination Card, 7 = Quest item, 8 = Prophecy item).
+
+### h
+Item slot height in inventory.
+
+### icon
+Item art url.
+
+### item_id
+Unique item id, will change if you use currency on it.
+
+### identified
+Is item identified.
+
+### ilvl
+Item level.
+
+### implicit_mods
+See mods
+
+### inventory_id
+slot?
+
+### is_relic
+Is item relic.
+Relics are unique items that have their original balance values.
+
+### league
+Item league (Standard/Hardcore/Leagcy/...)
+
+### locked_to_character
+useless
+
+### max_stack_size
+Item max stack size. usually present on currencies.
+
+### name
+Unique item's name.
+
+### next_level_requirements
+See requirements
+
+### note
+Item note. People can set a note to item in stash. This is a typical way to set item price.
+There are two local tags: `~b/o` which specifies buyout price and `~price` which specifies a non-negotiable buyout price.
+
+### properties
+Array of properties.
+See properties
+
+### prophecy_diff_text
+Prophecy difficulty text	???
+
+### prophecy_text
+Self explanatory.
+
+### requirements
+See requirements
+
+### sec_description_text
+Secondary description text	 ???
+
+### socketed_items
+List of items(gems) socketed on an item. Not used.
+
+### sockets
+Array of sockets.
+See sockets.
+
+### stack_size
+Item current stack size. Usually present on currencies.
+
+### support
+Is item support. Present on gems.
+
+### talisman_tier
+Number representation of talisman's tier. Higher is better.
+
+### type_line
+Item name. Might contain localization `<<set:MS>><<set:M>><<set:S>>`, you can strip these.
+
+### utility_mods
+Flask utility mods.
+See mods
+
+### verified
+useless
+
+### w
+Item slot width in inventory.
+
+### x
+Item X coordinate in stash tab.
+
+### y
+Item Y coordinate in stash tab.
+
+## Requirements
+
+## Properties
+
+## Mods
+
+## Sockets

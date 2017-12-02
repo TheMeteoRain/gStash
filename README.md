@@ -31,22 +31,21 @@ http://poe.trade/html/tags.html
 
 ## Item
 
-### additional_properties
-See properties
-Current item experience, required experience for next level and progress in percents.
+**additional_properties**: See properties. Current item experience, required experience for next level and progress in percents.
 
-### art_filename
-Divination card art url.
+**art_filename**: Divination card art url.
 
 ### corrupted
 Self explanatory.
 
 ### cosmetic_mods
 See mods
+
 Self explanatory.
 
 ### crafted_mods
 See mods
+
 Master mods.
 
 ### descr_text
@@ -57,6 +56,7 @@ Is item mirrored.
 
 ### enchanted_mods
 See mods
+
 Labyrinth mods.
 
 ### explicit_mods
@@ -90,8 +90,7 @@ See mods
 slot?
 
 ### is_relic
-Is item relic.
-Relics are unique items that have their original balance values.
+Is item relic. Relics are unique items that have their original balance values.
 
 ### league
 Item league (Standard/Hardcore/Leagcy/...)
@@ -114,6 +113,7 @@ There are two local tags: `~b/o` which specifies buyout price and `~price` which
 
 ### properties
 Array of properties.
+
 See properties
 
 ### prophecy_diff_text
@@ -133,6 +133,7 @@ List of items(gems) socketed on an item. Not used.
 
 ### sockets
 Array of sockets.
+
 See sockets.
 
 ### stack_size
@@ -149,6 +150,7 @@ Item name. Might contain localization `<<set:MS>><<set:M>><<set:S>>`, you can st
 
 ### utility_mods
 Flask utility mods.
+
 See mods
 
 ### verified

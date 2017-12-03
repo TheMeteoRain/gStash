@@ -83,6 +83,7 @@ CREATE TABLE CurrencyStats (
   CONSTRAINT currencystats_ibfk_1 FOREIGN KEY (currency_key) REFERENCES Currencies (currency_key)
 );
 
+
 CREATE TYPE stash_type AS ENUM ('NormalStash','PremiumStash','QuadStash','EssenceStash','CurrencyStash','DivinationStash');
 CREATE TABLE Stashes (
   stash_id varchar(128) NOT NULL DEFAULT '' PRIMARY KEY,
@@ -183,7 +184,6 @@ CREATE TABLE Sockets (
   CONSTRAINT Sockets_ibfk_1 FOREIGN KEY (item_id) REFERENCES Items (item_id) ON DELETE CASCADE
 );
 
-CREATE UNIQUE INDEX item ON Items USING BTREE (item_id);
 DROP FUNCTION IF EXISTS search_items(TEXT, VARCHAR, INT, INT, INT, INT, INT, INT, INT, BOOLEAN, BOOLEAN, BOOLEAN, BOOLEAN, BOOLEAN);
 
 CREATE FUNCTION search_items(search TEXT DEFAULT '', league_name VARCHAR DEFAULT 'Standard', frametype INT DEFAULT NULL,
@@ -216,4 +216,10 @@ $create_document_on_item$ LANGUAGE plpgsql;
 CREATE TRIGGER create_document_on_item BEFORE INSERT ON items
     FOR EACH ROW EXECUTE PROCEDURE create_document_on_item();
 
+CREATE UNIQUE INDEX item ON Items USING BTREE (item_id);
 CREATE INDEX idx_fts_search ON items USING gin(document);
+CREATE INDEX idx_mods ON mods USING BTREE (item_id);
+CREATE INDEX idx_properties ON properties USING BTREE (item_id);
+CREATE INDEX idx_requirements ON requirements USING BTREE (item_id);
+CREATE INDEX idx_sockets ON sockets USING BTREE (item_id);
+

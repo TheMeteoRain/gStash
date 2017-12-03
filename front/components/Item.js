@@ -216,13 +216,13 @@ export default class Item extends Component {
       league,
       x,
       y,
-      price,
+      note,
       stashByStashId: { stashName },
       accountByAccountName: { lastCharacterName },
     } = this.props.node
 
     const temporaryElement = document.createTextNode(
-      `@${lastCharacterName} Hi, I would like to buy your ${typeLine} listed for ${price} in ${league} (stash tab "${stashName}"; position: left: ${x}, top: ${y})`
+      `@${lastCharacterName} Hi, I would like to buy your ${typeLine} listed for ${note} in ${league} (stash tab "${stashName}"; position: left: ${x}, top: ${y})`
     )
     document.body.appendChild(temporaryElement)
     const selection = window.getSelection()
@@ -245,7 +245,7 @@ export default class Item extends Component {
       accountName,
       icon,
       ilvl,
-      price,
+      note,
       requirementsByItemId: { nodes: requirements },
       propertiesByItemId: { nodes: properties },
       modsByItemId: { nodes: mods },
@@ -311,7 +311,7 @@ export default class Item extends Component {
                 }}
               >
                 <Col span={24}>
-                  <div>{price}</div>
+                  <div>{note}</div>
                 </Col>
                 <Col span={24}>
 

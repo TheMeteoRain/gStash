@@ -1,19 +1,37 @@
 export interface Item {
-  w: number
-  h: number
-  ilvl: number
-  icon: string
-  league: string
-  item_id: string
-  name: string
-  type_line: string
-  identified: boolean
-  verified: boolean
+  // Official API properties
+  art_filename?: string
   corrupted: boolean
+  descr_text?: string
+  duplicated?: boolean
+  flavour_text: string
   frame_type: number
+  h: number
+  icon: string
+  identified: boolean
+  ilvl: number
+  inventory_id: string
+  is_relic?: boolean
+  item_id: string
+  league: string
+  locked_to_character?: boolean
+  max_stack_size?: number
+  name: string
+  note: string
+  prophecy_diff_text?: string
+  prophecy_text?: string
+  sec_decription_text?: string
+  // socketed_items?: Array<number>
+  stack_size?: number
+  support?: boolean
+  talisman_tier?: number
+  type_line: string
+  verified: boolean
+  w: number
   x: number
   y: number
-  inventory_id: string
+
+  // Custom properties
   account_name: string
   stash_id: string
   socket_amount: number
@@ -21,8 +39,6 @@ export interface Item {
   available: boolean
   added_ts: number
   updated_ts: number
-  flavour_text: string
-  price: string
   enchanted: boolean
   crafted: boolean
 }

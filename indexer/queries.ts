@@ -3,7 +3,7 @@ import { Account, Item, Mod, Property, Requirement, Socket, Stash } from './inte
 
 const COLUMN_SET_ACCOUNTS = new pgp.helpers.ColumnSet(['?account_name', 'last_character_name', 'last_seen'], { table: 'accounts' })
 const COLUMN_SET_STASHES = new pgp.helpers.ColumnSet(['stash_id', 'stash_name', 'stash_type', 'stash_public'], { table: 'stashes' })
-const COLUMN_SET_ITEMS = new pgp.helpers.ColumnSet(['w', 'h', 'ilvl', 'icon', 'league', 'item_id', 'name', 'type_line', 'identified', 'verified', 'corrupted', 'frame_type', 'x', 'y', 'inventory_id', 'account_name', 'stash_id', 'socket_amount', 'link_amount', 'available', 'added_ts', 'updated_ts', 'flavour_text', 'price', 'crafted'], { table: 'items' })
+const COLUMN_SET_ITEMS = new pgp.helpers.ColumnSet(['account_name', 'added_ts', 'art_filename', 'available', 'corrupted', 'crafted', 'descr_text', 'duplicated', 'enchanted', 'flavour_text', 'frame_type', 'h', 'icon', 'identified', 'ilvl', 'inventory_id', 'is_relic', 'item_id', 'league', 'link_amount', 'max_stack_size', 'name', 'note', 'prophecy_diff_text', 'prophecy_text', 'sec_decription_text', 'socket_amount', 'stack_size', 'stash_id', 'support', 'talisman_tier', 'type_line', 'updated_ts', 'verified', 'w', 'x', 'y'], { table: 'items' })
 const COLUMN_SET_SOCKETS = new pgp.helpers.ColumnSet(['item_id', 'socket_group', 'socket_attr'], { table: 'sockets' })
 const COLUMN_SET_PROPERTIES = new pgp.helpers.ColumnSet(['item_id', 'property_name', 'property_value1', 'property_value2', 'property_value_types', 'property_display_mode', 'property_progress'], { table: 'properties' })
 const COLUMN_SET_REQUIREMENTS = new pgp.helpers.ColumnSet(['item_id', 'requirement_name', 'requirement_value', 'requirement_value_type', 'requirement_display_mode'], { table: 'requirements' })
@@ -14,7 +14,7 @@ export const tables = {
 
   stashes: (stashes: Stash[]) => pgp.helpers.insert(stashes, COLUMN_SET_STASHES) + 'ON CONFLICT (stash_id) DO UPDATE SET stash_name = EXCLUDED.stash_name, stash_type = EXCLUDED.stash_type, stash_public = EXCLUDED.stash_public',
 
-  items: (items: Item[]) => pgp.helpers.insert(items, COLUMN_SET_ITEMS) + 'ON CONFLICT (item_id) DO UPDATE SET w = EXCLUDED.w, h = EXCLUDED.h, league = EXCLUDED.league, identified = EXCLUDED.identified, verified = EXCLUDED.verified, corrupted = EXCLUDED.corrupted, x = EXCLUDED.x, y = EXCLUDED.y, inventory_id = EXCLUDED.inventory_id, account_name = EXCLUDED.account_name, stash_id = EXCLUDED.stash_id, socket_amount = EXCLUDED.socket_amount, link_amount = EXCLUDED.link_amount, available = EXCLUDED.available, updated_ts = EXCLUDED.added_ts, price = EXCLUDED.price',
+  items: (items: Item[]) => pgp.helpers.insert(items, COLUMN_SET_ITEMS) + 'ON CONFLICT (item_id) DO UPDATE SET account_name = EXCLUDED.account_name, art_filename = EXCLUDED.art_filename, corrupted = EXCLUDED.corrupted, crafted = EXCLUDED.crafted, descr_text = EXCLUDED.descr_text, enchanted = EXCLUDED.enchanted, flavour_text = EXCLUDED.flavour_text, h = EXCLUDED.h, icon = EXCLUDED.icon, identified = EXCLUDED.identified, ilvl = EXCLUDED.ilvl, inventory_id = EXCLUDED.inventory_id, league = EXCLUDED.league, link_amount = EXCLUDED.link_amount, note = EXCLUDED.note, sec_decription_text = EXCLUDED.sec_decription_text, socket_amount = EXCLUDED.socket_amount, stack_size = EXCLUDED.stack_size, stash_id = EXCLUDED.stash_id, updated_ts = EXCLUDED.updated_ts, w = EXCLUDED.w, x = EXCLUDED.x, y = EXCLUDED.y',
 
   sockets: (sockets: Socket[]) => pgp.helpers.insert(sockets, COLUMN_SET_SOCKETS),
 

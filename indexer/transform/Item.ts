@@ -1,4 +1,4 @@
-import { Item } from '../interface'
+import { Item, Stash } from '../interface'
 
 const RE_CLEAN_NAME = /(<<set:\w+>>)+/g
 
@@ -39,7 +39,7 @@ const calculateLinks = (sockets: any): number => {
   return biggest
 }
 
-const transformItem = (data: any, account_name: string, stash_id: string): Item => {
+const transformItem = (data: any, account_name: string, stash: any): Item => {
   let enchanted: boolean = false
   if (data.hasOwnProperty('enchantMods')) {
     enchanted = data.enchantMods ? true : false
@@ -52,22 +52,28 @@ const transformItem = (data: any, account_name: string, stash_id: string): Item 
   if (data.hasOwnProperty('corrupted')) {
     corrupted = data.corrupted ? true : false
   }
-  let link_amount: number = 0
-  let socket_amount: number = 0
+  let linkAmount: number = 0
+  let socketAmount: number = 0
   if (data.hasOwnProperty('sockets')) {
-    link_amount = calculateLinks(data.sockets)
-    socket_amount = data.sockets.length
+    linkAmount = calculateLinks(data.sockets)
+    socketAmount = data.sockets.length
   }
+
   const typeLine = data.typeLine.replace(RE_CLEAN_NAME, '')
   const name = data.name.replace(RE_CLEAN_NAME, '')
   const flavourText = data.flavourText ? JSON.stringify(data.flavourText) : ''
+  // (^~price|^~b/o|^bo) (\d) (\w+)
+  // const price = stash.stash.match(/d/)
 
   const item: Item = {
     account_name,
     added_ts: Date.now(),
+    art_filename: data.art_filename,
     available: true,
     corrupted,
     crafted,
+    descr_text: data.descrText,
+    duplicated: data.duplicated,
     enchanted,
     flavour_text: flavourText,
     frame_type: data.frameType,
@@ -76,13 +82,21 @@ const transformItem = (data: any, account_name: string, stash_id: string): Item 
     identified: data.identified,
     ilvl: data.ilvl,
     inventory_id: data.inventoryId,
+    is_relic: data.isRelic,
     item_id: data.id,
     league: data.league,
-    link_amount,
+    link_amount: linkAmount,
+    max_stack_size: data.maxStackSize,
     name,
-    price: data.note,
-    socket_amount,
-    stash_id,
+    note: data.note,
+    prophecy_diff_text: data.prophecyDiffText,
+    prophecy_text: data.prophecyText,
+    sec_decription_text: data.secDecriptionText,
+    socket_amount: socketAmount,
+    stack_size: data.stackSize,
+    stash_id: stash.id,
+    support: data.support,
+    talisman_tier: data.talismanTier,
     type_line: typeLine,
     updated_ts: 0,
     verified: data.verified,

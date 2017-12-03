@@ -15,7 +15,7 @@ DROP TABLE IF EXISTS Currencies;
 DROP TABLE IF EXISTS Leagues;
 DROP TABLE IF EXISTS ChangeId;
 DROP TABLE IF EXISTS Accounts;
-DROP FUNCTION IF EXISTS search_items(VARCHAR, TEXT, INT, INT, INT, INT, INT, INT, BOOLEAN, BOOLEAN, BOOLEAN, BOOLEAN, BOOLEAN);
+DROP FUNCTION IF EXISTS search_items(TEXT, VARCHAR, INT, INT, INT, INT, INT, INT, INT, BOOLEAN, BOOLEAN, BOOLEAN, BOOLEAN, BOOLEAN);
 SET DEFAULT_TEXT_SEARCH_CONFIG = 'english';
 
 CREATE TABLE Accounts (
@@ -93,33 +93,44 @@ CREATE TABLE Stashes (
 
 
 CREATE TABLE Items (
-  w smallint NOT NULL DEFAULT '0',
-  h smallint NOT NULL DEFAULT '0',
-  ilvl smallint NOT NULL DEFAULT '0',
-  icon varchar(1024) DEFAULT NULL,
-  league varchar(128) NOT NULL DEFAULT '',
-  item_id varchar(128) NOT NULL DEFAULT '' PRIMARY KEY,
-  name varchar(128) DEFAULT NULL,
-  type_line varchar(128) DEFAULT NULL,
-  identified boolean NOT NULL DEFAULT 'FALSE',
-  verified boolean NOT NULL DEFAULT 'FALSE',
-  corrupted boolean NOT NULL DEFAULT 'FALSE',
+  account_name varchar(128) NOT NULL,
+  added_ts bigint DEFAULT 0,
+  art_filename VARCHAR(1024) DEFAULT NULL,
+  available boolean NOT NULL DEFAULT TRUE,
+  corrupted boolean NOT NULL DEFAULT FALSE,
+  crafted boolean DEFAULT FALSE,
+  descr_text varchar(2048) DEFAULT NULL,
+  duplicated boolean DEFAULT FALSE,
+  document TSVECTOR DEFAULT NULL,
+  enchanted boolean DEFAULT FALSE,
+  flavour_text varchar(1024) DEFAULT NULL,
   frame_type smallint DEFAULT 0,
+  h smallint DEFAULT 0,
+  icon varchar(1024) DEFAULT NULL,
+  identified boolean NOT NULL DEFAULT FALSE,
+  ilvl smallint NOT NULL DEFAULT 0,
+  inventory_id varchar(128) DEFAULT NULL,
+  is_relic boolean DEFAULT FALSE,
+  item_id varchar(128) NOT NULL PRIMARY KEY,
+  league varchar(128) DEFAULT NULL,
+  link_amount smallint NOT NULL DEFAULT NULL,
+  max_stack_size smallint DEFAULT NULL,
+  name varchar(128) DEFAULT NULL,
+  note varchar(128) DEFAULT NULL,
+  prophecy_diff_text varchar(1024) DEFAULT NULL,
+  prophecy_text varchar(2048) DEFAULT NULL,
+  sec_decription_text varchar(4096) DEFAULT NULL,
+  socket_amount smallint NOT NULL DEFAULT NULL,
+  stack_size smallint DEFAULT NULL,
+  stash_id varchar(128) DEFAULT NULL,
+  support boolean DEFAULT TRUE,
+  talisman_tier smallint DEFAULT NULL,
+  type_line varchar(128) DEFAULT NULL,
+  updated_ts bigint DEFAULT 0,
+  verified boolean NOT NULL DEFAULT FALSE,
+  w smallint DEFAULT 0,
   x smallint DEFAULT 0,
   y smallint DEFAULT 0,
-  inventory_id varchar(128) DEFAULT NULL,
-  account_name varchar(128) NOT NULL DEFAULT '',
-  stash_id varchar(128) NOT NULL DEFAULT '',
-  socket_amount smallint NOT NULL DEFAULT '0',
-  link_amount smallint NOT NULL DEFAULT '0',
-  available boolean NOT NULL DEFAULT TRUE,
-  added_ts bigint DEFAULT '0',
-  updated_ts bigint DEFAULT '0',
-  flavour_text varchar(1024) DEFAULT NULL,
-  price varchar(128) DEFAULT NULL,
-  enchanted boolean DEFAULT 'FALSE',
-  crafted boolean DEFAULT 'FALSE',
-  document TSVECTOR DEFAULT NULL,
   CONSTRAINT Items_ibfk_1 FOREIGN KEY (league) REFERENCES Leagues (league_name),
   CONSTRAINT Items_ibfk_2 FOREIGN KEY (account_name) REFERENCES Accounts (account_name),
   CONSTRAINT Items_ibfk_3 FOREIGN KEY (stash_id) REFERENCES Stashes (stash_id)
@@ -173,9 +184,9 @@ CREATE TABLE Sockets (
 );
 
 CREATE UNIQUE INDEX item ON Items USING BTREE (item_id);
-DROP FUNCTION IF EXISTS search_items(VARCHAR, TEXT, INT, INT, INT, INT, INT, INT, BOOLEAN, BOOLEAN, BOOLEAN, BOOLEAN, BOOLEAN);
+DROP FUNCTION IF EXISTS search_items(TEXT, VARCHAR, INT, INT, INT, INT, INT, INT, INT, BOOLEAN, BOOLEAN, BOOLEAN, BOOLEAN, BOOLEAN);
 
-CREATE FUNCTION search_items(league_name VARCHAR DEFAULT 'Standard', search TEXT DEFAULT '',
+CREATE FUNCTION search_items(search TEXT DEFAULT '', league_name VARCHAR DEFAULT 'Standard', frametype INT DEFAULT NULL,
   socket_amount_min INT DEFAULT 0, socket_amount_max INT DEFAULT 6, link_amount_min INT DEFAULT 0,
   link_amount_max INT DEFAULT 6, item_lvl_min INT DEFAULT 0, item_lvl_max INT DEFAULT 100,
   is_identified BOOLEAN DEFAULT NULL, is_verified BOOLEAN DEFAULT NULL, is_corrupted BOOLEAN DEFAULT NULL,
@@ -183,7 +194,8 @@ CREATE FUNCTION search_items(league_name VARCHAR DEFAULT 'Standard', search TEXT
 SELECT *
 FROM items
 WHERE
-    league LIKE league_name AND ((LENGTH(TRIM(search)) = 0 AND type_line ILIKE '%' || search || '%') OR (document @@ to_tsquery(REGEXP_REPLACE(TRIM(search), '\s+', '&', 'g')))) AND
+    ((LENGTH(TRIM(search)) = 0 AND type_line ILIKE '%' || search || '%') OR (document @@ to_tsquery(REGEXP_REPLACE(TRIM(search), '\s+', '&', 'g')))) AND
+    league LIKE league_name AND ((frametype IS NULL) OR (frame_type = frametype)) AND
     (socket_amount BETWEEN socket_amount_min AND socket_amount_max) AND (link_amount BETWEEN link_amount_min AND link_amount_max) AND (ilvl BETWEEN item_lvl_min AND item_lvl_max) AND
     ((is_identified IS NULL AND identified IS NOT NULL) OR (is_identified IS TRUE AND identified IS TRUE) OR (is_identified IS FALSE AND identified IS FALSE)) AND
     ((is_verified IS NULL AND identified IS NOT NULL) OR (is_verified IS TRUE AND identified IS TRUE) OR (is_verified IS FALSE AND identified IS FALSE)) AND
@@ -196,8 +208,6 @@ $$ LANGUAGE SQL STABLE;
 -- update document(ts_vector) column on a new item to match item's: name and type_line
 CREATE FUNCTION create_document_on_item() RETURNS TRIGGER AS $create_document_on_item$
     BEGIN
-
-        -- Remember who changed the payroll when
         NEW.document := to_tsvector(NEW.name || '. ' || NEW.type_line);
         RETURN NEW;
     END;

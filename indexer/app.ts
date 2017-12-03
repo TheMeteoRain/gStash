@@ -15,13 +15,14 @@ import { transformAccount, transformItem, transformMod, transformProperty, trans
 const POLL_CYCLE: number = 10000
 
 /**
- * Check for account duplicates in an array and replace them.
+ * Check for account duplicate in an array and replace it.
  *
  * If there is an duplicate, replace it with the new one.
+ * If there is not, do nothing.
  */
-const replaceDuplicateAccount = (account_name: string, stash: any, accountArray: Account[]): void => {
+const replaceDuplicateAccount = (accountName: string, stash: any, accountArray: Account[]): void => {
   const accountIndex = accountArray.findIndex((account: Account) => {
-    return account.account_name === account_name
+    return account.account_name === accountName
   })
 
   if (accountIndex > -1) {
@@ -35,7 +36,7 @@ const replaceDuplicateAccount = (account_name: string, stash: any, accountArray:
  *
  * @param stashes
  */
-const saveData = async (stashes: any): Promise<any> => {
+const parseData = async (stashes: any): Promise<any> => {
   console.time('Saving data took')
 
   const batchAccount: Account[] = []
@@ -65,7 +66,7 @@ const saveData = async (stashes: any): Promise<any> => {
         for (const item of items) {
           const { id: itemId } = item
 
-          batchItem.push(transformItem(item, account_name, stash_id))
+          batchItem.push(transformItem(item, account_name, stash))
 
           if (item.sockets) {
             for (const socket of item.sockets) {
@@ -108,6 +109,11 @@ const saveData = async (stashes: any): Promise<any> => {
           }
           if (item.craftedMods) {
             for (const mod of item.craftedMods) {
+              batchMod.push(transformMod(mod, item.id, ModType[ModType.CRAFTED]))
+            }
+          }
+          if (item.utilityMods) {
+            for (const mod of item.utilityMods) {
               batchMod.push(transformMod(mod, item.id, ModType[ModType.CRAFTED]))
             }
           }
@@ -180,19 +186,21 @@ const poll = (LATEST_ID: string): void => {
   console.log(' ')
 
   const fetchData = async (): Promise<void> => {
-
-    console.log(`Downloading data with ID [${LATEST_ID}]`)
-    console.time('Downloading took')
-
     try {
+      console.log(`Downloading data with ID [${LATEST_ID}]`)
+      console.time('Downloading took')
+
       const { next_change_id, stashes }: { next_change_id: string, stashes: any } = await requests.getStashes(LATEST_ID)
+
       console.timeEnd('Downloading took')
       // console.log(`Downloaded ${stashes.length} stashes`)
-      await saveData(stashes)
+      await parseData(stashes)
       await queries.upsertCurrentNextChangeId(LATEST_ID, true)
 
       poll(next_change_id)
     } catch (error) {
+      await queries.upsertCurrentNextChangeId(LATEST_ID, false)
+
       if (error.response) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
@@ -209,7 +217,7 @@ const poll = (LATEST_ID: string): void => {
         console.log('Error', error.message)
       }
       console.log(error.config)
-      await queries.upsertCurrentNextChangeId(LATEST_ID, false)
+
       poll(LATEST_ID)
     }
   }

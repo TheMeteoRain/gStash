@@ -41,6 +41,7 @@ class Search extends Component {
     this.state = {
       hasSearched: false,
       leagueName: 'Standard',
+      frameType: null,
       search: '',
       socketAmountMin: 0,
       socketAmountMax: 6,
@@ -73,6 +74,7 @@ class Search extends Component {
     this.setState({
       hasSearched: true,
       leagueName: getFieldValue('leagueName'),
+      frameType: getFieldValue('frameType'),
       search: search.value ? search.value : '',
       socketAmountMin: socketAmountMin.value
         ? Number(socketAmountMin.value)
@@ -93,11 +95,11 @@ class Search extends Component {
   }
 
   renderLeagues() {
-    const { data, data: { loading, error, allLeagues } } = this.props
+    const { data: { allLeagues } } = this.props
     const { getFieldDecorator } = this.props.form
 
-    const leagues = allLeagues.edges.map(league => {
-      const { leagueName, nodeId } = league.node
+    const leagues = allLeagues.nodes.map(league => {
+      const { leagueName, nodeId } = league
       return <Option key={nodeId} value={leagueName}>{leagueName}</Option>
     })
 
@@ -108,6 +110,35 @@ class Search extends Component {
         })(
           <Select>
             {leagues}
+          </Select>
+        )}
+      </FormItem>
+    )
+  }
+
+  renderFrameTypes() {
+    const { data: { allFrametypes } } = this.props
+    const { getFieldDecorator } = this.props.form
+
+    const frameTypes = allFrametypes.nodes.map(frameType => {
+      const { frameTypeValue, id, nodeId } = frameType
+      return (
+        <Option key={nodeId} value={id}>
+          {frameTypeValue.charAt(0) +
+            frameTypeValue.slice(1).toLowerCase().replace('_', ' ')}
+        </Option>
+      )
+    })
+
+    frameTypes.unshift(<Option key={10} value={null}>Any</Option>)
+
+    return (
+      <FormItem {...formItemLayout} label={'Item Rarity'}>
+        {getFieldDecorator('frameType', {
+          initialValue: null,
+        })(
+          <Select>
+            {frameTypes}
           </Select>
         )}
       </FormItem>
@@ -138,9 +169,15 @@ class Search extends Component {
           </Row>
 
           <Row gutter={24}>
+            <Col span={12}>
+              {this.renderFrameTypes()}
+            </Col>
+          </Row>
 
+          <Row gutter={24}>
             <Col span={4}>
               <Row gutter={24}>
+
                 <FormItem {...formItemLayout} label={'Sockets'}>
                   <Col span={12}>
                     <Input
@@ -277,4 +314,4 @@ class Search extends Component {
 
 // The `graphql` wrapper executes a GraphQL query and makes the results
 // available on the `data` prop of the wrapped component (PostList)
-export default graphql(queries.getLeagues)(Search)
+export default graphql(queries.getFilters)(Search)

@@ -6,21 +6,6 @@ import Loading from './Loading'
 import AlertMessage from './AlertMessage'
 import queries from '../queries'
 
-import {
-  Form,
-  Select,
-  InputNumber,
-  DatePicker,
-  Switch,
-  Slider,
-  Button,
-  LocaleProvider,
-  Col,
-  Row,
-  Card,
-  Tag,
-} from 'antd'
-
 class Result extends Component {
   constructor(props) {
     super(props)

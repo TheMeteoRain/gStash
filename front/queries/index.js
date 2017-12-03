@@ -1,19 +1,24 @@
 import { gql } from 'react-apollo'
 
 const queries = {
-  getLeagues: gql`query allLeaguesQuery {
+  getFilters: gql`query allFilters {
     allLeagues {
-      edges {
-        node {
-          nodeId
-          active
-          leagueName
-        }
+      nodes {
+        leagueName
+        active
+        nodeId
+      }
+    }
+    allFrametypes {
+      nodes {
+        frameTypeValue
+        id
+        nodeId
       }
     }
   }`,
-  getItems: gql`query allItemsQuery ($leagueName: String, $search: String, $socketAmountMin: Int, $socketAmountMax: Int, $linkAmountMin: Int, $linkAmountMax: Int, $itemLvlMin: Int, $itemLvlMax: Int, $isIdentified: Boolean, $isVerified: Boolean, $isEnchanted: Boolean, $isCrafted: Boolean, $isCorrupted: Boolean, $first: Int, $cursor: Cursor){
-    searchItems(leagueName: $leagueName, search: $search, socketAmountMin: $socketAmountMin, socketAmountMax: $socketAmountMax, linkAmountMin: $linkAmountMin, linkAmountMax: $linkAmountMax, itemLvlMin: $itemLvlMin, itemLvlMax: $itemLvlMax, isIdentified: $isIdentified, isVerified: $isVerified, isEnchanted: $isEnchanted, isCrafted: $isCrafted, isCorrupted: $isCorrupted, first: $first, after: $cursor ) {
+  getItems: gql`query allItemsQuery ($search: String, $leagueName: String, $frameType: Int, $socketAmountMin: Int, $socketAmountMax: Int, $linkAmountMin: Int, $linkAmountMax: Int, $itemLvlMin: Int, $itemLvlMax: Int, $isIdentified: Boolean, $isVerified: Boolean, $isEnchanted: Boolean, $isCrafted: Boolean, $isCorrupted: Boolean, $first: Int, $cursor: Cursor){
+    searchItems(search: $search, leagueName: $leagueName, frametype: $frameType, socketAmountMin: $socketAmountMin, socketAmountMax: $socketAmountMax, linkAmountMin: $linkAmountMin, linkAmountMax: $linkAmountMax, itemLvlMin: $itemLvlMin, itemLvlMax: $itemLvlMax, isIdentified: $isIdentified, isVerified: $isVerified, isEnchanted: $isEnchanted, isCrafted: $isCrafted, isCorrupted: $isCorrupted, first: $first, after: $cursor ) {
       pageInfo {
         startCursor
         endCursor
@@ -33,7 +38,7 @@ const queries = {
           addedTs
           updatedTs
           flavourText
-          price
+          note
           enchanted
           crafted
           accountName

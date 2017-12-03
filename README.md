@@ -77,8 +77,8 @@ http://poe.trade/html/tags.html
 **_item_id_**: Self explanatory. <br />
 **requirement_name**: Name of the requirement (Level/Str/Dex/Int). <br />
 **requirement_value**: Value representation of requirement condition. <br />
-**requirement_value_type**: Signle value type. Display style, which dictates which colour should be used when displaying the value. <br />
-**requirement_display_mode**: Dictates how requirement is displayed. <br />
+**requirement_value_type**: Signle [value type](#value-type). Display style, which dictates which colour should be used when displaying the value. <br />
+**requirement_display_mode**: Dictates how requirement is displayed. [See display mode](#display-mode). <br />
 **requirement_key**: Requirement's unique id. <br />
 ~~requirement_type~~: "type" is an internal thing to keep track of what the property is actually referencing (name can be localised). <br />
 
@@ -87,8 +87,8 @@ http://poe.trade/html/tags.html
 **property_name**: Name of the property. <br />
 **property_value1**: First value of property (always present). <br />
 **property_value2**: Second value of property (not always present). <br />
-**property_value_types**: Array of [value types](#). Display style, which dictates which colour should be used when displaying the value. <br />
-**property_display_mode**: Dictates how requirement is displayed. <br />
+**property_value_types**: Array of [value types](#value-type). Display style, which dictates which colour should be used when displaying the value. <br />
+**property_display_mode**: Dictates how requirement is displayed. [See display mode](#display-mode). <br />
 **property_progress**: Additional properties's Experience	. <br />
 **_property_key_**: Property's unique id. <br />
 ~~requirement_type~~: "type" is an internal thing to keep track of what the property is actually referencing (name can be localised). <br />

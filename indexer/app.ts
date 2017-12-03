@@ -50,7 +50,7 @@ const parseData = async (stashes: any): Promise<any> => {
   /**
    * Start parsing stashes
    */
-  for (const stash of stashes) {
+  stashes.forEach((stash: any) => {
     const { accountName: account_name, id: stash_id, items }: { accountName: string, id: string, items: any } = stash
     delete stash.items
 
@@ -119,8 +119,10 @@ const parseData = async (stashes: any): Promise<any> => {
           }
         }
       }
+    } else {
+      // delete all data from this stash id
     }
-  }
+  })
 
   db.task('SavingData', async (t: any) => {
     const queryBatch = [

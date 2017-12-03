@@ -29,8 +29,6 @@ http://poe.trade/html/tags.html
 
 # Database
 
-# Database
-
 ## Item
 
 **additional_properties**: Current item experience, required experience for next the level and progress in percents. See properties. <br />

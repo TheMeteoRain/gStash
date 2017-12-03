@@ -89,7 +89,7 @@ http://poe.trade/html/tags.html
 **property_value2**: Second value of property (not always present). <br />
 **property_value_types**: Array of value types. Display style, which dictates which colour should be used when displaying the value. <br />
 **property_display_mode**: Dictates how requirement is displayed. <br />
-**property_progress**: Ddditional properties's Experience	. <br />
+**property_progress**: Additional properties's Experience	. <br />
 **_property_key_**: Property's unique id. <br />
 ~~requirement_type~~: "type" is an internal thing to keep track of what the property is actually referencing (name can be localised). <br />
 

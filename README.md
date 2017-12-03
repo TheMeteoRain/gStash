@@ -61,7 +61,7 @@ http://poe.trade/html/tags.html
 **properties**: Array of properties. See properties. <br />
 **prophecy_diff_text**: Prophecy difficulty text	??? <br />
 **prophecy_text**: Self explanatory. <br />
-**requirements**: See requirements <br />
+**requirements**: See requirements. <br />
 **sec_description_text**: Skill gem description. <br />
 **socketed_items**: List of items(gems) socketed on an item. Not used. <br />
 **sockets**: Array of sockets. See sockets. <br />
@@ -78,7 +78,7 @@ http://poe.trade/html/tags.html
 ## Requirements
 **_item_id_**: Self explanatory. <br />
 **requirement_name**: Name of the requirement (Level/Str/Dex/Int). <br />
-**requirement_value**: Value representation of requirement condition.
+**requirement_value**: Value representation of requirement condition. <br />
 **requirement_value_type**: Signle value type. Display style, which dictates which colour should be used when displaying the value. <br />
 **requirement_display_mode**: Dictates how requirement is displayed. <br />
 **requirement_key**: Requirement's unique id. <br />

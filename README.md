@@ -64,11 +64,11 @@ http://poe.trade/html/tags.html
 **~~socketed_items~~**: List of items(gems) socketed on an item. <br />
 **sockets**: Array of sockets. [See sockets](#sockets). <br />
 **stack_size**: Item current stack size. Usually present on currencies. <br />
-**support**: Is item a skill gem or a support gem. Present on gems. <br />
+**support**: Is item a skill gem or a support gem. Only relevant for gems. <br />
 **talisman_tier**: Number representation of talisman's tier. Higher is better. <br />
 **type_line**: Item name. Might contain localization `<<set:MS>><<set:M>><<set:S>>`, you can strip these. <br />
 **utility_mods**: Flask utility mods. [See mods](#mods). <br />
-**verified**: useless <br />
+**verified**: BS property. <br />
 **w**: Item slot width in inventory. <br />
 **x**: Item X coordinate in stash tab. <br />
 **y**: Item Y coordinate in stash tab. <br />
@@ -80,7 +80,7 @@ http://poe.trade/html/tags.html
 **requirement_value_type**: Signle [value type](#value-type). Display style, which dictates which colour should be used when displaying the value. <br />
 **requirement_display_mode**: Dictates how requirement is displayed. [See display mode](#display-mode). <br />
 **requirement_key**: Requirement's unique id. <br />
-~~requirement_type~~: "type" is an internal thing to keep track of what the property is actually referencing (name can be localised). <br />
+**~~requirement_type~~**: "type" is an internal thing to keep track of what the property is actually referencing (name can be localised). <br />
 
 ## Properties
 **_item_id_**: Self explanatory. <br />
@@ -91,7 +91,7 @@ http://poe.trade/html/tags.html
 **property_display_mode**: Dictates how requirement is displayed. [See display mode](#display-mode). <br />
 **property_progress**: Additional properties's Experience	. <br />
 **_property_key_**: Property's unique id. <br />
-~~requirement_type~~: "type" is an internal thing to keep track of what the property is actually referencing (name can be localised). <br />
+**~~requirement_type~~**: "type" is an internal thing to keep track of what the property is actually referencing (name can be localised). <br />
 
 ## Mods
 **_item_id_**: Self explanatory. <br />

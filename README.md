@@ -55,7 +55,8 @@ http://poe.trade/html/tags.html
 **max_stack_size**: Item max stack size. usually present on currencies. <br />
 **name**: Unique item's name. <br />
 **next_level_requirements**: See requirements <br />
-**note**: Item note. People can set a note to item in stash. This is a typical way to set itemThere are two local tags: `~b/o` which specifies buyout price and `~price` which specifies a non-negotiable buyout price. <br />
+**note**: Item note. This is a typical way to set item price. <be />
+There are two local tags: `~b/o` which specifies buyout price and `~price` which specifies a non-negotiable buyout price. <br />
 **properties**: Array of properties. See properties. <br />
 **prophecy_diff_text**: Prophecy difficulty text	??? <br />
 **prophecy_text**: Self explanatory. <br />

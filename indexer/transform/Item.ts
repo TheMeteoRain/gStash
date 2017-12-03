@@ -62,8 +62,13 @@ const transformItem = (data: any, account_name: string, stash: any): Item => {
   const typeLine = data.typeLine.replace(RE_CLEAN_NAME, '')
   const name = data.name.replace(RE_CLEAN_NAME, '')
   const flavourText = data.flavourText ? JSON.stringify(data.flavourText) : ''
-  // (^~price|^~b/o|^bo) (\d) (\w+)
-  // const price = stash.stash.match(/d/)
+
+  // Determine price, prioritize item's own price then stash price
+  let itemPrice = data.note ? data.note.match(/(^~price|^~b\/o|^bo) (\d+) (\w+)/g) : null
+  itemPrice = Array.isArray(itemPrice) ? itemPrice[0] : null
+  let stashPrice = stash.stash.match(/(^~price|^~b\/o|^bo) (\d+) (\w+)/g)
+  stashPrice = Array.isArray(stashPrice) ? stashPrice[0] : null
+  const price = itemPrice ? itemPrice : stashPrice
 
   const item: Item = {
     account_name,
@@ -88,7 +93,7 @@ const transformItem = (data: any, account_name: string, stash: any): Item => {
     link_amount: linkAmount,
     max_stack_size: data.maxStackSize,
     name,
-    note: data.note,
+    note: price,
     prophecy_diff_text: data.prophecyDiffText,
     prophecy_text: data.prophecyText,
     sec_decription_text: data.secDecriptionText,

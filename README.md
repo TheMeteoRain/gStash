@@ -61,8 +61,8 @@ http://poe.trade/html/tags.html
 **prophecy_text**: Self explanatory. <br />
 **requirements**: [See requirements](#requirements). <br />
 **sec_description_text**: Skill gem description. <br />
-**socketed_items**: List of items(gems) socketed on an item. Not used. <br />
-**sockets**: Array of sockets. See sockets. <br />
+**~~socketed_items~~**: List of items(gems) socketed on an item. <br />
+**sockets**: Array of sockets. [See sockets](#sockets). <br />
 **stack_size**: Item current stack size. Usually present on currencies. <br />
 **support**: Is item a skill gem or a support gem. Present on gems. <br />
 **talisman_tier**: Number representation of talisman's tier. Higher is better. <br />
@@ -87,7 +87,7 @@ http://poe.trade/html/tags.html
 **property_name**: Name of the property. <br />
 **property_value1**: First value of property (always present). <br />
 **property_value2**: Second value of property (not always present). <br />
-**property_value_types**: Array of value types. Display style, which dictates which colour should be used when displaying the value. <br />
+**property_value_types**: Array of [value types](#). Display style, which dictates which colour should be used when displaying the value. <br />
 **property_display_mode**: Dictates how requirement is displayed. <br />
 **property_progress**: Additional properties's Experience	. <br />
 **_property_key_**: Property's unique id. <br />

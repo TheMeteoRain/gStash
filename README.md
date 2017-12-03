@@ -29,14 +29,16 @@ http://poe.trade/html/tags.html
 
 # Database
 
+# Database
+
 ## Item
 
-**additional_properties**: See properties. Current item experience, required experience for next level and progress in percents. <br />
+**additional_properties**: Current item experience, required experience for next the level and progress in percents. See properties. <br />
 **art_filename**: Divination card art url. <br />
 **corrupted**: Self explanatory. <br />
 **cosmetic_mods**: Self explanatory. See mods. 
 **crafted_mods**: Master mods. See mods. <br />
-**descr_text**: Description text. <br />
+**descr_text**: Help text for an item "Right click to drink.", "Place into an item socket of the right colour to gain this skill." <br />
 **duplicated**: Is item mirrored. <br />
 **enchanted_mods**: Labyrinth mods. See mods. <br />
 **explicit_mods**: See mods. <br />
@@ -55,17 +57,16 @@ http://poe.trade/html/tags.html
 **max_stack_size**: Item max stack size. usually present on currencies. <br />
 **name**: Unique item's name. <br />
 **next_level_requirements**: See requirements <br />
-**note**: Item note. This is a typical way to set item price. <be />
-There are two local tags: `~b/o` which specifies buyout price and `~price` which specifies a non-negotiable buyout price. <br />
+**note**: Item note. People can set a note to item in stash. This is a typical way to set itemThere are two local tags: `~b/o` which specifies buyout price and `~price` which specifies a non-negotiable buyout price. <br />
 **properties**: Array of properties. See properties. <br />
 **prophecy_diff_text**: Prophecy difficulty text	??? <br />
 **prophecy_text**: Self explanatory. <br />
 **requirements**: See requirements <br />
-**sec_description_text**: Secondary description text	 ??? <br />
+**sec_description_text**: Skill gem description. <br />
 **socketed_items**: List of items(gems) socketed on an item. Not used. <br />
 **sockets**: Array of sockets. See sockets. <br />
 **stack_size**: Item current stack size. Usually present on currencies. <br />
-**support**: Is item support. Present on gems. <br />
+**support**: Is item a skill gem or a support gem. Present on gems. <br />
 **talisman_tier**: Number representation of talisman's tier. Higher is better. <br />
 **type_line**: Item name. Might contain localization `<<set:MS>><<set:M>><<set:S>>`, you can strip these. <br />
 **utility_mods**: Flask utility mods. See mods. <br />
@@ -75,9 +76,42 @@ There are two local tags: `~b/o` which specifies buyout price and `~price` which
 **y**: Item Y coordinate in stash tab. <br />
 
 ## Requirements
+**_item_id_**: Self explanatory. <br />
+**requirement_name**: Name of the requirement (Level/Str/Dex/Int). <br />
+**requirement_value**: Value representation of requirement condition.
+**requirement_value_type**: Signle value type. Display style, which dictates which colour should be used when displaying the value. <br />
+**requirement_display_mode**: Dictates how requirement is displayed. <br />
+**requirement_key**: Requirement's unique id. <br />
+~~requirement_type~~: "type" is an internal thing to keep track of what the property is actually referencing (name can be localised). <br />
 
 ## Properties
+**_item_id_**: Self explanatory.
+**property_name**: Name of the property. <br />
+**property_value1**: First value of property (always present). <br />
+**property_value2**: Second value of property (not always present). <br />
+**property_value_types**: Array of value types. Display style, which dictates which colour should be used when displaying the value. <br />
+**property_display_mode**: Dictates how requirement is displayed. <br />
+**property_progress**: Ddditional properties's Experience	. <br />
+**_property_key_**: Property's unique id. <br />
 
 ## Mods
+**_item_id_**: Self explanatory. <br />
+**mod_name**: Name of the modifier. <br />
+**mod_value1**: First value of modifier. <br />
+**mod_value2**: Second value of modifier. <br />
+**mod_value3**: Third value of modifier. <br />
+**mod_value4**: Fourth value of modifier. <br />
+**mod_type**: EXPLICIT/IMPLICIT/CRAFTED/ENCHANTED. <br />
+**mod_key**: Modifier's uique id. <br />
 
 ## Sockets
+**_item_id_**: Self explanatory. <br />
+**socket_group**: . <br />
+**socket_attr**: First character of socket's attribute color (S/D/I/G). <br />
+**socket_key**: Socket's unique id. <br />
+
+### Value type
+0 = Default #FFFFFF 1 = Augmented #8888FF 2 = Unmet #D20000 3 = Physical Damage #FFFFFF 4 = Fire Damage #960000 5 = Cold Damage #366492 6 = Lightning Damage #FFD700 7 = Chaos Damage #D02090
+
+### Display mode
+0 means name should go before the values. 1 means name should go after the values. 2 is a progress bar (for skill gem experience). 3 means that the name should have occurances of %1, %2, etc replaced with the values.

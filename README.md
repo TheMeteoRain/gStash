@@ -85,7 +85,7 @@ http://poe.trade/html/tags.html
 ~~requirement_type~~: "type" is an internal thing to keep track of what the property is actually referencing (name can be localised). <br />
 
 ## Properties
-**_item_id_**: Self explanatory.
+**_item_id_**: Self explanatory. <br />
 **property_name**: Name of the property. <br />
 **property_value1**: First value of property (always present). <br />
 **property_value2**: Second value of property (not always present). <br />
@@ -93,6 +93,7 @@ http://poe.trade/html/tags.html
 **property_display_mode**: Dictates how requirement is displayed. <br />
 **property_progress**: Ddditional properties's Experience	. <br />
 **_property_key_**: Property's unique id. <br />
+~~requirement_type~~: "type" is an internal thing to keep track of what the property is actually referencing (name can be localised). <br />
 
 ## Mods
 **_item_id_**: Self explanatory. <br />
@@ -110,8 +111,8 @@ http://poe.trade/html/tags.html
 **socket_attr**: First character of socket's attribute color (S/D/I/G). <br />
 **socket_key**: Socket's unique id. <br />
 
-### Value type
+#### Value type
 0 = Default #FFFFFF 1 = Augmented #8888FF 2 = Unmet #D20000 3 = Physical Damage #FFFFFF 4 = Fire Damage #960000 5 = Cold Damage #366492 6 = Lightning Damage #FFD700 7 = Chaos Damage #D02090
 
-### Display mode
+#### Display mode
 0 means name should go before the values. 1 means name should go after the values. 2 is a progress bar (for skill gem experience). 3 means that the name should have occurances of %1, %2, etc replaced with the values.

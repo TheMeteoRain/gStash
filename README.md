@@ -31,139 +31,47 @@ http://poe.trade/html/tags.html
 
 ## Item
 
-**additional_properties**: See properties. Current item experience, required experience for next level and progress in percents.
-
-**art_filename**: Divination card art url.
-
-### corrupted
-Self explanatory.
-
-### cosmetic_mods
-See mods
-
-Self explanatory.
-
-### crafted_mods
-See mods
-
-Master mods.
-
-### descr_text
-Description text.
-
-### duplicated
-Is item mirrored.
-
-### enchanted_mods
-See mods
-
-Labyrinth mods.
-
-### explicit_mods
-See mods
-
-### flavour_text
-Flavour text is present on unique items, to make them feel more distinct.
-
-### frame_type
-Item rarity (0 = Normal, 1 = Magic, 2 = Rare, 3 = Unique, 4 = Gem, 5 = Currency, 6 = Divination Card, 7 = Quest item, 8 = Prophecy item).
-
-### h
-Item slot height in inventory.
-
-### icon
-Item art url.
-
-### item_id
-Unique item id, will change if you use currency on it.
-
-### identified
-Is item identified.
-
-### ilvl
-Item level.
-
-### implicit_mods
-See mods
-
-### inventory_id
-slot?
-
-### is_relic
-Is item relic. Relics are unique items that have their original balance values.
-
-### league
-Item league (Standard/Hardcore/Leagcy/...)
-
-### locked_to_character
-useless
-
-### max_stack_size
-Item max stack size. usually present on currencies.
-
-### name
-Unique item's name.
-
-### next_level_requirements
-See requirements
-
-### note
-Item note. People can set a note to item in stash. This is a typical way to set item price.
-There are two local tags: `~b/o` which specifies buyout price and `~price` which specifies a non-negotiable buyout price.
-
-### properties
-Array of properties.
-
-See properties
-
-### prophecy_diff_text
-Prophecy difficulty text	???
-
-### prophecy_text
-Self explanatory.
-
-### requirements
-See requirements
-
-### sec_description_text
-Secondary description text	 ???
-
-### socketed_items
-List of items(gems) socketed on an item. Not used.
-
-### sockets
-Array of sockets.
-
-See sockets.
-
-### stack_size
-Item current stack size. Usually present on currencies.
-
-### support
-Is item support. Present on gems.
-
-### talisman_tier
-Number representation of talisman's tier. Higher is better.
-
-### type_line
-Item name. Might contain localization `<<set:MS>><<set:M>><<set:S>>`, you can strip these.
-
-### utility_mods
-Flask utility mods.
-
-See mods
-
-### verified
-useless
-
-### w
-Item slot width in inventory.
-
-### x
-Item X coordinate in stash tab.
-
-### y
-Item Y coordinate in stash tab.
+**additional_properties**: See properties. Current item experience, required experience for next level and progress in percents. <br />
+**art_filename**: Divination card art url. <br />
+**corrupted**: Self explanatory. <br />
+**cosmetic_mods**: Self explanatory. See mods. 
+**crafted_mods**: Master mods. See mods. <br />
+**descr_text**: Description text. <br />
+**duplicated**: Is item mirrored. <br />
+**enchanted_mods**: Labyrinth mods. See mods. <br />
+**explicit_mods**: See mods. <br />
+**flavour_text**: Flavour text is present on unique items, to make them feel more distinct. <br />
+**frame_type**: Item rarity (0 = Normal, 1 = Magic, 2 = Rare, 3 = Unique, 4 = Gem, 5 = Currency, 6 = Divination Card, 7 = Quest item, 8 = Prophecy item). <br />
+**h**: Item slot height in inventory. <br />
+**icon**: Item art url. <br />
+**item_id**: Unique item id, will change if you use currency on it. <br />
+**identified**: Is item identified. <br />
+**ilvl**: Item level. <br />
+**implicit_mods**: See mods <br />
+**inventory_id**: slot? <br />
+**is_relic**: Is item relic. Relics are unique items that have their original balance values. <br />
+**league**: Item league (Standard/Hardcore/Leagcy/...) <br />
+**locked_to_character**: useless <br />
+**max_stack_size**: Item max stack size. usually present on currencies. <br />
+**name**: Unique item's name. <br />
+**next_level_requirements**: See requirements <br />
+**note**: Item note. People can set a note to item in stash. This is a typical way to set itemThere are two local tags: `~b/o` which specifies buyout price and `~price` which specifies a non-negotiable buyout price. <br />
+**properties**: Array of properties. See properties. <br />
+**prophecy_diff_text**: Prophecy difficulty text	??? <br />
+**prophecy_text**: Self explanatory. <br />
+**requirements**: See requirements <br />
+**sec_description_text**: Secondary description text	 ??? <br />
+**socketed_items**: List of items(gems) socketed on an item. Not used. <br />
+**sockets**: Array of sockets. See sockets. <br />
+**stack_size**: Item current stack size. Usually present on currencies. <br />
+**support**: Is item support. Present on gems. <br />
+**talisman_tier**: Number representation of talisman's tier. Higher is better. <br />
+**type_line**: Item name. Might contain localization `<<set:MS>><<set:M>><<set:S>>`, you can strip these. <br />
+**utility_mods**: Flask utility mods. See mods. <br />
+**verified**: useless <br />
+**w**: Item slot width in inventory. <br />
+**x**: Item X coordinate in stash tab. <br />
+**y**: Item Y coordinate in stash tab. <br />
 
 ## Requirements
 

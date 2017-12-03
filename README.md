@@ -31,7 +31,7 @@ http://poe.trade/html/tags.html
 
 ## Item
 
-**additional_properties**: Current item experience, required experience for next the level and progress in percents. See properties. <br />
+**additional_properties**: Current item experience, required experience for next the level and progress in percents. [See properties](#properties). <br />
 **art_filename**: Divination card art url. <br />
 **corrupted**: Self explanatory. <br />
 **cosmetic_mods**: Self explanatory. See mods. 

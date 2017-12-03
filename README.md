@@ -34,12 +34,12 @@ http://poe.trade/html/tags.html
 **additional_properties**: Current item experience, required experience for next the level and progress in percents. [See properties](#properties). <br />
 **art_filename**: Divination card art url. <br />
 **corrupted**: Self explanatory. <br />
-**cosmetic_mods**: Self explanatory. See mods. 
-**crafted_mods**: Master mods. See mods. <br />
+**cosmetic_mods**: Self explanatory. [See mods](#mods). 
+**crafted_mods**: Master mods. [See mods](#mods). <br />
 **descr_text**: Help text for an item "Right click to drink.", "Place into an item socket of the right colour to gain this skill." <br />
 **duplicated**: Is item mirrored. <br />
-**enchanted_mods**: Labyrinth mods. See mods. <br />
-**explicit_mods**: See mods. <br />
+**enchanted_mods**: Labyrinth mods. [See mods](#mods). <br />
+**explicit_mods**: [See mods](#mods). <br />
 **flavour_text**: Flavour text is present on unique items, to make them feel more distinct. <br />
 **frame_type**: Item rarity (0 = Normal, 1 = Magic, 2 = Rare, 3 = Unique, 4 = Gem, 5 = Currency, 6 = Divination Card, 7 = Quest item, 8 = Prophecy item). <br />
 **h**: Item slot height in inventory. <br />
@@ -47,19 +47,19 @@ http://poe.trade/html/tags.html
 **item_id**: Unique item id, will change if you use currency on it. <br />
 **identified**: Is item identified. <br />
 **ilvl**: Item level. <br />
-**implicit_mods**: See mods <br />
+**implicit_mods**: [See mods](#mods). <br />
 **inventory_id**: slot? <br />
 **is_relic**: Is item relic. Relics are unique items that have their original balance values. <br />
 **league**: Item league (Standard/Hardcore/Leagcy/...) <br />
 **locked_to_character**: useless <br />
 **max_stack_size**: Item max stack size. usually present on currencies. <br />
 **name**: Unique item's name. <br />
-**next_level_requirements**: See requirements <br />
+**next_level_requirements**: [See requirements](#requirements). <br />
 **note**: Item note. People can set a note to item in stash. This is a typical way to set itemThere are two local tags: `~b/o` which specifies buyout price and `~price` which specifies a non-negotiable buyout price. <br />
-**properties**: Array of properties. See properties. <br />
+**properties**: Array of properties. See properties(#properties). <br />
 **prophecy_diff_text**: Prophecy difficulty text	??? <br />
 **prophecy_text**: Self explanatory. <br />
-**requirements**: See requirements. <br />
+**requirements**: [See requirements](#requirements). <br />
 **sec_description_text**: Skill gem description. <br />
 **socketed_items**: List of items(gems) socketed on an item. Not used. <br />
 **sockets**: Array of sockets. See sockets. <br />
@@ -67,7 +67,7 @@ http://poe.trade/html/tags.html
 **support**: Is item a skill gem or a support gem. Present on gems. <br />
 **talisman_tier**: Number representation of talisman's tier. Higher is better. <br />
 **type_line**: Item name. Might contain localization `<<set:MS>><<set:M>><<set:S>>`, you can strip these. <br />
-**utility_mods**: Flask utility mods. See mods. <br />
+**utility_mods**: Flask utility mods. [See mods](#mods). <br />
 **verified**: useless <br />
 **w**: Item slot width in inventory. <br />
 **x**: Item X coordinate in stash tab. <br />

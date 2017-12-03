@@ -34,7 +34,7 @@ http://poe.trade/html/tags.html
 **additional_properties**: Current item experience, required experience for next the level and progress in percents. [See properties](#properties). <br />
 **art_filename**: Divination card art url. <br />
 **corrupted**: Self explanatory. <br />
-**cosmetic_mods**: Self explanatory. [See mods](#mods). 
+**cosmetic_mods**: Self explanatory. [See mods](#mods). <br />
 **crafted_mods**: Master mods. [See mods](#mods). <br />
 **descr_text**: Help text for an item "Right click to drink.", "Place into an item socket of the right colour to gain this skill." <br />
 **duplicated**: Is item mirrored. <br />

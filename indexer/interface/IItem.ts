@@ -1,44 +1,44 @@
-export interface Item {
+export interface IItem {
   // Official API properties
-  art_filename?: string
+  artFilename?: string
   corrupted: boolean
-  descr_text?: string
+  descrText?: string
   duplicated?: boolean
-  flavour_text: string
-  frame_type: number
+  flavourText: string
+  frameType: number
   h: number
   icon: string
   identified: boolean
   ilvl: number
-  inventory_id: string
-  is_relic?: boolean
-  item_id: string
+  inventoryId: string
+  isRelic?: boolean
+  itemId: string
   league: string
-  locked_to_character?: boolean
-  max_stack_size?: number
+  lockedToCharacter?: boolean
+  maxStackSize?: number
   name: string
   note: string | null
-  prophecy_diff_text?: string
-  prophecy_text?: string
-  sec_decription_text?: string
+  prophecyDiffText?: string
+  prophecyText?: string
+  secDecriptionText?: string
   // socketed_items?: Array<number>
-  stack_size?: number
+  stackSize?: number
   support?: boolean
-  talisman_tier?: number
-  type_line: string
+  talismanTier?: number
+  typeLine: string
   verified: boolean
   w: number
   x: number
   y: number
 
   // Custom properties
-  account_name: string
-  stash_id: string
-  socket_amount: number
-  link_amount: number
+  accountName: string
+  stashId: string
+  socketAmount: number
+  linkAmount: number
   available: boolean
-  added_ts: number
-  updated_ts: number
+  addedTs: number
+  updatedTs: number
   enchanted: boolean
   crafted: boolean
 }

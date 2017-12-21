@@ -4,8 +4,9 @@ import { db, pgp } from './db'
 import queries, { tables } from './queries'
 import requests from './requests'
 
+import { Account, aItem, Batch } from './class'
 import { ModType } from './enum'
-import { Account, Item, Mod, Property, Requirement, Socket, Stash } from './interface'
+import { Item, Mod, Property, Requirement, Socket, Stash } from './interface'
 import { transformAccount, transformItem, transformMod, transformProperty, transformRequirement, transformSocket, transformStash } from './transform'
 
 /**
@@ -20,8 +21,8 @@ const POLL_CYCLE: number = 10000
  * If there is an duplicate, replace it with the new one.
  * If there is not, do nothing.
  */
-const replaceDuplicateAccount = (accountName: string, stash: any, accountArray: Account[]): void => {
-  const accountIndex = accountArray.findIndex((account: Account) => {
+const replaceDuplicateAccount = (accountName: string, stash: any, accountArray: any[]): void => {
+  const accountIndex = accountArray.findIndex((account: any) => {
     return account.account_name === accountName
   })
 
@@ -39,6 +40,7 @@ const replaceDuplicateAccount = (accountName: string, stash: any, accountArray: 
 const parseData = async (stashes: any): Promise<any> => {
   console.time('Saving data took')
 
+  const batch = new Batch()
   const batchAccount: Account[] = []
   const batchStash: Stash[] = []
   const batchItem: Item[] = []
@@ -51,8 +53,11 @@ const parseData = async (stashes: any): Promise<any> => {
    * Start parsing stashes
    */
   stashes.forEach((stash: any) => {
-    const { accountName: account_name, id: stash_id, items }: { accountName: string, id: string, items: any } = stash
+    const { accountName: account_name, lastCharacterName, id: stashId, items }: { accountName: string, id: string, lastCharacterName: string, items: any } = stash
     delete stash.items
+
+    /* const account = new Account(account_name, lastCharacterName)
+    batch.push(account) */
 
     /**
      * Account name has to be present. Otherwise skip entry.
@@ -60,67 +65,90 @@ const parseData = async (stashes: any): Promise<any> => {
     if (stash.accountName !== null) {
       replaceDuplicateAccount(account_name, stash, batchAccount)
 
+      // batch.addAccount(account_name, stash)
+      // batch.addStash(stash)
+
       batchStash.push(transformStash(stash))
 
-      if (items.length > 0) {
-        for (const item of items) {
-          const { id: itemId } = item
+      items.forEach((item: any) => {
+        const { id: itemId } = item
+        // batch.setItemId(itemId)
+        /* const aitem = new aItem(item, stash, account_name)
+        batch.push(aitem) */
+        // batch.addItem(item, account_name, stash)
+        batchItem.push(transformItem(item, account_name, stash))
 
-          batchItem.push(transformItem(item, account_name, stash))
-
-          if (item.sockets) {
-            for (const socket of item.sockets) {
-              batchSocket.push(transformSocket(socket, itemId))
-            }
-          }
-
-          if (item.properties) {
-            for (const property of item.properties) {
-              batchProperty.push(transformProperty(property, itemId))
-            }
-          }
-
-          if (item.additionalProperties) {
-            for (const additionalProperty of item.additionalProperties) {
-              batchProperty.push(transformProperty(additionalProperty, itemId))
-            }
-          }
-
-          if (item.requirements) {
-            for (const requirement of item.requirements) {
-              batchRequirement.push(transformRequirement(requirement, itemId))
-            }
-          }
-
-          if (item.explicitMods) {
-            for (const mod of item.explicitMods) {
-              batchMod.push(transformMod(mod, item.id, ModType[ModType.EXPLICIT]))
-            }
-          }
-          if (item.implicitMods) {
-            for (const mod of item.implicitMods) {
-              batchMod.push(transformMod(mod, item.id, ModType[ModType.IMPLICIT]))
-            }
-          }
-          if (item.enchantMods) {
-            for (const mod of item.enchantMods) {
-              batchMod.push(transformMod(mod, item.id, ModType[ModType.ENCHANTED]))
-            }
-          }
-          if (item.craftedMods) {
-            for (const mod of item.craftedMods) {
-              batchMod.push(transformMod(mod, item.id, ModType[ModType.CRAFTED]))
-            }
-          }
-          if (item.utilityMods) {
-            for (const mod of item.utilityMods) {
-              batchMod.push(transformMod(mod, item.id, ModType[ModType.CRAFTED]))
-            }
+        if (item.sockets) {
+          for (const socket of item.sockets) {
+            batchSocket.push(transformSocket(socket, itemId))
           }
         }
-      }
+
+        if (item.properties) {
+          item.properties.forEach((property: any) => {
+            if (property.values.length > 1 && property.displayMode !== 3) {
+              // Multiple values
+              for (let i = 0; i < property.values.length; i++) {
+                batchProperty.push(transformProperty(property, itemId, i))
+              }
+            } else {
+              // Single value
+              batchProperty.push(transformProperty(property, itemId))
+            }
+          })
+        }
+
+        if (item.additionalProperties) {
+          item.additionalProperties.forEach((additionalProperty: any) => {
+            for (let i = 0; i < additionalProperty.values.length; i++) {
+              batchProperty.push(transformProperty(additionalProperty, itemId, i))
+            }
+          })
+        }
+
+        if (item.requirements) {
+          item.requirements.forEach((requirement: any) => {
+            batchRequirement.push(transformRequirement(requirement, itemId))
+          })
+        }
+
+        if (item.explicitMods) {
+          item.explicitMods.forEach((mod: any) => {
+            batchMod.push(transformMod(mod, item.id, ModType[ModType.EXPLICIT]))
+          })
+        }
+        if (item.implicitMods) {
+          item.implicitMods.forEach((mod: any) => {
+            batchMod.push(transformMod(mod, item.id, ModType[ModType.IMPLICIT]))
+          })
+        }
+        if (item.enchantMods) {
+          item.enchantMods.forEach((mod: any) => {
+            batchMod.push(transformMod(mod, item.id, ModType[ModType.ENCHANTED]))
+          })
+        }
+        if (item.craftedMods) {
+          item.craftedMods.forEach((mod: any) => {
+            batchMod.push(transformMod(mod, item.id, ModType[ModType.CRAFTED]))
+          })
+        }
+        if (item.utilityMods) {
+          item.utilityMods.forEach((mod: any) => {
+            batchMod.push(transformMod(mod, item.id, ModType[ModType.CRAFTED]))
+          })
+        }
+      })
     } else {
       // delete all data from this stash id
+      /* queries.deleteStashById(stashId).then((result: any) => {
+        if (result.rowCount >= 1) {
+          console.log(`Stash and items deleted by stash id: ${stashId}`)
+
+          console.log(`this ${result.rowCount}`)
+        }
+      }).catch((e: any) => {
+        console.error(e)
+      }) */
     }
   })
 

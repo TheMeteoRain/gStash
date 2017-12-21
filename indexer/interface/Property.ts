@@ -3,7 +3,7 @@ export interface Property {
   property_name: string
   property_value1: string | null
   property_value2: string | null
-  property_value_types: string | null
+  property_value_type: string | null
   property_display_mode: number
   property_progress?: number
   property_key?: string

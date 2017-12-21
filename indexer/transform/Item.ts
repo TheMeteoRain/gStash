@@ -7,7 +7,7 @@ const RE_CLEAN_NAME = /(<<set:\w+>>)+/g
  *
  * @param sockets array of sockets of an item
  */
-const calculateLinks = (sockets: any): number => {
+const setLinkAmount = (sockets: any): number => {
   const groups: number[] = [0, 0, 0, 0, 0]
   for (const key of Object.keys(sockets)) {
     switch (sockets[key].group) {
@@ -39,7 +39,21 @@ const calculateLinks = (sockets: any): number => {
   return biggest
 }
 
-const transformItem = (data: any, account_name: string, stash: any): Item => {
+// Determine price, prioritize item's own price then stash price
+const setNote = (itemNote: string, stashNote: string): string | null => {
+  const findPriceNote = itemNote ? itemNote.match(/(^~price|^~b\/o|^bo) (\d+) (\w+)/g) : null
+  const itemPrice = Array.isArray(findPriceNote) ? findPriceNote[0] : null
+  const findStashPrice = stashNote ? stashNote.match(/(^~price|^~b\/o|^bo) (\d+) (\w+)/g) : null
+  const stashPrice = Array.isArray(findStashPrice) ? findStashPrice[0] : null
+
+  return itemPrice ? itemPrice : stashPrice
+}
+
+const cleanText = (text: string) => {
+  return text.replace(RE_CLEAN_NAME, '')
+}
+
+const transformItem = (data: any, accountName: string, stash: any): Item => {
   let enchanted: boolean = false
   if (data.hasOwnProperty('enchantMods')) {
     enchanted = data.enchantMods ? true : false
@@ -55,23 +69,14 @@ const transformItem = (data: any, account_name: string, stash: any): Item => {
   let linkAmount: number = 0
   let socketAmount: number = 0
   if (data.hasOwnProperty('sockets')) {
-    linkAmount = calculateLinks(data.sockets)
+    linkAmount = setLinkAmount(data.sockets)
     socketAmount = data.sockets.length
   }
 
-  const typeLine = data.typeLine.replace(RE_CLEAN_NAME, '')
-  const name = data.name.replace(RE_CLEAN_NAME, '')
   const flavourText = data.flavourText ? JSON.stringify(data.flavourText) : ''
 
-  // Determine price, prioritize item's own price then stash price
-  let itemPrice = data.note ? data.note.match(/(^~price|^~b\/o|^bo) (\d+) (\w+)/g) : null
-  itemPrice = Array.isArray(itemPrice) ? itemPrice[0] : null
-  let stashPrice = stash.stash.match(/(^~price|^~b\/o|^bo) (\d+) (\w+)/g)
-  stashPrice = Array.isArray(stashPrice) ? stashPrice[0] : null
-  const price = itemPrice ? itemPrice : stashPrice
-
   const item: Item = {
-    account_name,
+    account_name: accountName,
     added_ts: Date.now(),
     art_filename: data.art_filename,
     available: true,
@@ -92,8 +97,8 @@ const transformItem = (data: any, account_name: string, stash: any): Item => {
     league: data.league,
     link_amount: linkAmount,
     max_stack_size: data.maxStackSize,
-    name,
-    note: price,
+    name: cleanText(data.name),
+    note: setNote(data.note, stash.stash),
     prophecy_diff_text: data.prophecyDiffText,
     prophecy_text: data.prophecyText,
     sec_decription_text: data.secDecriptionText,
@@ -102,7 +107,7 @@ const transformItem = (data: any, account_name: string, stash: any): Item => {
     stash_id: stash.id,
     support: data.support,
     talisman_tier: data.talismanTier,
-    type_line: typeLine,
+    type_line: cleanText(data.typeLine),
     updated_ts: 0,
     verified: data.verified,
     w: data.w,

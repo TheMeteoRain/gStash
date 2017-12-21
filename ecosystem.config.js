@@ -15,22 +15,22 @@ module.exports = {
 
     // Second application
     {
-      script: "npm",
-      name: "indexer",
-      cwd: "./indexer",
-      args: "run-script start",
-      watch: true
+      script: 'npm',
+      name: 'indexer',
+      cwd: './indexer',
+      args: 'run-script start',
+      watch: true,
     },
 
     // Front application
-    {
+    /* {
       script: "npm",
       name: "front",
       cwd: "./front",
       args: "run-script run dev",
       watch: true
-    }
-  ]
+    } */
+  ],
 
   /**
    * Deployment section
@@ -57,4 +57,4 @@ module.exports = {
       }
     }
   }*/
-};
+}

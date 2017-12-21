@@ -300,6 +300,15 @@ class Search extends Component {
             </Col>
           </Row>
 
+          <Row gutter={16}>
+            <Col span={12}>
+              a
+            </Col>
+            <Col span={12}>
+              a
+            </Col>
+          </Row>
+
         </Form>
 
         <br />

@@ -1,37 +1,17 @@
 import 'dotenv/config'
 
 import { db, pgp } from './db'
-import queries, { tables } from './queries'
+import queries from './queries'
 import requests from './requests'
 
-import { Account, aItem, Batch } from './class'
+import { Account, Item, Batch, Stash, Socket, Property, Requirement, Mod } from './class'
 import { ModType } from './enum'
-import { Item, Mod, Property, Requirement, Socket, Stash } from './interface'
-import { transformAccount, transformItem, transformMod, transformProperty, transformRequirement, transformSocket, transformStash } from './transform'
 
 /**
  * The amount of milliseconds when a new request is sent to the poe api.
  * New poll cycle will being only after the previous has finished.
  */
-const POLL_CYCLE: number = 10000
-
-/**
- * Check for account duplicate in an array and replace it.
- *
- * If there is an duplicate, replace it with the new one.
- * If there is not, do nothing.
- */
-const replaceDuplicateAccount = (accountName: string, stash: any, accountArray: any[]): void => {
-  const accountIndex = accountArray.findIndex((account: any) => {
-    return account.account_name === accountName
-  })
-
-  if (accountIndex > -1) {
-    accountArray.splice(accountIndex, 1, transformAccount(stash))
-  } else {
-    accountArray.push(transformAccount(stash))
-  }
-}
+const POLL_CYCLE: number = 5000
 
 /**
  *
@@ -41,101 +21,59 @@ const parseData = async (stashes: any): Promise<any> => {
   console.time('Saving data took')
 
   const batch = new Batch()
-  const batchAccount: Account[] = []
-  const batchStash: Stash[] = []
-  const batchItem: Item[] = []
-  const batchSocket: Socket[] = []
-  const batchProperty: Property[] = []
-  const batchRequirement: Requirement[] = []
-  const batchMod: Mod[] = []
 
   /**
    * Start parsing stashes
    */
   stashes.forEach((stash: any) => {
-    const { accountName: account_name, lastCharacterName, id: stashId, items }: { accountName: string, id: string, lastCharacterName: string, items: any } = stash
-    delete stash.items
-
-    /* const account = new Account(account_name, lastCharacterName)
-    batch.push(account) */
-
+    const { accountName, lastCharacterName, id: stashId, public: stashPublic, name: stashName, stashType, items }: { accountName: string, id: string, public: boolean, name: string, stashType: string, lastCharacterName: string, items: any } = stash
     /**
      * Account name has to be present. Otherwise skip entry.
      */
-    if (stash.accountName !== null) {
-      replaceDuplicateAccount(account_name, stash, batchAccount)
-
-      // batch.addAccount(account_name, stash)
-      // batch.addStash(stash)
-
-      batchStash.push(transformStash(stash))
+    if (accountName !== null) {
+      delete stash.items
+      batch.push(new Account(accountName, lastCharacterName))
+      batch.push(new Stash(stashId, stashName, stashType, stashPublic))
 
       items.forEach((item: any) => {
         const { id: itemId } = item
-        // batch.setItemId(itemId)
-        /* const aitem = new aItem(item, stash, account_name)
-        batch.push(aitem) */
-        // batch.addItem(item, account_name, stash)
-        batchItem.push(transformItem(item, account_name, stash))
+
+        batch.push(new Item(item, stashId, stashName, accountName))
 
         if (item.sockets) {
-          for (const socket of item.sockets) {
-            batchSocket.push(transformSocket(socket, itemId))
-          }
+          item.sockets.forEach((socket: any) => batch.push(new Socket(itemId, socket)))
         }
 
         if (item.properties) {
-          item.properties.forEach((property: any) => {
-            if (property.values.length > 1 && property.displayMode !== 3) {
-              // Multiple values
-              for (let i = 0; i < property.values.length; i++) {
-                batchProperty.push(transformProperty(property, itemId, i))
-              }
-            } else {
-              // Single value
-              batchProperty.push(transformProperty(property, itemId))
-            }
-          })
+          item.properties.forEach((property: any) => batch.push(new Property(itemId, property)))
         }
 
         if (item.additionalProperties) {
-          item.additionalProperties.forEach((additionalProperty: any) => {
-            for (let i = 0; i < additionalProperty.values.length; i++) {
-              batchProperty.push(transformProperty(additionalProperty, itemId, i))
-            }
-          })
+          item.additionalProperties.forEach((property: any) => batch.push(new Property(itemId, property)))
         }
 
         if (item.requirements) {
-          item.requirements.forEach((requirement: any) => {
-            batchRequirement.push(transformRequirement(requirement, itemId))
-          })
+          item.requirements.forEach((requirement: any) => batch.push(new Requirement(itemId, requirement)))
         }
 
         if (item.explicitMods) {
-          item.explicitMods.forEach((mod: any) => {
-            batchMod.push(transformMod(mod, item.id, ModType[ModType.EXPLICIT]))
-          })
+          item.explicitMods.forEach((mod: any) => batch.push(new Mod(itemId, mod, ModType.EXPLICIT)))
         }
+
         if (item.implicitMods) {
-          item.implicitMods.forEach((mod: any) => {
-            batchMod.push(transformMod(mod, item.id, ModType[ModType.IMPLICIT]))
-          })
+          item.implicitMods.forEach((mod: any) => batch.push(new Mod(itemId, mod, ModType.IMPLICIT)))
         }
+
         if (item.enchantMods) {
-          item.enchantMods.forEach((mod: any) => {
-            batchMod.push(transformMod(mod, item.id, ModType[ModType.ENCHANTED]))
-          })
+          item.enchantMods.forEach((mod: any) => batch.push(new Mod(itemId, mod, ModType.ENCHANTED)))
         }
+
         if (item.craftedMods) {
-          item.craftedMods.forEach((mod: any) => {
-            batchMod.push(transformMod(mod, item.id, ModType[ModType.CRAFTED]))
-          })
+          item.craftedMods.forEach((mod: any) => batch.push(new Mod(itemId, mod, ModType.CRAFTED)))
         }
+
         if (item.utilityMods) {
-          item.utilityMods.forEach((mod: any) => {
-            batchMod.push(transformMod(mod, item.id, ModType[ModType.CRAFTED]))
-          })
+          item.utilityMods.forEach((mod: any) => batch.push(new Mod(itemId, mod, ModType.CRAFTED)))
         }
       })
     } else {
@@ -153,15 +91,7 @@ const parseData = async (stashes: any): Promise<any> => {
   })
 
   db.task('SavingData', async (t: any) => {
-    const queryBatch = [
-      batchAccount.length > 0 ? await queries.insert(batchAccount, tables.accounts, t) : undefined,
-      batchStash.length > 0 ? await queries.insert(batchStash, tables.stashes, t) : undefined,
-      batchItem.length > 0 ? await queries.insert(batchItem, tables.items, t) : undefined,
-      batchSocket.length > 0 ? await queries.insert(batchSocket, tables.sockets, t) : undefined,
-      batchProperty.length > 0 ? await queries.insert(batchProperty, tables.properties, t) : undefined,
-      batchRequirement.length > 0 ? await queries.insert(batchRequirement, tables.requirements, t) : undefined,
-      batchMod.length > 0 ? await queries.insert(batchMod, tables.mods, t) : undefined,
-    ]
+    const queryBatch = await batch.query(t)
 
     return t.batch(queryBatch)
   }).then(calculateStatistics)
@@ -171,6 +101,7 @@ const parseData = async (stashes: any): Promise<any> => {
         `Accounts: saved: ${stats.accounts} \n`,
         `Stashes: saved: ${stats.stashes} \n`,
         `Items: saved: ${stats.items} \n`,
+        `Sockets: saved: ${stats.sockets} \n`,
         `Properties: saved: ${stats.properties} \n`,
         `Requirements: saved: ${stats.requirements} \n`,
         `Mods: saved: ${stats.mods} \n`,

@@ -1,4 +1,4 @@
-export interface Socket {
+export interface ISocket {
   item_id: string
   socket_group: number
   socket_attr: string

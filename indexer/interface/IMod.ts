@@ -1,6 +1,6 @@
-export interface Mod {
+export interface IMod {
   item_id: string
-  mod_name: string
+  mod_name: string | null
   mod_value1: string | null
   mod_value2: string | null
   mod_value3: string | null

@@ -1,4 +1,4 @@
-export interface Requirement {
+export interface IRequirement {
   item_id: string
   requirement_name: string
   requirement_value: string | null

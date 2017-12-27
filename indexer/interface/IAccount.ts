@@ -1,5 +1,5 @@
 export interface IAccount {
-  accountName: string
-  lastCharacterName: string
-  lastSeen: number
+  account_name: string
+  last_character_name: string
+  last_seen: number
 }

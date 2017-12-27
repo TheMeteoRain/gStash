@@ -8,9 +8,9 @@ export default class Account implements IAccount {
    * If there is not, do nothing.
    */
   public static replaceDuplicateAccount = (newAccount: Account, accountArray: Account[]): void => {
-    const accountIndex = accountArray.findIndex((findAccount: any) => {
-      return findAccount.accountName === newAccount.accountName
-    })
+    const accountIndex = accountArray.findIndex((findAccount: any) =>
+      findAccount.account_name === newAccount.account_name
+    )
 
     if (accountIndex > -1) {
       accountArray.splice(accountIndex, 1, newAccount)
@@ -19,21 +19,13 @@ export default class Account implements IAccount {
     }
   }
 
-  public accountName: string
-  public lastCharacterName: string
-  public lastSeen: number
+  public account_name: string
+  public last_character_name: string
+  public last_seen: number
 
-  constructor(accountName: string, lastCharacterName: string) {
-    this.accountName = accountName
-    this.lastCharacterName = lastCharacterName
-    this.lastSeen = Date.now()
-  }
-
-  public toString() {
-    return {
-      account_name: this.accountName,
-      last_character_name: this.lastCharacterName,
-      last_seen: this.lastSeen,
-    }
+  constructor(account_name: string, last_character_name: string) {
+    this.account_name = account_name
+    this.last_character_name = last_character_name
+    this.last_seen = Date.now()
   }
 }

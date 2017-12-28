@@ -1,5 +1,13 @@
 # Path of Exile API
 
+items has category property
+http://api.pathofexile.com/leagues?type=main&compact=1
+postgraphql -c postgres://localhost:5433/poe
+28.12.2017
+download speed: 3 seconds
+parsing speed: 0.150 seconds
+saving speed: 14 seconds < create sql files
+
 Database
 Stashes : The stash unique id, the stash name, the stash type and wether it is public or not
 Sockets : The item id, the socket group, the socket type and a socket unique id

@@ -8,6 +8,7 @@ const COLUMN_SET_SOCKETS = new pgp.helpers.ColumnSet(['item_id', 'socket_group',
 const COLUMN_SET_PROPERTIES = new pgp.helpers.ColumnSet(['item_id', 'property_name', 'property_value1', 'property_value2', 'property_value_type', 'property_display_mode', 'property_progress'], { table: 'properties' })
 const COLUMN_SET_REQUIREMENTS = new pgp.helpers.ColumnSet(['item_id', 'requirement_name', 'requirement_value', 'requirement_value_type', 'requirement_display_mode'], { table: 'requirements' })
 const COLUMN_SET_MODS = new pgp.helpers.ColumnSet(['item_id', 'mod_name', 'mod_value1', 'mod_value2', 'mod_value3', 'mod_value4', 'mod_type'], { table: 'mods' })
+const REMOVE_STASH_BY_ID = (stashId: string) => ({ query: 'DELETE FROM stashes WHERE stash_id = $1', values: [stashId] })
 
 const queries = {
   insertAccounts: (data: Account[], t: any) => t.result(pgp.helpers.insert(data, COLUMN_SET_ACCOUNTS) + ' ON CONFLICT (account_name) DO UPDATE SET last_seen = EXCLUDED.last_seen, last_character_name = EXCLUDED.last_character_name'),
@@ -17,6 +18,7 @@ const queries = {
   insertProperties: (data: Property[], t: any) => t.result(pgp.helpers.insert(data, COLUMN_SET_PROPERTIES)),
   insertRequirements: (data: Requirement[], t: any) => t.result(pgp.helpers.insert(data, COLUMN_SET_REQUIREMENTS) + ' ON CONFLICT (item_id, requirement_name) DO UPDATE SET requirement_value = EXCLUDED.requirement_value'),
   insertMods: (data: Mod[], t: any) => t.result(pgp.helpers.insert(data, COLUMN_SET_MODS)),
+  removeStashes: (data: Stash[], t: any) => t.result(pgp.helpers.concat(data.map(stash => REMOVE_STASH_BY_ID(stash.stash_id)))),
 
   upsertCurrentNextChangeId: (next_change_id: string, processed: boolean = false): Promise<any> =>
     db.result('INSERT INTO changeid(next_change_id, processed) VALUES($<next_change_id>, $<processed>) ON CONFLICT (next_change_id) DO UPDATE SET (processed) = (EXCLUDED.processed)', { next_change_id, processed: true }),

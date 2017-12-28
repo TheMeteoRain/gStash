@@ -3,6 +3,7 @@ import 'dotenv/config'
 import { db, pgp } from './db'
 import queries from './queries'
 import requests from './requests'
+import statistics from './statistics'
 
 import { Account, Item, Batch, Stash, Socket, Property, Requirement, Mod } from './class'
 import { ModType } from './enum'
@@ -11,14 +12,15 @@ import { ModType } from './enum'
  * The amount of milliseconds when a new request is sent to the poe api.
  * New poll cycle will being only after the previous has finished.
  */
-const POLL_CYCLE: number = 5000
+const POLL_CYCLE: number = 1000
+
 
 /**
  *
  * @param stashes
  */
 const parseData = async (stashes: any): Promise<any> => {
-  console.time('Saving data took')
+  console.time('Parsing data took')
 
   const batch = new Batch()
 
@@ -73,74 +75,24 @@ const parseData = async (stashes: any): Promise<any> => {
         }
 
         if (item.utilityMods) {
-          item.utilityMods.forEach((mod: any) => batch.push(new Mod(itemId, mod, ModType.CRAFTED)))
+          item.utilityMods.forEach((mod: any) => batch.push(new Mod(itemId, mod, ModType.UTILITY)))
         }
       })
     } else {
-      // delete all data from this stash id
-      /* queries.deleteStashById(stashId).then((result: any) => {
-        if (result.rowCount >= 1) {
-          console.log(`Stash and items deleted by stash id: ${stashId}`)
-
-          console.log(`this ${result.rowCount}`)
-        }
-      }).catch((e: any) => {
-        console.error(e)
-      }) */
+      batch.stashesToRemove.push(new Stash(stashId, stashName, stashType, stashPublic))
     }
   })
+  console.timeEnd('Parsing data took')
 
-  db.task('SavingData', async (t: any) => {
-    const queryBatch = await batch.query(t)
-
-    return t.batch(queryBatch)
-  }).then(calculateStatistics)
+  console.time('Saving data took')
+  await db.task('SavingData', async (t: any) => t.batch(await batch.query(t)))
+    .then(statistics)
     .then((stats: any) => {
-      console.log(
-        `Total downloaded: ${0}, saved: ${stats.saved} \n`,
-        `Accounts: saved: ${stats.accounts} \n`,
-        `Stashes: saved: ${stats.stashes} \n`,
-        `Items: saved: ${stats.items} \n`,
-        `Sockets: saved: ${stats.sockets} \n`,
-        `Properties: saved: ${stats.properties} \n`,
-        `Requirements: saved: ${stats.requirements} \n`,
-        `Mods: saved: ${stats.mods} \n`,
-      )
       console.timeEnd('Saving data took')
       console.log(' ')
     }).catch((error: any) => {
-      console.log(error)
+      console.error(error)
     })
-}
-
-const calculateStatistics = (events: any) => {
-  const calculateTotal = (property: any) => {
-    let total = 0
-    for (const event of events) {
-      total = total + event ? event[property] : 0
-    }
-
-    return total
-  }
-
-  const getRow = (event: any) => {
-    return event ? event.rowCount : 0
-  }
-
-  const statistics = {
-    accounts: getRow(events[0]),
-    duration: calculateTotal('duration'),
-    failed: 0,
-    items: getRow(events[2]),
-    mods: getRow(events[6]),
-    properties: getRow(events[4]),
-    requirements: getRow(events[5]),
-    saved: calculateTotal('rowCount'),
-    sockets: getRow(events[3]),
-    stashes: getRow(events[1]),
-  }
-
-  return statistics
 }
 
 const poll = (LATEST_ID: string): void => {
@@ -148,7 +100,7 @@ const poll = (LATEST_ID: string): void => {
 
   const fetchData = async (): Promise<void> => {
     try {
-      console.log(`Downloading data with ID [${LATEST_ID}]`)
+      console.log(`Downloading data with ID http://api.pathofexile.com/public-stash-tabs?id=${LATEST_ID}`)
       console.time('Downloading took')
 
       const { next_change_id, stashes }: { next_change_id: string, stashes: any } = await requests.getStashes(LATEST_ID)

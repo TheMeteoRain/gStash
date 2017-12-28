@@ -12,6 +12,7 @@ export default class Batch {
   private requirements: Requirement[] = []
   private mods: Mod[] = []
 
+  public stashesToRemove: Stash[] = []
 
   public push(object: Account | Item | Stash | Socket | Property | Requirement | Mod) {
     if (object instanceof Account) {
@@ -43,7 +44,6 @@ export default class Batch {
     }
   }
 
-
   public async query(t: any) {
     return [
       this.accounts.length > 0 ? await queries.insertAccounts(this.accounts, t) : undefined,
@@ -53,10 +53,7 @@ export default class Batch {
       this.properties.length > 0 ? await queries.insertProperties(this.properties, t) : undefined,
       this.requirements.length > 0 ? await queries.insertRequirements(this.requirements, t) : undefined,
       this.mods.length > 0 ? await queries.insertMods(this.mods, t) : undefined,
+      this.stashesToRemove.length > 0 ? await queries.removeStashes(this.stashesToRemove, t) : undefined
     ]
   }
-
-  /*  public addProperty() {
-     this.properties
-   } */
 }

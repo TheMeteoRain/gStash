@@ -43,7 +43,7 @@ CREATE TABLE Leagues (
 INSERT INTO Leagues(league_name, active)
 VALUES ('Standard', '1'), ('Hardcore', '1'), ('SSF Standard', '1'), ('SSF Hardcore', '1'),
 ('Harbinger', '1'), ('Hardcore Harbinger', '1'), ('SSF Harbinger', '1'), ('SSF Harbinger HC', '1'),
-('Legacy', '1'), ('Hardcore Legacy', '1'), ('SSF Legacy', '1'), ('SSF HC Legacy', '1');
+('Legacy', '1'), ('Hardcore Legacy', '1'), ('SSF Legacy', '1'), ('SSF HC Legacy', '1'), ('Abyss', '1'),  ('Hardcore Abyss', '1'),  ('SSF Abyss', '1'),  ('SSF Abyss HC', '1');
 
 
 CREATE TYPE frame_type AS ENUM ('Normal', 'Magic', 'Rare', 'Unique', 'Gem', 'Currency', 'Divination card', 'Quest item', 'Prophecy', 'Relic');
@@ -89,7 +89,7 @@ CREATE TABLE CurrencyStats (
 );
 
 
-CREATE TYPE stash_type AS ENUM ('NormalStash','PremiumStash','QuadStash','EssenceStash','CurrencyStash','DivinationStash');
+CREATE TYPE stash_type AS ENUM ('NormalStash','PremiumStash','QuadStash','EssenceStash','CurrencyStash','DivinationCardStash');
 CREATE TABLE Stashes (
   stash_id VARCHAR(128) NOT NULL DEFAULT '' PRIMARY KEY,
   stash_name VARCHAR(128) DEFAULT NULL,
@@ -142,7 +142,7 @@ CREATE TABLE Items (
   CONSTRAINT Items_ibfk_3 FOREIGN KEY (stash_id) REFERENCES Stashes (stash_id) ON DELETE CASCADE
 );
 
-CREATE TYPE mod_type AS ENUM ('EXPLICIT','IMPLICIT','CRAFTED','ENCHANTED');
+CREATE TYPE mod_type AS ENUM ('EXPLICIT','IMPLICIT','CRAFTED','ENCHANTED','UTILITY');
 CREATE TABLE Mods (
   item_id VARCHAR(128) NOT NULL,
   mod_name VARCHAR(256) NOT NULL,

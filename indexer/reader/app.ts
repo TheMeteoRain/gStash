@@ -13,14 +13,14 @@ import { ModType } from './enum'
  * New poll cycle will being only after the previous has finished.
  */
 const POLL_CYCLE: number = 1000
-
+let LATEST_ID: string = ''
 
 /**
  *
  * @param stashes
  */
 const parseData = async (stashes: any): Promise<any> => {
-  console.time('Parsing data took')
+  console.time('Parsing data')
 
   const batch = new Batch()
 
@@ -28,7 +28,7 @@ const parseData = async (stashes: any): Promise<any> => {
    * Start parsing stashes
    */
   stashes.forEach((stash: any) => {
-    const { accountName, lastCharacterName, id: stashId, public: stashPublic, name: stashName, stashType, items }: { accountName: string, id: string, public: boolean, name: string, stashType: string, lastCharacterName: string, items: any } = stash
+    const { accountName, lastCharacterName, id: stashId, public: stashPublic, stash: stashName, stashType, items }: { accountName: string, id: string, public: boolean, stash: string, stashType: string, lastCharacterName: string, items: any } = stash
     /**
      * Account name has to be present. Otherwise skip entry.
      */
@@ -82,35 +82,39 @@ const parseData = async (stashes: any): Promise<any> => {
       batch.stashesToRemove.push(new Stash(stashId, stashName, stashType, stashPublic))
     }
   })
-  console.timeEnd('Parsing data took')
+  console.timeEnd('Parsing data')
 
-  console.time('Saving data took')
-  await db.task('SavingData', async (t: any) => t.batch(await batch.query(t)))
-    .then(statistics)
-    .then((stats: any) => {
-      console.timeEnd('Saving data took')
-      console.log(' ')
-    }).catch((error: any) => {
-      console.error(error)
-    })
+  /*   console.time('Saving data')
+    await db.task('SavingData', async (t: any) => t.batch(await batch.query(t)))
+      .then(statistics)
+      .then((stats: any) => {
+        console.timeEnd('Saving data')
+        console.log(' ')
+      }).catch((error: any) => {
+        console.error(error)
+      }) */
+  console.time('Create sql file')
+  await batch.createSqlQueryFile(LATEST_ID)
+  console.timeEnd('Create sql file')
 }
 
-const poll = (LATEST_ID: string): void => {
+const poll = (): void => {
   console.log(' ')
 
   const fetchData = async (): Promise<void> => {
     try {
       console.log(`Downloading data with ID http://api.pathofexile.com/public-stash-tabs?id=${LATEST_ID}`)
-      console.time('Downloading took')
+      console.time('Downloading')
 
       const { next_change_id, stashes }: { next_change_id: string, stashes: any } = await requests.getStashes(LATEST_ID)
 
-      console.timeEnd('Downloading took')
+      console.timeEnd('Downloading')
       // console.log(`Downloaded ${stashes.length} stashes`)
       await parseData(stashes)
       await queries.upsertCurrentNextChangeId(LATEST_ID, true)
 
-      poll(next_change_id)
+      LATEST_ID = next_change_id
+      poll()
     } catch (error) {
       await queries.upsertCurrentNextChangeId(LATEST_ID, false)
 
@@ -127,11 +131,11 @@ const poll = (LATEST_ID: string): void => {
         console.log(error.request)
       } else {
         // Something happened in setting up the request that triggered an Error
-        console.log('Error', error.message)
+        console.error('Error', error)
       }
       console.log(error.config)
 
-      poll(LATEST_ID)
+      poll()
     }
   }
 
@@ -145,10 +149,21 @@ const poll = (LATEST_ID: string): void => {
  * and begins to poll server.
  */
 (async () => {
+  const args = process.argv.slice(2)
+
+  if (args.length > 0) {
+    const id = args.find((element: string) => element.toLocaleLowerCase().startsWith('id='))
+    LATEST_ID = id !== undefined ? id.slice(3) : ''
+
+    if (LATEST_ID !== '') {
+      return poll()
+    }
+  }
+
   console.log('Fetching latest change id')
-  const LATEST_ID: string = await queries.getLatestNextChangeId()
+  LATEST_ID = await queries.getLatestNextChangeId()
   console.log('Fetching done.')
-  poll(LATEST_ID)
+  poll()
 })().catch((error) => {
   console.error(error)
 })

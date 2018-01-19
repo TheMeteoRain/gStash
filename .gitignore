@@ -8,6 +8,9 @@ yarn-error.log*
 # Unwanted file extensions
 indexer/*.js
 
+# Unwanted directories
+sql/
+
 # Idea configuration
 .idea/
 .vscode/

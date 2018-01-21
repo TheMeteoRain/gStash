@@ -5,8 +5,8 @@
   "main": "app.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start-indexer-read": "ts-node ./reader/app.ts",
-    "start-indexer-write": "ts-node app.ts"
+    "start-indexer-read": "ts-node ./src/reader/app.ts",
+    "start-indexer-write": "ts-node ./src/writer/app.ts"
   },
   "keywords": [
     "indexer",

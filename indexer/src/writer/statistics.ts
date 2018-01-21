@@ -1,10 +1,8 @@
 const statistics = (events: any) => {
-  console.log(events)
-  const calculateTotal = (property: any) => {
+  const calculateTotal = (property: string) => {
     let total = 0
-    for (const event of events) {
-      total = total + event ? event[property] : 0
-    }
+    for (const event of events)
+      total = total + (event ? event[property] : 0)
 
     return total
   }
@@ -13,7 +11,7 @@ const statistics = (events: any) => {
     return event ? event.rowCount : 0
   }
 
-  const statistics = {
+  const stats = {
     accounts: getRow(events[0]),
     stashes: getRow(events[1]),
     items: getRow(events[2]),
@@ -22,13 +20,12 @@ const statistics = (events: any) => {
     requirements: getRow(events[5]),
     mods: getRow(events[6]),
     removed: getRow(events[7]),
-    duration: calculateTotal('duration'),
     saved: calculateTotal('rowCount'),
   }
 
-  printStats(statistics)
+  printStats(stats)
 
-  return statistics
+  return events
 }
 
 const printStats = (stats: any) => {
@@ -41,7 +38,7 @@ const printStats = (stats: any) => {
     `Properties saved: ${stats.properties} \n`,
     `Requirements saved: ${stats.requirements} \n`,
     `Mods saved: ${stats.mods} \n`,
-    `Stashes removed: ${stats.removed} \n`,
+    `Stashes removed: ${stats.removed}`,
   )
 }
 

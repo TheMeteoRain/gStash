@@ -19,8 +19,10 @@
             "spaces",
             2
         ],
+        "object-literal-sort-keys": false,
+        "curly": false,
         "no-console": false,
-        "ordered-imports": true,
+        "ordered-imports": false,
         "eofline": true,
         "no-submodule-imports": false
     },

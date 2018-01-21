@@ -27,7 +27,7 @@ export default class Mod implements IMod {
   }
 
   private setValues(modName: string) {
-    const mod_name: string = modName.replace(RE_SELECT_NUMBER_DOT_DASH_ROUND_BRACKETS, '#')
+    const mod_name: string = encodeURI(modName.replace(RE_SELECT_NUMBER_DOT_DASH_ROUND_BRACKETS, '#'))
     const values: RegExpMatchArray | null = modName.match(RE_SELECT_NUMBER_DOT)
 
     this.mod_name = mod_name

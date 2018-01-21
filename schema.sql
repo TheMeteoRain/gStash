@@ -28,10 +28,11 @@ CREATE TABLE Accounts (
 CREATE TABLE ChangeId (
   id BIGSERIAL NOT NULL,
   next_change_id VARCHAR(128) NOT NULL DEFAULT '' UNIQUE,
-  processed BOOLEAN DEFAULT 'false',
+  downloaded BOOLEAN DEFAULT 'FALSE',
+  uploaded BOOLEAN DEFAULT 'FALSE',
   PRIMARY KEY (id,next_change_id)
 );
-INSERT INTO ChangeId(next_change_id, processed) VALUES('0', '0');
+INSERT INTO ChangeId(next_change_id, downloaded, uploaded) VALUES('0', 'FALSE', 'FALSE');
 
 
 

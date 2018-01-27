@@ -1,5 +1,4 @@
 import { stringify } from 'querystring'
-import { IItem } from '../interface'
 
 const RE_CLEAN_NAME = /(<<set:\w+>>)+/g
 
@@ -7,7 +6,7 @@ const cleanName = (name: string) => {
   return name.replace(RE_CLEAN_NAME, '')
 }
 
-export default class Item implements IItem {
+export default class Item {
   public art_filename: string
   public corrupted: boolean
   public descr_text: string
@@ -23,7 +22,7 @@ export default class Item implements IItem {
   public item_id: string
   public league: string
   public locked_to_character: boolean
-  public max_stack_size: number
+  public max_stack_size: boolean
   public name: string
   public note: string | null
   public prophecy_diff_text: string
@@ -71,7 +70,7 @@ export default class Item implements IItem {
     this.setNote(props.note, stashNote)
     this.prophecy_diff_text = props.prophecyDiffText
     this.prophecy_text = props.prophecyText
-    this.sec_decription_text = null
+    this.sec_decription_text = props.secDescrText
     this.stack_size = props.stackSize
     this.support = props.support
     this.talisman_tier = props.talismanTier
@@ -159,5 +158,4 @@ export default class Item implements IItem {
 
     return biggest
   }
-
 }

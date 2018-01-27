@@ -1,6 +1,4 @@
-import { IStash } from '../interface'
-
-export default class Stash implements IStash {
+export default class Stash {
 
   public stash_id: string
   public stash_name: string | null | undefined

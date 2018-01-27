@@ -1,6 +1,4 @@
-import { IProperty } from '../interface'
-
-export default class Property implements IProperty {
+export default class Property {
 
   public item_id: string
   public property_name: string

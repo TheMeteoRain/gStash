@@ -1,10 +1,9 @@
-import { IMod } from '../interface'
-import { ModType } from '../enum/ModType';
+import { ModType } from '../enum/ModType'
 
 const RE_SELECT_NUMBER_DOT_DASH_ROUND_BRACKETS = /[(\d.\-)]+/g
 const RE_SELECT_NUMBER_DOT = /[\d.]+/g
 
-export default class Mod implements IMod {
+export default class Mod {
 
   public item_id: string
   public mod_name: string | null

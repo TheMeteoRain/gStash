@@ -35,6 +35,9 @@ https://www.reddit.com/r/pathofexiledev/comments/55xrd7/how_to_get_started_readi
 https://www.reddit.com/r/pathofexile/comments/6q941j/discussion_the_publicstashtabs_api_is_a_good/
 http://poe.trade/html/tags.html
 
+divination card art: http://www.pathofexile.com/image/gen/divination_cards/TheScarredMeadow.png
+http://www.pathofexile.com/image/Art/2DItems/Divination/Images/DivinationCard.png?scale=1?1516225861000
+
 # Database
 
 ## Item

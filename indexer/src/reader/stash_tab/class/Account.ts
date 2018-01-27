@@ -1,6 +1,4 @@
-import { IAccount } from '../interface'
-
-export default class Account implements IAccount {
+export default class Account {
   /**
    * Check for account duplicate in an array and replace it.
    *

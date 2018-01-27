@@ -1,6 +1,4 @@
-import { IRequirement } from '../interface'
-
-export default class Requirement implements IRequirement {
+export default class Requirement {
 
   public item_id: string
   public requirement_name: string

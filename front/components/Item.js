@@ -4,74 +4,69 @@ import Colors from './Colors'
 import { Col, Row, Card, Tag, Button } from 'antd'
 import { propType } from 'graphql-anywhere/lib/src/utilities'
 
-const formatColor = (value, valueType) => {
-  return <span style={{ color: Colors.ValueTypes[valueType] }}>{value}</span>
-}
+const formatColor = (value, valueType) => <span style={{ color: Colors.ValueTypes[valueType] }}>{value}</span>
+
 
 const REQUIREMENT_ORDER = ['Level', 'Str', 'Dex', 'Int']
 
-const formatValue = (
-  name,
-  displayMode,
-  value1,
-  value2 = null,
-  valueType1,
-  valueType2 = null,
-  last = false,
-  comma = false,
-  colon = false
-) => {
-  // VALUE NAME
-  if (last && displayMode === 1)
-    return (
-      <span>
-        {formatColor(value1, valueType1)} {formatColor(name, 0)}
-      </span>
-    )
-  // NAME[ VALUE][, ]
-  if (!value1 && displayMode === 0)
-    return (
-      <span>
-        {formatColor(name, 0)}
-        {' '}
-        {value1 ? formatColor(value1, valueType1) : ''}
-        {comma ? ', ' : ''}
-      </span>
-    )
+const formatProperty = ({
+  name, displayMode, value1 = null, value2 = null, valueType, progress,
+}) => {
+  if (displayMode !== 3)
+    name = formatColor(name, 0)
+
+  if (value1 === null && value2 === null)
+    return <span>{name}</span>
+
+  // name: value or name: value-value
+  if (displayMode === 0) {
+    if (value2 === null)
+      return <span>{name}: {formatColor(value1, valueType)}</span>
+
+    return <span>{name}: {formatColor(`${value1}-${value2}`, valueType)}</span>
+  }
+
+  // property does not have displayMode 1
+
+  // experience bar
+  if (displayMode === 2) {
+    if (value2 === null)
+      return <span>{progress}</span>
+  }
+
+  // name %0 something %1
+  if (displayMode === 3) {
+    let i = 0
+    name = name.replace(/#/g, () => {
+      i++
+      if (i == 1) return formatColor(value1, valueType)
+      if (i == 2) return formatColor(value2, valueType)
+    })
+
+    return <span>{name}</span>
+  }
+}
+
+const formatRequirements = ({
+  name, displayMode, value, valueType, last = true,
+}) => {
+  value = formatColor(value, valueType)
 
   if (displayMode === 0) {
-    // NAME[:][ ][VALUE][,]
-    return (
-      <span>
-        {formatColor(name, 0)}
-        {colon ? ':' : ''}
-        {value1 ? ' ' : ''}
-        {value1 ? formatColor(value1, valueType1) : ''}
-        {comma ? ',' : ''}
-      </span>
-    )
+    if (last)
+      return <span>{name} {value}</span>
+
+    return <span>{name} {value}, </span>
   }
+
   if (displayMode === 1) {
-    // VALUE NAME[, ]
-    return (
-      <span>
-        {' '}
-        {formatColor(value1, valueType1)}
-        {' '}
-        {formatColor(name, 0)}
-        {comma ? ', ' : ''}
-      </span>
-    )
+    if (last)
+      return <span>{value} {name}</span>
+
+    return <span>{value} {name}, </span>
   }
-  if (displayMode === 3) {
-    // NAME 10 NAME 11
-    // formatColor(value2, valueType2)
-    return (
-      <span>
-        {name.replace('%0', value1).replace('%1', value2)}
-      </span>
-    )
-  }
+
+  // there is no displayMode 2 or 3 in requirements
 }
 
 export default class Item extends Component {
@@ -83,40 +78,35 @@ export default class Item extends Component {
   renderRequirements(requirements) {
     if (requirements.length === 0) return
 
-    // APOLLO IS IMMUTABLE DO THIS
-    const b = Array.of(...requirements)
-
-    const a = b.sort(
+    // APOLLO IS IMMUTABLE, DO THIS
+    const sortedList = Array.of(...requirements).sort(
       (a, b) =>
         REQUIREMENT_ORDER.indexOf(a.requirementName) -
         REQUIREMENT_ORDER.indexOf(b.requirementName)
     )
 
-    const requirementList = a.map((requirement, index, array) => {
+    const requirementList = sortedList.map((requirement, index, array) => {
       if (!requirement) return
       const {
+        nodeId,
         requirementName,
         requirementValue,
         requirementValueType,
-        requirementKey,
         requirementDisplayMode,
       } = requirement
 
       const last = array.length - 1 > index ? false : true
 
-      const name = formatValue(
-        requirementName,
-        requirementDisplayMode,
-        requirementValue,
-        null,
-        requirementValueType,
-        null,
-        last,
-        true
-      )
+      const name = formatRequirements({
+        name: requirementName,
+        displayMode: requirementDisplayMode,
+        value: requirementValue,
+        valueType: requirementValueType,
+        last: last,
+      })
 
       return (
-        <span key={requirementKey}>
+        <span key={nodeId}>
           {name}
         </span>
       )
@@ -124,8 +114,7 @@ export default class Item extends Component {
 
     return (
       <div>
-        {requirementList.length > 0 ? 'Requires' : ''}
-        {' '}
+        {'Requires '}
         {requirementList}
         <hr />
       </div>
@@ -135,31 +124,28 @@ export default class Item extends Component {
   renderProperties(properties) {
     if (properties.length === 0) return
 
-    const propertiesList = properties.map((property, index, array) => {
+    const propertiesList = properties.map((property) => {
       const {
+        nodeId,
         propertyName,
         propertyValue1,
         propertyValue2,
-        propertyKey,
+        propertyValueType,
         propertyDisplayMode,
+        propertyProgress,
       } = property
-      const propertyValueTypes = JSON.parse(property.propertyValueTypes)
-      const last = array.length - 1 > index ? false : true
 
-      const name = formatValue(
-        propertyName,
-        propertyDisplayMode,
-        propertyValue1,
-        propertyValue2,
-        propertyValueTypes[0],
-        propertyValueTypes[1],
-        last,
-        false,
-        true
-      )
+      const name = formatProperty({
+        name: propertyName,
+        displayMode: propertyDisplayMode,
+        value1: propertyValue1,
+        value2: propertyValue2,
+        valueType: propertyValueType,
+        progress: propertyProgress,
+      })
 
       return (
-        <div key={propertyKey}>
+        <div key={nodeId}>
           {name}
         </div>
       )
@@ -172,7 +158,7 @@ export default class Item extends Component {
     if (mods.length === 0) return
 
     const modsList = mods.map(mod => {
-      const { modValue1, modValue2, modValue3, modValue4, modKey } = mod
+      const { nodeId, modValue1, modValue2, modValue3, modValue4 } = mod
 
       let i = 0
       const modName = mod.modName.replace(/#/g, () => {
@@ -184,7 +170,7 @@ export default class Item extends Component {
       })
 
       return (
-        <div key={modKey} style={{ color: Colors.ValueTypes[1] }}>
+        <div key={nodeId} style={{ color: Colors.ValueTypes[1] }}>
           {modName}
         </div>
       )

@@ -7,119 +7,88 @@ const cleanName = (name: string) => {
 }
 
 export default class Item {
-  public art_filename: string
+  public account_name: string
+  public added_ts: number
   public corrupted: boolean
-  public descr_text: string
-  public duplicated: boolean
-  public flavour_text: string
+  public crafted: boolean
+  public document: null
+  public enchanted: boolean
   public frame_type: number
   public h: number
   public icon: string
   public identified: boolean
   public ilvl: number
   public inventory_id: string
-  public is_relic: boolean
   public item_id: string
   public league: string
-  public locked_to_character: boolean
-  public max_stack_size: boolean
   public name: string
-  public note: string | null
-  public prophecy_diff_text: string
-  public prophecy_text: string
-  public sec_decription_text: string | null
-  // socketed_items: Array<number>
-  public stack_size: number
-  public support: boolean
-  public talisman_tier: number
+  public stash_id: string
   public type_line: string
+  public updated_ts: number
   public verified: boolean
   public w: number
   public x: number
   public y: number
-  // Custom properties
-  public account_name: string
-  public stash_id: string
-  public socket_amount: number | null
-  public link_amount: number | null
-  public available: boolean
-  public added_ts: number
-  public updated_ts: number
-  public enchanted: boolean
-  public crafted: boolean
+  public variable_data: any
+  // public locked_to_character: boolean
+  // socketed_items: Array<number>
 
   constructor({ ...props }: any, stashId: string, stashNote: string, accountName: string) {
     // Item properties
-    this.art_filename = props.artFilename
-    this.corrupted = this.hasOwnProperty(props, 'corrupted')
-    this.descr_text = props.descrText
-    this.duplicated = this.hasOwnProperty(props, 'duplicated')
-    this.setFlavourText(props.flavourText)
+    this.account_name = accountName
+    this.added_ts = Date.now()
+    this.corrupted = props.corrupted ? true : false
+    this.crafted = props.craftedMods ? true : false
+    this.document = null
+    this.enchanted = props.enchantedMods ? true : false
     this.frame_type = props.frameType
     this.h = props.h
     this.icon = props.icon
     this.identified = props.identified
     this.ilvl = props.ilvl
     this.inventory_id = props.inventoryId
-    this.is_relic = this.hasOwnProperty(props, 'isRelic')
     this.item_id = props.id
     this.league = props.league
-    this.locked_to_character = props.lockedToCharacter
-    this.max_stack_size = props.maxStackSize
-    this.setName(props.name)
-    this.setNote(props.note, stashNote)
-    this.prophecy_diff_text = props.prophecyDiffText
-    this.prophecy_text = props.prophecyText
-    this.sec_decription_text = props.secDescrText
-    this.stack_size = props.stackSize
-    this.support = props.support
-    this.talisman_tier = props.talismanTier
-    this.setTypeLine(props.typeLine)
+    this.name = cleanName(props.name)
+    this.stash_id = stashId
+    this.type_line = cleanName(props.typeLine)
+    this.updated_ts = 0
     this.verified = props.verified
     this.w = props.w
     this.x = props.x
     this.y = props.y
-    // Custom properties
-    this.account_name = accountName
-    this.stash_id = stashId
-    this.socket_amount = props.sockets ? props.sockets.length : null
-    this.link_amount = props.sockets ? this.setLinkAmount(props.sockets) : null
-    this.available = this.hasOwnProperty(props, 'available')
-    this.added_ts = Date.now()
-    this.updated_ts = 0
-    this.enchanted = this.hasOwnProperty(props, 'enchantedMods')
-    this.crafted = this.hasOwnProperty(props, 'craftedMods')
-  }
-
-  private hasOwnProperty(data: any, hasProperty: string) {
-    if (data.hasOwnProperty[hasProperty]) {
-      return true
-    } else {
-      return false
+    this.variable_data = {
+      abyss_jewel: props.abyssJewel,
+      art_filename: props.artFilename,
+      category: props.category,
+      descr_text: props.descrText,
+      duplicated: props.duplicated,
+      elder: props.elder,
+      flavour_text: JSON.stringify(props.flavourText),
+      is_relic: props.isRelic,
+      link_amount: props.sockets ? this.setLinkAmount(props.sockets) : undefined,
+      max_stack_size: props.maxStackSize,
+      note: this.setNote(props.note, stashNote),
+      prophecy_diff_text: props.prophecyDiffText,
+      prophecy_text: props.prophecy_text,
+      sec_decription_text: props.secDescrText,
+      shaper: props.shaper,
+      socket_amount: props.sockets ? props.sockets.length : undefined,
+      support: props.support,
+      talisman_tier: props.talismanTier,
     }
-  }
-
-  private setTypeLine(typeLine: string) {
-    this.type_line = cleanName(typeLine)
-  }
-
-  private setName(name: string) {
-    this.name = cleanName(name)
-  }
-
-  private setFlavourText(flavourText: any) {
-    this.flavour_text = flavourText ? JSON.stringify(flavourText) : ''
+    // this.locked_to_character = props.lockedToCharacter
+    // Custom properties
   }
 
   private setNote(itemNote: string, stashNote: string) {
     const findPriceNote = itemNote ? itemNote.match(/(^~price|^~b\/o|^bo) (\d+) (\w+)/g) : null
-    const itemPrice = Array.isArray(findPriceNote) ? findPriceNote[0] : null
+    const itemPrice = Array.isArray(findPriceNote) ? findPriceNote[0] : undefined
     const findStashPrice = stashNote ? stashNote.match(/(^~price|^~b\/o|^bo) (\d+) (\w+)/g) : null
-    const stashPrice = Array.isArray(findStashPrice) ? findStashPrice[0] : null
+    const stashPrice = Array.isArray(findStashPrice) ? findStashPrice[0] : undefined
 
-    this.note = itemPrice ? itemPrice : stashPrice
+    return itemPrice ? itemPrice : stashPrice
   }
-
 
   /**
    * Return the biggest link number on an single item.

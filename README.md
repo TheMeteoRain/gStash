@@ -2,7 +2,8 @@
 
 items has category property
 http://api.pathofexile.com/leagues?type=main&compact=1
-postgraphql -c postgres://localhost:5433/poe
+postgraphile -c postgres://localhost:5432/poe --watch
+postgraphql -c postgres://localhost:5432/poe --watch
 28.12.2017
 download speed: 3 seconds
 parsing speed: 0.150 seconds

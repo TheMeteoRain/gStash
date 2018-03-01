@@ -8,7 +8,7 @@ export default class Requirement {
 
   constructor(itemId: string, { ...props }) {
     this.item_id = itemId
-    this.setName(props.name)
+    this.requirement_name = this.setName(props.name)
     this.requirement_value = null
     this.requirement_value_type = null
     this.requirement_display_mode = props.displayMode
@@ -17,7 +17,7 @@ export default class Requirement {
   }
 
   private setName(name: string) {
-    this.requirement_name = name !== 'Level' ? name.slice(0, 3) : name
+    return name !== 'Level' ? name.slice(0, 3) : name
   }
 
   private setValues(values: any) {

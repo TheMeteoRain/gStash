@@ -61,11 +61,8 @@ export const parseLeagueData = ({ data: [...leagues] }: { data: any[], leagues: 
   return leaguesData
 }
 
-
-
 export const pollServer = async () => {
   try {
-
     const statsData: StatData[] = await downloadAndParse({
       url: 'https://www.pathofexile.com/api/trade/data/stats',
       parser: parseStatData,

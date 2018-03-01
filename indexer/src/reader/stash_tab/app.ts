@@ -1,7 +1,7 @@
 import { db } from '../../db'
 
 import downloadAndParse from '../downloadAndParse'
-import { sqlFile } from '../create'
+import { sqlFile, csvFile } from '../create'
 
 import queries from './queries'
 import { ModType } from './enum'
@@ -11,7 +11,8 @@ import { Account, Item, Stash, Socket, Property, Requirement, Mod, StashTabData 
  * The amount of milliseconds when a new request is sent to the poe api.
  * New poll cycle will being only after the previous has finished.
  */
-const POLL_SERVER_REPEAT_CYCLE: number = 1000
+const POLL_SERVER_REPEAT_CYCLE: number = 750
+const CSV_TABLES = ['items', 'properties', 'mods', 'sockets', 'requirements']
 
 /**
  *
@@ -40,16 +41,27 @@ export const parseData = async ({ data: { next_change_id, stashes } }: { data: a
         stashTabData.items.push(new Item(item, stashId, stashName, accountName))
 
         if (item.sockets)
-          item.sockets.forEach((socket: any) => stashTabData.sockets.push(new Socket(itemId, socket)))
+          item.sockets.forEach((socket: any, index: number) =>
+            stashTabData.sockets.push(new Socket(itemId, index, socket)))
 
         if (item.properties)
-          item.properties.forEach((property: any) => stashTabData.properties.push(new Property(itemId, property)))
+          item.properties.forEach((property: any) => {
+            // Elemental Damage can have more than one values (one for each element)
+            if (property.values.length > 1) {
+              for (let i = 0; i < property.values.length; i++)
+                stashTabData.properties.push(new Property(itemId, i, property))
+            } else {
+              stashTabData.properties.push(new Property(itemId, 0, property))
+            }
+          })
 
         if (item.additionalProperties)
-          item.additionalProperties.forEach((property: any) => stashTabData.properties.push(new Property(itemId, property)))
+          item.additionalProperties.forEach((property: any) =>
+            stashTabData.properties.push(new Property(itemId, 0, property)))
 
         if (item.requirements)
-          item.requirements.forEach((requirement: any) => stashTabData.requirements.push(new Requirement(itemId, requirement)))
+          item.requirements.forEach((requirement: any) =>
+            stashTabData.requirements.push(new Requirement(itemId, requirement)))
 
         if (item.explicitMods)
           item.explicitMods.forEach((mod: any) => stashTabData.mods.push(new Mod(itemId, mod, ModType.EXPLICIT)))
@@ -93,23 +105,38 @@ export const pollServer = async () => {
         parser: parseData,
       })
 
-      console.time('Sql file creation took')
+      console.time('SQL and CSV files creation took')
       const sql = sqlFile({
         title: LATEST_ID,
         directory: 'sql',
       })
       sql.addQuery(stashTabData.accounts, queries.insertAccounts)
       sql.addQuery(stashTabData.stashes, queries.insertStashes)
-      sql.addQuery(stashTabData.items, queries.insertItems)
-      sql.addQuery(stashTabData.sockets, queries.insertSockets)
-      sql.addQuery(stashTabData.properties, queries.insertProperties)
-      sql.addQuery(stashTabData.requirements, queries.insertRequirements)
-      sql.addQuery(stashTabData.mods, queries.insertMods)
+      /*        sql.addQuery(stashTabData.items, queries.insertItems)
+             sql.addQuery(stashTabData.sockets, queries.insertSockets)
+             sql.addQuery(stashTabData.properties, queries.insertProperties)
+             sql.addQuery(stashTabData.requirements, queries.insertRequirements)
+             sql.addQuery(stashTabData.mods, queries.insertMods) */
       sql.addQuery(stashTabData.stashesToRemove, queries.removeStashes)
-      const creationSuccessful: boolean = sql.createFile()
+      const sqlCreationSuccessful: boolean = sql.createFile()
 
-      if (creationSuccessful) {
-        console.timeEnd('Sql file creation took')
+      const csv = csvFile({
+        directory: 'csv',
+      })
+
+      const csvCreationSuccessful: boolean = Object.keys(stashTabData).every((key) => {
+        let successful = true
+
+        if (CSV_TABLES.find((value) => value === key ? true : false))
+          successful = csv.createFile({
+            data: stashTabData[key], title: `${key}-${LATEST_ID}`,
+          })
+
+        return successful
+      })
+
+      if (sqlCreationSuccessful || csvCreationSuccessful) {
+        console.timeEnd('SQL and CSV files creation took')
         await queries.upsertCurrentNextchange_id(LATEST_ID, true)
         LATEST_ID = stashTabData.next_change_id
       } else {

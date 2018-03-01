@@ -26,7 +26,7 @@ export default class Mod {
   }
 
   private setValues(modName: string) {
-    const mod_name: string = encodeURI(modName.replace(RE_SELECT_NUMBER_DOT_DASH_ROUND_BRACKETS, '#'))
+    const mod_name: string = modName.length !== 0 ? modName.replace(RE_SELECT_NUMBER_DOT_DASH_ROUND_BRACKETS, '#').replace(/[\r\n|\n]+/g, '. ') : ' '
     const values: RegExpMatchArray | null = modName.match(RE_SELECT_NUMBER_DOT)
 
     this.mod_name = mod_name

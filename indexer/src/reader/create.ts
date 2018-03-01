@@ -44,3 +44,40 @@ export const sqlFile = ({ title, directory = 'sql' }: { title: string, directory
     },
   }
 }
+
+export const csvFile = ({ directory = 'csv' }: { directory: string }) => {
+  const csvArray = new Array<string>()
+
+  return {
+    createFile: ({ data, title }: { data: any, title: string }) => {
+
+      if (data.length > 0) {
+        const headers = Object.keys(data[0])
+
+        data = data.map((element: any, index: number) => headers.map((header) => {
+          if (header === 'variable_data')
+            return JSON.stringify(element[header])
+
+          return element[header]
+        }).join('|'))
+
+        const fileName = `${title}.csv`
+        const filePath = directory + '/' + fileName
+        const text = headers.join('|') + '\n' + data.join('\n')
+
+        try {
+          fs.writeFileSync(filePath, text)
+        } catch (error) {
+          console.error(`Could not save file: '${fileName}' to directory: '${directory}/'`)
+          console.error(error)
+          return false
+        }
+        console.log(`File: ${fileName} has been saved`)
+
+        return true
+      }
+
+      return false
+    },
+  }
+}

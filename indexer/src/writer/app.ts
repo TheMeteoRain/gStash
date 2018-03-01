@@ -7,20 +7,13 @@ import queries from './queries'
 const DIRECTORY = 'sql'
 const FILE_LOCATION = (fileName: string): string => `${DIRECTORY}/${fileName}`
 const FILE_ID = (fileName: string): string => fileName.substring(fileName.indexOf('_') + 1, fileName.indexOf('.'))
-const extractNumberFromFileName = (value: string): number =>
-  Number(value.substring(0, value.indexOf('-') || value.indexOf('.')))
+const extractNumberFromFileName = (value: string): number => Number(value.match(/\d+/)[0])
 
 const readDirectory = (): string[] => {
   try {
     const sqlDirectory: string[] = fs.readdirSync(DIRECTORY, 'utf8').sort((a: string, b: string): number => {
       const aNumber: number = extractNumberFromFileName(a)
       const bNumber: number = extractNumberFromFileName(b)
-
-      if (aNumber === 0)
-        return -1
-
-      if (bNumber === 0)
-        return 1
 
       if (aNumber < bNumber)
         return -1
@@ -90,9 +83,48 @@ const writeFilesToDatabase = async (fileArray: string[]): Promise<boolean> => {
       })
       .catch((error: any) => {
         console.error('Something went wrong')
-        // console.error('ERROR', `Failed to process file: ${fileId}`)
         throw error
+        // console.error('ERROR', `Failed to process file: ${fileId}`)
+
       })
+
+    /* const getNextData = (t, pageIndex: number): Promise<string> => {
+      const data = sqlQueryArray[pageIndex]
+
+      process.stdout.clearLine()
+      process.stdout.cursorTo(0)
+      process.stdout.write(`${pageIndex} of ${sqlQueryArray.length} ${data ? `(${data.substr(13, 12)})` : ''}`)
+
+      return Promise.resolve(data)
+    }
+
+    const calculateTotal = (event, property: string) => {
+      return event ? event[property] : 0
+    }
+
+    await db.task('massive-insert', (t) => {
+      let total = 0
+      return t.sequence((index: number) =>
+        getNextData(t, index).then((data: any) => {
+          if (data) {
+            return t.result(data)
+          } else {
+            process.stdout.write('\n')
+          }
+        }).then((event) => {
+          total += calculateTotal(event, 'rowCount')
+          return event
+        })).then(() => total)
+    })
+      .then((data: any) => {
+        // COMMIT has been executed
+        console.log('Total inserts:', data)
+      })
+      .catch((error) => {
+        // ROLLBACK has been executed
+        console.error('Something went wrong')
+        throw error
+      }) */
 
     return true
   }
@@ -132,7 +164,8 @@ async function main() {
 
     if (fileArray.length > 0) {
       const writeSuccessful: boolean = await writeFilesToDatabase(fileArray)
-      deleteFiles(fileArray)
+      if (writeSuccessful)
+        deleteFiles(fileArray)
       console.log(' ')
     }
 

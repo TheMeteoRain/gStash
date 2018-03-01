@@ -10,6 +10,8 @@ indexer/*.js
 
 # Unwanted directories
 sql/
+csv/
+my-app/
 
 # Idea configuration
 .idea/

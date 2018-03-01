@@ -18,7 +18,6 @@ import {
 const InputGroup = Input.Group
 const FormItem = Form.Item
 const Option = Select.Option
-const AutoCompleteOption = AutoComplete.Option
 
 import Result from './Result'
 
@@ -95,10 +94,10 @@ class Search extends Component {
   }
 
   renderLeagues() {
-    const { data: { allLeagues } } = this.props
+    const { nodes: allLeagues } = this.props.data.allLeagues
     const { getFieldDecorator } = this.props.form
 
-    const leagues = allLeagues.nodes.map(league => {
+    const leagues = allLeagues.map(league => {
       const { leagueName, nodeId } = league
       return <Option key={nodeId} value={leagueName}>{leagueName}</Option>
     })
@@ -117,10 +116,10 @@ class Search extends Component {
   }
 
   renderFrameTypes() {
-    const { data: { allFrametypes } } = this.props
+    const { nodes: allFrameTypes } = this.props.data.allFrameTypes
     const { getFieldDecorator } = this.props.form
 
-    const frameTypes = allFrametypes.nodes.map(frameType => {
+    const frameTypes = allFrameTypes.map(frameType => {
       const { frameTypeValue, id, nodeId } = frameType
       return (
         <Option key={nodeId} value={id}>
@@ -148,6 +147,11 @@ class Search extends Component {
   render() {
     const { hasSearched, ...state } = this.state
     const { getFieldDecorator } = this.props.form
+    const { nodes: allItemsData } = this.props.data.allItemsData
+
+    const dataSource = allItemsData.map((data) => {
+      return data.text
+    })
 
     return (
       <section>
@@ -161,6 +165,8 @@ class Search extends Component {
                   defaultValue={''}
                   placeholder={'Search items...'}
                 />
+                <AutoComplete
+                  dataSource={dataSource} />
               </FormItem>
             </Col>
             <Col span={8}>

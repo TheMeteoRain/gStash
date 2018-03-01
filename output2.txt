@@ -1,0 +1,107 @@
+CREATE TEMPORARY TABLE temp_items (
+  art_filename VARCHAR(1024) DEFAULT NULL,
+  corrupted BOOLEAN NOT NULL DEFAULT FALSE,
+  descr_text VARCHAR(2048) DEFAULT NULL,
+  duplicated BOOLEAN NOT NULL DEFAULT FALSE,
+  flavour_text VARCHAR(1024) DEFAULT NULL,
+
+  frame_type SMALLINT DEFAULT 0,
+  h SMALLINT DEFAULT 0,
+  icon VARCHAR(1024) DEFAULT NULL,
+  identified BOOLEAN NOT NULL DEFAULT FALSE,
+  ilvl SMALLINT NOT NULL DEFAULT 0,
+
+  inventory_id VARCHAR(128) DEFAULT NULL,
+  is_relic BOOLEAN DEFAULT FALSE,
+  item_id VARCHAR(128) NOT NULL PRIMARY KEY,
+  league VARCHAR(128) DEFAULT NULL,
+  max_stack_size SMALLINT DEFAULT NULL,
+
+  name VARCHAR(128) DEFAULT NULL,
+  note VARCHAR(128) DEFAULT NULL,
+  prophecy_diff_text VARCHAR(1024) DEFAULT NULL,
+  prophecy_text VARCHAR(2048) DEFAULT NULL,
+  sec_decription_text VARCHAR(4096) DEFAULT NULL,
+
+  stack_size SMALLINT DEFAULT NULL,
+  support BOOLEAN DEFAULT TRUE,
+  talisman_tier SMALLINT DEFAULT NULL,
+  type_line VARCHAR(128) DEFAULT NULL,
+  verified BOOLEAN NOT NULL DEFAULT FALSE,
+
+  w SMALLINT DEFAULT 0,
+  x SMALLINT DEFAULT 0,
+  y SMALLINT DEFAULT 0,
+  account_name VARCHAR(128) NOT NULL,
+  stash_id VARCHAR(128) DEFAULT NULL,
+
+  socket_amount SMALLINT DEFAULT NULL,
+  link_amount SMALLINT DEFAULT NULL,
+  available BOOLEAN NOT NULL DEFAULT TRUE,
+  added_ts BIGINT DEFAULT 0,
+  updated_ts BIGINT DEFAULT 0,
+
+  crafted BOOLEAN NOT NULL DEFAULT FALSE,
+  enchanted BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+CREATE TEMPORARY TABLE temp_mods (
+  item_id VARCHAR(128) NOT NULL,
+  mod_name VARCHAR(256) NOT NULL,
+  mod_value1 VARCHAR(256) DEFAULT NULL,
+  mod_value2 VARCHAR(128) DEFAULT NULL,
+  mod_value3 VARCHAR(128) DEFAULT NULL,
+  mod_value4 VARCHAR(128) DEFAULT NULL,
+  mod_type modType DEFAULT 'IMPLICIT',
+  mod_key BIGSERIAL NOT NULL,
+  CONSTRAINT temp_mods_ibfk_1 FOREIGN KEY (item_id) REFERENCES temp_items (item_id) ON DELETE CASCADE
+);
+
+
+CREATE TEMPORARY TABLE temp_properties (
+  item_id VARCHAR(128) NOT NULL,
+  property_name VARCHAR(128) NOT NULL,
+  property_value1 VARCHAR(128) DEFAULT NULL,
+  property_value2 VARCHAR(128) DEFAULT NULL,
+  property_value_type SMALLINT DEFAULT NULL,
+  property_display_mode SMALLINT DEFAULT NULL,
+  property_progress DECIMAL DEFAULT NULL,
+  property_key BIGSERIAL NOT NULL,
+  PRIMARY KEY (item_id, property_name),
+  CONSTRAINT temp_properties_ibfk_1 FOREIGN KEY (item_id) REFERENCES temp_items (item_id) ON DELETE CASCADE
+);
+
+
+CREATE TEMPORARY TABLE temp_requirements (
+  item_id VARCHAR(128) NOT NULL,
+  requirement_name VARCHAR(128) NOT NULL,
+  requirement_value VARCHAR(128) DEFAULT NULL,
+  requirement_value_type SMALLINT DEFAULT NULL,
+  requirement_display_mode SMALLINT DEFAULT NULL,
+  requirement_key BIGSERIAL NOT NULL,
+  PRIMARY KEY (item_id, requirement_name),
+  CONSTRAINT temp_requirements_ibfk_1 FOREIGN KEY (item_id) REFERENCES temp_items (item_id) ON DELETE CASCADE
+);
+
+
+CREATE TEMPORARY TABLE temp_sockets (
+  item_id VARCHAR(128) NOT NULL,
+  socket_group SMALLINT DEFAULT '0',
+  socket_attr CHAR(1) DEFAULT NULL,
+  socket_key BIGSERIAL NOT NULL,
+  CONSTRAINT temp_sockets_ibfk_1 FOREIGN KEY (item_id) REFERENCES temp_items (item_id) ON DELETE CASCADE
+);
+
+\copy accounts from 'H:\Projects\freetime\gStash\indexer\csv\accounts-0.csv' WITH DELIMITER ',' CSV HEADER
+\copy stashes from 'H:\Projects\freetime\gStash\indexer\csv\stashes-0.csv' WITH DELIMITER ',' CSV HEADER
+\copy items from 'H:\Projects\freetime\gStash\indexer\csv\items-0.csv' WITH DELIMITER ',' CSV HEADER
+\copy properties from 'H:\Projects\freetime\gStash\indexer\csv\properties-0.csv' WITH DELIMITER ',' CSV HEADER
+\copy requirements from 'H:\Projects\freetime\gStash\indexer\csv\requirements-0.csv' WITH DELIMITER ',' CSV HEADER
+\copy mods from 'H:\Projects\freetime\gStash\indexer\csv\mods-0.csv' WITH DELIMITER ',' CSV HEADER
+\copy sockets from 'H:\Projects\freetime\gStash\indexer\csv\sockets-0.csv' WITH DELIMITER ',' CSV HEADER
+
+
+UPDATE items
+SET icon = t.icon
+FROM temp_items t
+WHERE t.item_id != items.item_id

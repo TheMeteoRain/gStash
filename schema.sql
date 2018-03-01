@@ -4,8 +4,6 @@ DROP DATABASE IF EXISTS poe;
 CREATE DATABASE poe;
 \connect poe
 
-
-
 --DROP TABLE IF EXISTS stashes CASCADE;
 --DROP TABLE IF EXISTS sockets;
 --DROP TABLE IF EXISTS requirements;
@@ -47,14 +45,14 @@ CREATE UNLOGGED TABLE leagues (
   active BOOLEAN DEFAULT TRUE
 );
 
-CREATE UNLOGGED TABLE items_data (
+CREATE TABLE items_data (
   name VARCHAR(128) DEFAULT NULL,
   type VARCHAR(128) NOT NULL,
   disc VARCHAR(128) DEFAULT NULL,
   text VARCHAR(128) PRIMARY KEY
 );
 
-CREATE UNLOGGED TABLE stats_data (
+CREATE TABLE stats_data (
   id VARCHAR(256) PRIMARY KEY,
   text VARCHAR(512) NOT NULL,
   type VARCHAR(128) NOT NULL
@@ -64,17 +62,17 @@ CREATE UNLOGGED TABLE frame_type (
   id SMALLINT PRIMARY KEY,
   frame_type_value frameType NOT NULL
 );
-INSERT INTO frameType(id, frame_type_value)
+INSERT INTO frame_type(id, frame_type_value)
 VALUES (0, 'Normal'), (1, 'Magic'), (2, 'Rare'), (3, 'Unique'), (4, 'Gem'), (5,'Currency'), (6, 'Divination card'),
 (7,'Quest item'), (8, 'Prophecy'), (9, 'Relic');
 
 
-CREATE TYPE value_type AS ENUM ('Default', 'Augmented', 'Unmet', 'Physical','Fire', 'Cold', 'Lightning', 'Chaos');
+CREATE TYPE vType AS ENUM ('Default', 'Augmented', 'Unmet', 'Physical','Fire', 'Cold', 'Lightning', 'Chaos');
 CREATE UNLOGGED TABLE value_type (
   id SMALLINT PRIMARY KEY,
-  value_type valueType NOT NULL
+  value_type vType NOT NULL
 );
-INSERT INTO valueType
+INSERT INTO value_type
 VALUES (0, 'Default'), (1, 'Augmented'), (2, 'Unmet'), (3, 'Physical'), (4, 'Fire'), (5, 'Cold'), (6, 'Lightning'), (7, 'Chaos');
 
 
@@ -115,43 +113,28 @@ CREATE UNLOGGED TABLE stashes (
 
 CREATE UNLOGGED TABLE items (
   account_name VARCHAR(128) NOT NULL,
-  added_ts BIGINT DEFAULT 0,
-  art_filename VARCHAR(1024) DEFAULT NULL,
-  available BOOLEAN NOT NULL DEFAULT TRUE,
-  corrupted BOOLEAN NOT NULL DEFAULT FALSE,
-  crafted BOOLEAN NOT NULL DEFAULT FALSE,
-  descr_text VARCHAR(2048) DEFAULT NULL,
-  duplicated BOOLEAN NOT NULL DEFAULT FALSE,
+  added_ts BIGINT DEFAULT NULL,
+  corrupted BOOLEAN NOT NULL,
+  crafted BOOLEAN NOT NULL,
   document TSVECTOR DEFAULT NULL,
-  enchanted BOOLEAN NOT NULL DEFAULT FALSE,
-  flavour_text VARCHAR(1024) DEFAULT NULL,
-  frame_type SMALLINT DEFAULT 0,
-  h SMALLINT DEFAULT 0,
+  enchanted BOOLEAN NOT NULL,
+  frame_type SMALLINT NOT NULL,
+  h SMALLINT NOT NULL,
   icon VARCHAR(1024) DEFAULT NULL,
-  identified BOOLEAN NOT NULL DEFAULT FALSE,
-  ilvl SMALLINT NOT NULL DEFAULT 0,
+  identified BOOLEAN NOT NULL,
+  ilvl SMALLINT DEFAULT NULL,
   inventory_id VARCHAR(128) DEFAULT NULL,
-  is_relic BOOLEAN DEFAULT FALSE,
-  item_id VARCHAR(128) NOT NULL PRIMARY KEY,
+  item_id VARCHAR(128) PRIMARY KEY,
   league VARCHAR(128) DEFAULT NULL,
-  link_amount SMALLINT DEFAULT NULL,
-  max_stack_size BOOLEAN DEFAULT NULL,
   name VARCHAR(128) DEFAULT NULL,
-  note VARCHAR(128) DEFAULT NULL,
-  prophecy_diff_text VARCHAR(1024) DEFAULT NULL,
-  prophecy_text VARCHAR(2048) DEFAULT NULL,
-  sec_decription_text VARCHAR(4096) DEFAULT NULL,
-  socket_amount SMALLINT DEFAULT NULL,
-  stack_size SMALLINT DEFAULT NULL,
   stash_id VARCHAR(128) DEFAULT NULL,
-  support BOOLEAN DEFAULT TRUE,
-  talisman_tier SMALLINT DEFAULT NULL,
   type_line VARCHAR(128) DEFAULT NULL,
-  updated_ts BIGINT DEFAULT 0,
-  verified BOOLEAN NOT NULL DEFAULT FALSE,
-  w SMALLINT DEFAULT 0,
-  x SMALLINT DEFAULT 0,
-  y SMALLINT DEFAULT 0,
+  updated_ts BIGINT DEFAULT NULL,
+  verified BOOLEAN NOT NULL,
+  w SMALLINT DEFAULT NULL,
+  x SMALLINT DEFAULT NULL,
+  y SMALLINT DEFAULT NULL,
+  variable_data JSONB DEFAULT NULL,
   CONSTRAINT items_ibfk_1 FOREIGN KEY (league) REFERENCES leagues (league_name),
   CONSTRAINT items_ibfk_2 FOREIGN KEY (account_name) REFERENCES accounts (account_name),
   CONSTRAINT items_ibfk_3 FOREIGN KEY (stash_id) REFERENCES stashes (stash_id) ON DELETE CASCADE
@@ -160,13 +143,13 @@ CREATE UNLOGGED TABLE items (
 
 CREATE UNLOGGED TABLE mods (
   item_id VARCHAR(128) NOT NULL,
-  mod_name VARCHAR(256) NOT NULL,
+  mod_name TEXT NOT NULL,
+  mod_type modType DEFAULT 'IMPLICIT',
   mod_value1 VARCHAR(256) DEFAULT NULL,
   mod_value2 VARCHAR(128) DEFAULT NULL,
   mod_value3 VARCHAR(128) DEFAULT NULL,
   mod_value4 VARCHAR(128) DEFAULT NULL,
-  mod_type modType DEFAULT 'IMPLICIT',
-  mod_key BIGSERIAL NOT NULL,
+  PRIMARY KEY (item_id, mod_type, mod_name),
   CONSTRAINT mods_ibfk_1 FOREIGN KEY (item_id) REFERENCES items (item_id) ON DELETE CASCADE
 );
 
@@ -179,7 +162,6 @@ CREATE UNLOGGED TABLE properties (
   property_value_type SMALLINT DEFAULT NULL,
   property_display_mode SMALLINT DEFAULT NULL,
   property_progress DECIMAL DEFAULT NULL,
-  property_key BIGSERIAL NOT NULL,
   PRIMARY KEY (item_id, property_name),
   CONSTRAINT properties_ibfk_1 FOREIGN KEY (item_id) REFERENCES items (item_id) ON DELETE CASCADE
 );
@@ -191,7 +173,6 @@ CREATE UNLOGGED TABLE requirements (
   requirement_value VARCHAR(128) DEFAULT NULL,
   requirement_value_type SMALLINT DEFAULT NULL,
   requirement_display_mode SMALLINT DEFAULT NULL,
-  requirement_key BIGSERIAL NOT NULL,
   PRIMARY KEY (item_id, requirement_name),
   CONSTRAINT requirements_ibfk_1 FOREIGN KEY (item_id) REFERENCES items (item_id) ON DELETE CASCADE
 );
@@ -199,30 +180,44 @@ CREATE UNLOGGED TABLE requirements (
 
 CREATE UNLOGGED TABLE sockets (
   item_id VARCHAR(128) NOT NULL,
-  socket_group SMALLINT DEFAULT '0',
-  socket_attr CHAR(1) DEFAULT NULL,
-  socket_key BIGSERIAL NOT NULL,
+  socket_order SMALLINT NOT NULL,
+  socket_attr CHAR(1) NOT NULL,
+  socket_group SMALLINT NOT NULL,
+  PRIMARY KEY (item_id, socket_order),
   CONSTRAINT sockets_ibfk_1 FOREIGN KEY (item_id) REFERENCES items (item_id) ON DELETE CASCADE
 );
 
 --DROP FUNCTION IF EXISTS search_items(TEXT, VARCHAR, INT, INT, INT, INT, INT, INT, INT, BOOLEAN, BOOLEAN, BOOLEAN, BOOLEAN, BOOLEAN);
 -- search_items('Belly of the beast wyrmscale', 'Standard', NULL, 0, 6, 0, 6, 0, 100, true, null, null, null, null);
-CREATE FUNCTION search_items(search TEXT DEFAULT '', league_name VARCHAR DEFAULT 'Standard', frametype INT DEFAULT NULL,
-  socket_amount_min INT DEFAULT 0, socket_amount_max INT DEFAULT 6, link_amount_min INT DEFAULT 0,
-  link_amount_max INT DEFAULT 6, item_lvl_min INT DEFAULT 0, item_lvl_max INT DEFAULT 100,
-  is_identified BOOLEAN DEFAULT NULL, is_verified BOOLEAN DEFAULT NULL, is_corrupted BOOLEAN DEFAULT NULL,
-  is_enchanted BOOLEAN DEFAULT NULL, is_crafted BOOLEAN DEFAULT NULL) RETURNS SETOF items AS $$
+CREATE OR REPLACE FUNCTION  search_items(
+  search TEXT DEFAULT '',
+  league_name VARCHAR DEFAULT 'Standard',
+  frametype INT DEFAULT NULL,
+  socket_amount_min INT DEFAULT 0,
+  socket_amount_max INT DEFAULT 6,
+  link_amount_min INT DEFAULT 0,
+  link_amount_max INT DEFAULT 6,
+  item_lvl_min INT DEFAULT 0,
+  item_lvl_max INT DEFAULT 100,
+  is_identified BOOLEAN DEFAULT NULL,
+  is_verified BOOLEAN DEFAULT NULL,
+  is_corrupted BOOLEAN DEFAULT NULL,
+  is_enchanted BOOLEAN DEFAULT NULL,
+  is_crafted BOOLEAN DEFAULT NULL
+  ) RETURNS SETOF items AS $$
 SELECT *
 FROM items
 WHERE
     ((LENGTH(TRIM(search)) = 0 AND type_line ILIKE '%' || search || '%') OR (document @@ to_tsquery(REGEXP_REPLACE(TRIM(search), '\s+', '&', 'g')))) AND
     league LIKE league_name AND ((frametype IS NULL) OR (frame_type = frametype)) AND
-    (socket_amount BETWEEN socket_amount_min AND socket_amount_max) AND (link_amount BETWEEN link_amount_min AND link_amount_max) AND (ilvl BETWEEN item_lvl_min AND item_lvl_max) AND
+    ((variable_data->>'socket_amount')::int >= socket_amount_min AND (variable_data->>'socket_amount')::int <= socket_amount_max) AND 
+    ((variable_data->>'link_amount')::int >= link_amount_min AND (variable_data->>'link_amount')::int <= link_amount_max) AND
+    (ilvl BETWEEN item_lvl_min AND item_lvl_max) AND
     ((is_identified IS NULL AND identified IS NOT NULL) OR (is_identified IS TRUE AND identified IS TRUE) OR (is_identified IS FALSE AND identified IS FALSE)) AND
-    ((is_verified IS NULL AND identified IS NOT NULL) OR (is_verified IS TRUE AND identified IS TRUE) OR (is_verified IS FALSE AND identified IS FALSE)) AND
-    ((is_corrupted IS NULL AND identified IS NOT NULL) OR (is_corrupted IS TRUE AND identified IS TRUE) OR (is_corrupted IS FALSE AND identified IS FALSE)) AND
-    ((is_enchanted IS NULL AND identified IS NOT NULL) OR (is_enchanted IS TRUE AND identified IS TRUE) OR (is_enchanted IS FALSE AND identified IS FALSE)) AND
-    ((is_crafted IS NULL AND identified IS NOT NULL) OR (is_crafted IS TRUE AND identified IS TRUE) OR (is_crafted IS FALSE AND identified IS FALSE))
+    ((is_verified IS NULL AND verified IS NOT NULL) OR (is_verified IS TRUE AND verified IS TRUE) OR (is_verified IS FALSE AND verified IS FALSE)) AND
+    ((is_corrupted IS NULL AND corrupted IS NOT NULL) OR (is_corrupted IS TRUE AND corrupted IS TRUE) OR (is_corrupted IS FALSE AND corrupted IS FALSE)) AND
+    ((is_enchanted IS NULL AND enchanted IS NOT NULL) OR (is_enchanted IS TRUE AND enchanted IS TRUE) OR (is_enchanted IS FALSE AND enchanted IS FALSE)) AND
+    ((is_crafted IS NULL AND crafted IS NOT NULL) OR (is_crafted IS TRUE AND crafted IS TRUE) OR (is_crafted IS FALSE AND crafted IS FALSE))
 $$ LANGUAGE SQL STABLE;
 
 
@@ -238,7 +233,7 @@ $create_document_on_item$ LANGUAGE plpgsql;
 CREATE TRIGGER create_document_on_item BEFORE INSERT ON items
     FOR EACH ROW EXECUTE PROCEDURE create_document_on_item();
 
-CREATE UNIQUE INDEX item ON items USING BTREE (item_id);
+
 CREATE INDEX idx_fts_search ON items USING gin(document);
 CREATE INDEX idx_mods ON mods USING BTREE (item_id);
 CREATE INDEX idx_properties ON properties USING BTREE (item_id);
@@ -252,40 +247,41 @@ CREATE INDEX idx_sockets ON sockets USING BTREE (item_id);
 -- VACUUM ANALYZE mods;VACUUM ANALYZE requirements;VACUUM ANALYZE sockets;
 -- SELECT pg_reload_conf();
 
---ALTER TABLE accounts SET UNLOGGED;ALTER TABLE stashes SET UNLOGGED;ALTER TABLE items SET UNLOGGED;ALTER TABLE sockets SET UNLOGGED;
---ALTER TABLE properties SET UNLOGGED;ALTER TABLE requirements SET UNLOGGED;ALTER TABLE mods SET UNLOGGED;
+
 
 ALTER TABLE accounts SET (autovacuum_vacuum_scale_factor = 0.0);
 ALTER TABLE accounts SET (autovacuum_vacuum_threshold = 10);
-ALTER TABLE accounts SET (autovacuum_analyze_scale_factor = 0.0);
-ALTER TABLE accounts SET (autovacuum_analyze_threshold = 10);
+ALTER TABLE accounts SET (autovacuum_analyze_scale_factor = 0.2);
+ALTER TABLE accounts SET (autovacuum_analyze_threshold = 1000);
+ALTER TABLE accounts SET (autovacuum_vacuum_scale_factor = 0.0);
+
 
 ALTER TABLE stashes SET (autovacuum_vacuum_scale_factor = 0.0);
 ALTER TABLE stashes SET (autovacuum_vacuum_threshold = 10);
-ALTER TABLE stashes SET (autovacuum_analyze_scale_factor = 0.0);
-ALTER TABLE stashes SET (autovacuum_analyze_threshold = 10);
+ALTER TABLE stashes SET (autovacuum_analyze_scale_factor = 0.2);
+ALTER TABLE stashes SET (autovacuum_analyze_threshold = 1000);
 
 ALTER TABLE items SET (autovacuum_vacuum_scale_factor = 0.0);
 ALTER TABLE items SET (autovacuum_vacuum_threshold = 50);
-ALTER TABLE items SET (autovacuum_analyze_scale_factor = 0.0);
-ALTER TABLE items SET (autovacuum_analyze_threshold = 50);
+ALTER TABLE items SET (autovacuum_analyze_scale_factor = 0.2);
+ALTER TABLE items SET (autovacuum_analyze_threshold = 1000);
 
 ALTER TABLE sockets SET (autovacuum_vacuum_scale_factor = 0.0);
 ALTER TABLE sockets SET (autovacuum_vacuum_threshold = 100);
-ALTER TABLE sockets SET (autovacuum_analyze_scale_factor = 0.0);
-ALTER TABLE sockets SET (autovacuum_analyze_threshold = 100);
+ALTER TABLE sockets SET (autovacuum_analyze_scale_factor = 0.2);
+ALTER TABLE sockets SET (autovacuum_analyze_threshold = 1000);
 
 ALTER TABLE properties SET (autovacuum_vacuum_scale_factor = 0.0);
 ALTER TABLE properties SET (autovacuum_vacuum_threshold = 100);
-ALTER TABLE properties SET (autovacuum_analyze_scale_factor = 0.0);
-ALTER TABLE properties SET (autovacuum_analyze_threshold = 100);
+ALTER TABLE properties SET (autovacuum_analyze_scale_factor = 0.2);
+ALTER TABLE properties SET (autovacuum_analyze_threshold = 1000);
 
 ALTER TABLE requirements SET (autovacuum_vacuum_scale_factor = 0.0);
 ALTER TABLE requirements SET (autovacuum_vacuum_threshold = 100);
-ALTER TABLE requirements SET (autovacuum_analyze_scale_factor = 0.0);
-ALTER TABLE requirements SET (autovacuum_analyze_threshold = 100);
+ALTER TABLE requirements SET (autovacuum_analyze_scale_factor = 0.2);
+ALTER TABLE requirements SET (autovacuum_analyze_threshold = 1000);
 
 ALTER TABLE mods SET (autovacuum_vacuum_scale_factor = 0.0);
 ALTER TABLE mods SET (autovacuum_vacuum_threshold = 100);
-ALTER TABLE mods SET (autovacuum_analyze_scale_factor = 0.0);
-ALTER TABLE mods SET (autovacuum_analyze_threshold = 100);
+ALTER TABLE mods SET (autovacuum_analyze_scale_factor = 0.2);
+ALTER TABLE mods SET (autovacuum_analyze_threshold = 1000);

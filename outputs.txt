@@ -1,0 +1,62 @@
+poe=# select count(*) as sum, account_name from items group by account_name order by sum desc limit 5;
+  sum  | account_name
+-------+--------------
+ 22216 | morloxIC
+  9988 | Chimberly
+  5020 | Dior_cz
+  4456 | Silvafoxy
+  4173 | σÅ░τüúΦè▒µ₧¥
+
+
+
+https://www.postgresql.org/docs/9.1/static/sql-syntax-calling-funcs.html
+Again, the argument uppercase was omitted so it is set to false implicitly. One advantage of using named notation is that the arguments may be specified in any order, for example:
+
+https://www.postgresql.org/docs/9.5/static/pgstattuple.html
+
+CREATE EXTENSION pgstattuple ;
+SELECT * FROM pgstatindex('items_pkey'); 
+
+explain analyze select search_items('ring', 'Hardcore', null, 0, 6, 0, 6, 0, 100, true, null, null, null, null);
+
+select * from pg_stat_progress_vacuum ;
+
+autovacuum, dead tuples
+select * from pg_stat_user_tables;
+
+ALTER TABLE leagues SET LOGGED;
+ALTER TABLE accounts SET LOGGED;
+ALTER TABLE change_id SET LOGGED;
+ALTER TABLE value_type SET LOGGED;
+ALTER TABLE frame_type SET LOGGED;
+ALTER TABLE stashes SET LOGGED;
+ALTER TABLE items SET LOGGED;
+ALTER TABLE sockets SET LOGGED;
+ALTER TABLE properties SET LOGGED;
+ALTER TABLE requirements SET LOGGED;
+ALTER TABLE mods SET LOGGED;
+
+ALTER TABLE leagues SET UNLOGGED;
+ALTER TABLE accounts SET UNLOGGED;
+ALTER TABLE change_id SET UNLOGGED;
+ALTER TABLE value_type SET UNLOGGED;
+ALTER TABLE frame_type SET UNLOGGED;
+ALTER TABLE stashes SET UNLOGGED;
+ALTER TABLE items SET UNLOGGED;
+ALTER TABLE sockets SET UNLOGGED;
+ALTER TABLE properties SET UNLOGGED;
+ALTER TABLE requirements SET UNLOGGED;
+ALTER TABLE mods SET UNLOGGED;
+
+SELECT pg_reload_conf();
+
+
+poe=# explain analyze select search_items('ring', 'Hardcore', null, 0, 6, 0, 6, 0, 100, true, null, null, null, null);
+-[ RECORD 1 ]--------------------------------------------------------------------------------------------------
+QUERY PLAN | ProjectSet  (cost=0.00..5.27 rows=1000 width=32) (actual time=99.956..391604.753 rows=957 loops=1)
+-[ RECORD 2 ]--------------------------------------------------------------------------------------------------
+QUERY PLAN |   ->  Result  (cost=0.00..0.01 rows=1 width=0) (actual time=0.000..0.001 rows=1 loops=1)
+-[ RECORD 3 ]--------------------------------------------------------------------------------------------------
+QUERY PLAN | Planning time: 0.022 ms
+-[ RECORD 4 ]--------------------------------------------------------------------------------------------------
+QUERY PLAN | Execution time: 391635.203 ms

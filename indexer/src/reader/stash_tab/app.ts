@@ -47,12 +47,12 @@ export const parseData = async ({ data: { next_change_id, stashes } }: { data: a
         if (item.properties)
           item.properties.forEach((property: any) => {
             // Elemental Damage can have more than one values (one for each element)
-            if (property.values.length > 1) {
-              for (let i = 0; i < property.values.length; i++)
-                stashTabData.properties.push(new Property(itemId, i, property))
-            } else {
-              stashTabData.properties.push(new Property(itemId, 0, property))
-            }
+            // if (property.values.length > 1 && property.displayMode !== 3) {
+            //  for (let i = 0; i < property.values.length; i++)
+            //   stashTabData.properties.push(new Property(itemId, i, property))
+            //} else {
+            stashTabData.properties.push(new Property(itemId, 0, property))
+            //}
           })
 
         if (item.additionalProperties)
@@ -137,10 +137,10 @@ export const pollServer = async () => {
 
       if (sqlCreationSuccessful || csvCreationSuccessful) {
         console.timeEnd('SQL and CSV files creation took')
-        await queries.upsertCurrentNextchange_id(LATEST_ID, true)
+        await queries.upsertCurrentNextchangeId(LATEST_ID, true)
         LATEST_ID = stashTabData.next_change_id
       } else {
-        await queries.upsertCurrentNextchange_id(LATEST_ID, false)
+        await queries.upsertCurrentNextchangeId(LATEST_ID, false)
       }
 
       setTimeout(loop, POLL_SERVER_REPEAT_CYCLE)

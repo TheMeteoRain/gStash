@@ -39,7 +39,7 @@ export default class Property {
       this.property_value_type = Array.isArray(values[0]) ? values[0][1] : null
     }
 
-    if (values.length > 1) {
+    /* if (values.length > 1) {
       this.property_value1 = Array.isArray(values[valuesIndex]) ? values[valuesIndex][0] : null
       if (this.property_value1 && this.property_value1.includes('-')) {
         const valueArray = this.property_value1.split('-')
@@ -47,6 +47,6 @@ export default class Property {
         this.property_value2 = valueArray[1]
       }
       this.property_value_type = Array.isArray(values[valuesIndex]) ? values[0][1] : null
-    }
+    } */
   }
 }

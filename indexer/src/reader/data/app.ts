@@ -11,13 +11,8 @@ export const parseStatData = ({ data: { result } }: { data: any, result: any[] }
   const statsData: StatData[] = []
 
   result.forEach(({ label, entries }: { label: string, entries: any[] }) => {
-    entries.forEach(({ id, text, type }: { id: string, text: string, type: string }) => {
-      const statData = new StatData()
-      statData.id = id
-      statData.text = encodeURI(text)
-      statData.type = type
-      statsData.push(statData)
-    })
+    entries.forEach(({ id, text, type }: { id: string, text: string, type: string }) =>
+      statsData.push(new StatData(id, text, type)))
   })
 
   return statsData
@@ -27,15 +22,8 @@ export const parseItemData = ({ data: { result } }: { data: any, result: any[] }
   const itemsData: ItemData[] = []
 
   result.forEach(({ label, entries }: { label: string, entries: any[] }) => {
-    entries.forEach(({ name, type, text, disc, flags }: { name: string, type: string, text: string, disc: string, flags: any[] }) => {
-      const itemData = new ItemData()
-      itemData.name = name
-      itemData.type = type
-      itemData.text = text
-      itemData.disc = disc
-      itemData.flags = flags
-      itemsData.push(itemData)
-    })
+    entries.forEach(({ name, type, text, disc, flags }: { name: string, type: string, text: string, disc: string, flags: any[] }) =>
+      itemsData.push(new ItemData({ name, type, text, disc, flags })))
   })
 
   return itemsData
@@ -44,19 +32,8 @@ export const parseItemData = ({ data: { result } }: { data: any, result: any[] }
 export const parseLeagueData = ({ data: [...leagues] }: { data: any[], leagues: any }): LeagueData[] => {
   const leaguesData: LeagueData[] = []
 
-  const checkIfLeagueIsActive = (start: Date, end: Date | null): boolean => {
-    if (end instanceof Date && start.getTime() < end.getTime())
-      return false
-
-    return true
-  }
-
-  leagues.forEach(({ id, startAt, endAt }: { id: string, startAt: Date, endAt: Date | null }) => {
-    const leagueData = new LeagueData()
-    leagueData.league_name = id
-    leagueData.active = checkIfLeagueIsActive(startAt, endAt)
-    leaguesData.push(leagueData)
-  })
+  leagues.forEach(({ id, startAt, endAt }: { id: string, startAt: Date, endAt: Date | null }) =>
+    leaguesData.push(new LeagueData(id, startAt, endAt)))
 
   return leaguesData
 }

@@ -157,9 +157,7 @@ CREATE UNLOGGED TABLE mods (
 CREATE UNLOGGED TABLE properties (
   item_id VARCHAR(128) NOT NULL,
   property_name VARCHAR(128) NOT NULL,
-  property_value1 VARCHAR(128) DEFAULT NULL,
-  property_value2 VARCHAR(128) DEFAULT NULL,
-  property_value_type SMALLINT DEFAULT NULL,
+  property_values JSONB NOT NULL,
   property_display_mode SMALLINT DEFAULT NULL,
   property_progress DECIMAL DEFAULT NULL,
   PRIMARY KEY (item_id, property_name),

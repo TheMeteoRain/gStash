@@ -54,12 +54,7 @@ export const csvFile = ({ directory = 'csv' }: { directory: string }) => {
 
       const headers = Object.keys(data[0])
 
-      data = data.map((element: any, index: number) => headers.map((header) => {
-        if (header === 'variable_data')
-          return JSON.stringify(element[header])
-
-        return element[header]
-      }).join('|'))
+      data = data.map((element: any, index: number) => headers.map((header) => element[header]).join('|'))
 
       const fileName = `${title}.csv`
       const filePath = directory + '/' + fileName

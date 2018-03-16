@@ -45,19 +45,12 @@ export const parseData = async ({ data: { next_change_id, stashes } }: { data: a
             stashTabData.sockets.push(new Socket(itemId, index, socket)))
 
         if (item.properties)
-          item.properties.forEach((property: any) => {
-            // Elemental Damage can have more than one values (one for each element)
-            // if (property.values.length > 1 && property.displayMode !== 3) {
-            //  for (let i = 0; i < property.values.length; i++)
-            //   stashTabData.properties.push(new Property(itemId, i, property))
-            //} else {
-            stashTabData.properties.push(new Property(itemId, 0, property))
-            //}
-          })
+          item.properties.forEach((property: any) =>
+            stashTabData.properties.push(new Property(itemId, property)))
 
         if (item.additionalProperties)
           item.additionalProperties.forEach((property: any) =>
-            stashTabData.properties.push(new Property(itemId, 0, property)))
+            stashTabData.properties.push(new Property(itemId, property)))
 
         if (item.requirements)
           item.requirements.forEach((requirement: any) =>

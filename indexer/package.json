@@ -23,7 +23,6 @@
   "dependencies": {
     "@types/dotenv": "^4.0.2",
     "@types/node": "^8.0.53",
-    "@types/pg": "^7.4.4",
     "axios": "^0.16.2",
     "dotenv": "^4.0.0",
     "pg": "^7.4.1",
@@ -31,5 +30,8 @@
     "pg-monitor": "^0.8.3",
     "pg-promise": "^7.3.2",
     "ts-node": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/pg": "^7.4.5"
   }
 }

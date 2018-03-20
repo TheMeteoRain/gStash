@@ -2,8 +2,6 @@ import * as fs from 'fs'
 
 import { pgp } from '../db'
 
-const concatQueries = (queryArray: string[]): string => pgp.helpers.concat([...queryArray])
-
 export const checkArrayLength = (array: any[] | undefined, method: any) => {
   if (Array.isArray(array)) {
     return array.length > 0 ? method(array) : ''
@@ -20,7 +18,7 @@ export const sqlFile = ({ title, directory = 'sql' }: { title: string, directory
       sqlQueryArray.push(checkArrayLength(array, method))
     },
     createFile: () => {
-      const sqlQueryString: string = concatQueries(sqlQueryArray)
+      const sqlQueryString: string = pgp.helpers.concat([...sqlQueryArray])
 
       const fileName = `${title}.sql`
       const filePath = directory + '/' + fileName

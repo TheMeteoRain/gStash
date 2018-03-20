@@ -36,9 +36,9 @@ export const parseLeagueData = ({ data: [...leagues] }: { data: any[], leagues: 
     leaguesData.push(new LeagueData(id, startAt, endAt)))
 
   return leaguesData
-}
+};
 
-export const pollServer = async () => {
+(async function main() {
   try {
     const statsData: StatData[] = await downloadAndParse({
       url: 'https://www.pathofexile.com/api/trade/data/stats',
@@ -67,7 +67,7 @@ export const pollServer = async () => {
       console.timeEnd('Sql file creation took')
     }
 
-    setTimeout(pollServer, POLL_SERVER_REPEAT_CYCLE)
+    setTimeout(main, POLL_SERVER_REPEAT_CYCLE)
   } catch (error) {
     if (error.response) {
       // The request was made and the server responded with a status code
@@ -86,8 +86,6 @@ export const pollServer = async () => {
     }
     console.log(error.config)
 
-    setTimeout(pollServer, 5000)
+    setTimeout(main, 5000)
   }
-}
-
-pollServer()
+})()

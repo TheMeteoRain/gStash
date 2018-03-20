@@ -57,19 +57,24 @@ export const parseData = async ({ data: { next_change_id, stashes } }: { data: a
             stashTabData.requirements.push(new Requirement(itemId, requirement)))
 
         if (item.explicitMods)
-          item.explicitMods.forEach((mod: any) => stashTabData.mods.push(new Mod(itemId, mod, ModType.EXPLICIT)))
+          item.explicitMods.forEach((mod: any) =>
+            stashTabData.mods.push(new Mod(itemId, mod, ModType.EXPLICIT)))
 
         if (item.implicitMods)
-          item.implicitMods.forEach((mod: any) => stashTabData.mods.push(new Mod(itemId, mod, ModType.IMPLICIT)))
+          item.implicitMods.forEach((mod: any) =>
+            stashTabData.mods.push(new Mod(itemId, mod, ModType.IMPLICIT)))
 
         if (item.enchantMods)
-          item.enchantMods.forEach((mod: any) => stashTabData.mods.push(new Mod(itemId, mod, ModType.ENCHANTED)))
+          item.enchantMods.forEach((mod: any) =>
+            stashTabData.mods.push(new Mod(itemId, mod, ModType.ENCHANTED)))
 
         if (item.craftedMods)
-          item.craftedMods.forEach((mod: any) => stashTabData.mods.push(new Mod(itemId, mod, ModType.CRAFTED)))
+          item.craftedMods.forEach((mod: any) =>
+            stashTabData.mods.push(new Mod(itemId, mod, ModType.CRAFTED)))
 
         if (item.utilityMods)
-          item.utilityMods.forEach((mod: any) => stashTabData.mods.push(new Mod(itemId, mod, ModType.UTILITY)))
+          item.utilityMods.forEach((mod: any) =>
+            stashTabData.mods.push(new Mod(itemId, mod, ModType.UTILITY)))
 
       })
     } else {
@@ -78,16 +83,16 @@ export const parseData = async ({ data: { next_change_id, stashes } }: { data: a
   })
 
   return stashTabData
-}
+};
 
-export const pollServer = async () => {
+(async function main() {
   let LATEST_ID: string = '0'
   try {
     console.log('Fetching latest change id')
-    LATEST_ID = await queries.getLatestNextchangeId()
+    LATEST_ID = await queries.getLatestNextChangeId()
     console.log('Fetching done')
   } catch (error) {
-    console.error('Could not get change id from database')
+    console.error('Could not fetch change id')
     console.error(error)
   }
 
@@ -130,15 +135,15 @@ export const pollServer = async () => {
 
       if (sqlCreationSuccessful || csvCreationSuccessful) {
         console.timeEnd('SQL and CSV files creation took')
-        await queries.upsertCurrentNextchangeId(LATEST_ID, true)
+        await queries.upsertCurrentNextChangeId(LATEST_ID, true)
         LATEST_ID = stashTabData.next_change_id
       } else {
-        await queries.upsertCurrentNextchangeId(LATEST_ID, false)
+        await queries.upsertCurrentNextChangeId(LATEST_ID, false)
       }
 
       setTimeout(loop, POLL_SERVER_REPEAT_CYCLE)
     } catch (error) {
-      await queries.upsertCurrentNextchange_id(LATEST_ID, false)
+      await queries.upsertCurrentNextChangeId(LATEST_ID, false)
 
       if (error.response) {
         // The request was made and the server responded with a status code
@@ -162,6 +167,4 @@ export const pollServer = async () => {
   }
 
   return loop()
-}
-
-pollServer()
+})()

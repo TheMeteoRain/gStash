@@ -17,7 +17,7 @@ export const parseFileName = (fileName: string) => {
 }
 
 export const findFilesWithId = ({ directory, fileId }: { directory: string, fileId: string }): any => {
-  if (!fileId) return
+  if (!directory || !fileId) return
 
   const fileArray = fs.readdirSync(directory, 'utf8')
 

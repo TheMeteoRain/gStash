@@ -1,4 +1,4 @@
-import { db } from '../../db'
+import { pgp, db } from '../../db'
 import { sqlFile } from '../create'
 import downloadAndParse from '../downloadAndParse'
 
@@ -36,7 +36,7 @@ export const parseLeagueData = ({ data: [...leagues] }: { data: any[], leagues: 
     leaguesData.push(new LeagueData(id, startAt, endAt)))
 
   return leaguesData
-};
+}
 
 (async function main() {
   try {
@@ -53,7 +53,16 @@ export const parseLeagueData = ({ data: [...leagues] }: { data: any[], leagues: 
       parser: parseLeagueData,
     })
 
-    console.time('Sql file creation took')
+    await db.task('Inserting data', (t) =>
+      t.batch([
+        t.result(queries.insertStatsData(statsData)),
+        t.result(queries.insertItemsData(itemsData)),
+        t.result(queries.insertLeaguesData(leagueData)),
+      ]))
+      .then((events) => console.log)
+      .then((error) => console.error)
+
+    /* console.time('Sql file creation took')
     const sql = sqlFile({
       title: 'data',
       directory: 'sql',
@@ -65,7 +74,7 @@ export const parseLeagueData = ({ data: [...leagues] }: { data: any[], leagues: 
 
     if (creationSuccessful) {
       console.timeEnd('Sql file creation took')
-    }
+    } */
 
     setTimeout(main, POLL_SERVER_REPEAT_CYCLE)
   } catch (error) {

@@ -11,7 +11,7 @@ import { parseFileName, findFilesWithId, deleteFile } from './util'
 
 // @ts-ignore
 const pool: Pool = new Pool({
-  user: 'katri',
+  user: 'Mete',
   host: 'localhost',
   database: 'poe',
   password: null,
@@ -43,7 +43,7 @@ pool.on('error', (error, client) => {
   let nextChangeId: string | null = null
 
   try {
-    const nextChangeId = await queries.getLatestNextchangeId(client)
+    nextChangeId = await queries.getLatestNextChangeId(client)
       .then((res) => res.rows[0].next_change_id)
     client.release()
     console.log(`Preparing to insert id: ${nextChangeId}`)
@@ -119,7 +119,7 @@ pool.on('error', (error, client) => {
   }
 
   (async function insertSql() {
-    if (fileArraySql.length === 0) return setTimeout(insertCsv, 1000)
+    if (fileArraySql.length === 0) return insertCsv()
 
     fileArraySql.shift().then(async (fileName: string) => {
       const {

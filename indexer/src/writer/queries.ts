@@ -5,7 +5,7 @@ const queries = {
       text: 'UPDATE change_id SET uploaded = $1 WHERE next_change_id = $2 AND downloaded IS TRUE',
       values: [uploaded, nextChangeId],
     }),
-  getLatestNextchangeId: (client) =>
+  getLatestNextChangeId: (client) =>
     client.query({
       name: 'get-change-id',
       text: 'SELECT next_change_id FROM change_id WHERE downloaded IS TRUE AND uploaded IS FALSE ORDER BY id LIMIT 1',

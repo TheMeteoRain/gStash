@@ -7,24 +7,14 @@ CREATE DATABASE poe;
 SET DEFAULT_TEXT_SEARCH_CONFIG = 'english';
 SET CLIENT_ENCODING TO 'UTF8';
 
-CREATE TYPE modType AS ENUM ('EXPLICIT','IMPLICIT','CRAFTED','ENCHANTED','UTILITY');
-CREATE TYPE frameType AS ENUM ('Normal', 'Magic', 'Rare', 'Unique', 'Gem', 'Currency', 'Divination card', 'Quest item', 'Prophecy', 'Relic');
 
-
-CREATE UNLOGGED TABLE accounts (
-  account_name VARCHAR(128),
-  last_character_name VARCHAR(128) DEFAULT NULL,
-  last_seen BIGINT DEFAULT 0
-);
-
-
-CREATE UNLOGGED TABLE change_id (
+CREATE TABLE change_id (
   id BIGSERIAL,
   next_change_id VARCHAR(128) PRIMARY KEY,
   downloaded BOOLEAN DEFAULT 'FALSE',
   uploaded BOOLEAN DEFAULT 'FALSE'
 );
-INSERT INTO change_id(next_change_id, downloaded, uploaded) VALUES('74109747-77901157-72955011-84499034-78809239', 'FALSE', 'FALSE');
+INSERT INTO change_id(next_change_id, downloaded, uploaded) VALUES('0', 'FALSE', 'FALSE');
 
 
 
@@ -37,36 +27,25 @@ CREATE UNLOGGED TABLE items_data (
   name VARCHAR(128) DEFAULT NULL,
   type VARCHAR(128) NOT NULL,
   disc VARCHAR(128) DEFAULT NULL,
-  text VARCHAR(128)
+  text VARCHAR(128) PRIMARY KEY
 );
 
 CREATE UNLOGGED TABLE stats_data (
-  id VARCHAR(256),
+  id VARCHAR(256) PRIMARY KEY,
   text VARCHAR(512) NOT NULL,
   type VARCHAR(128) NOT NULL
 );
 
-CREATE UNLOGGED TABLE frame_type (
-  id SMALLINT,
-  frame_type_value frameType NOT NULL
+
+CREATE UNLOGGED TABLE accounts (
+  account_name VARCHAR(128) PRIMARY KEY,
+  last_character_name VARCHAR(128) DEFAULT NULL,
+  last_seen BIGINT DEFAULT 0
 );
-INSERT INTO frame_type(id, frame_type_value)
-VALUES (0, 'Normal'), (1, 'Magic'), (2, 'Rare'), (3, 'Unique'), (4, 'Gem'), (5,'Currency'), (6, 'Divination card'),
-(7,'Quest item'), (8, 'Prophecy'), (9, 'Relic');
-
-
-CREATE TYPE vType AS ENUM ('Default', 'Augmented', 'Unmet', 'Physical','Fire', 'Cold', 'Lightning', 'Chaos');
-CREATE UNLOGGED TABLE value_type (
-  id SMALLINT,
-  value_type vType NOT NULL
-);
-INSERT INTO value_type
-VALUES (0, 'Default'), (1, 'Augmented'), (2, 'Unmet'), (3, 'Physical'), (4, 'Fire'), (5, 'Cold'), (6, 'Lightning'), (7, 'Chaos');
-
 
 CREATE TYPE stash_type AS ENUM ('NormalStash','PremiumStash','QuadStash','EssenceStash','CurrencyStash','DivinationCardStash', 'MapStash');
 CREATE UNLOGGED TABLE stashes (
-  stash_id VARCHAR(128),
+  stash_id VARCHAR(128) PRIMARY KEY,
   stash_name VARCHAR(128) DEFAULT NULL,
   stash_type stash_type DEFAULT 'NormalStash',
   stash_public BOOLEAN DEFAULT 'FALSE'
@@ -86,7 +65,7 @@ CREATE UNLOGGED TABLE items (
   identified BOOLEAN NOT NULL,
   ilvl SMALLINT DEFAULT NULL,
   inventory_id VARCHAR(128) DEFAULT NULL,
-  item_id VARCHAR(128) PRIMARY KEY,
+  item_id VARCHAR(128) NOT NULL,
   league VARCHAR(128) DEFAULT NULL,
   name VARCHAR(128) DEFAULT NULL,
   stash_id VARCHAR(128) DEFAULT NULL,
@@ -103,7 +82,7 @@ CREATE UNLOGGED TABLE items (
 CREATE UNLOGGED TABLE mods (
   item_id VARCHAR(128) NOT NULL,
   mod_name TEXT NOT NULL,
-  mod_type modType DEFAULT 'IMPLICIT',
+  mod_type VARCHAR(50) DEFAULT 'IMPLICIT',
   mod_value1 VARCHAR(256) DEFAULT NULL,
   mod_value2 VARCHAR(128) DEFAULT NULL,
   mod_value3 VARCHAR(128) DEFAULT NULL,
@@ -114,9 +93,7 @@ CREATE UNLOGGED TABLE mods (
 CREATE UNLOGGED TABLE properties (
   item_id VARCHAR(128) NOT NULL,
   property_name VARCHAR(128) NOT NULL,
-  property_value1 VARCHAR(128) DEFAULT NULL,
-  property_value2 VARCHAR(128) DEFAULT NULL,
-  property_value_type SMALLINT DEFAULT NULL,
+  property_values JSONB NOT NULL,
   property_display_mode SMALLINT DEFAULT NULL,
   property_progress DECIMAL DEFAULT NULL
 );

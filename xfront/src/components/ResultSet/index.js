@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
 
+import CircularProgress from '@material-ui/core/CircularProgress'
+
 import { graphql } from 'react-apollo'
 import { getItems } from '../../queries'
 
@@ -14,25 +16,28 @@ class ResultSet extends Component {
     console.log(this.props)
     const {
       data,
-      data: { loading, networkStatus, error, searchItems, loadMoreEntries },
+      data: { loading, networkStatus, error, allItems, loadMoreEntries },
     } = this.props
 
-    if (loading && networkStatus === 1) {
-      return 'sss'
+    if (networkStatus === 6) {
+      return <div>Polling!</div>
+    } else if (networkStatus < 7) {
+      return <CircularProgress size={50} />
     }
 
     if (error) {
+      console.log(data)
       console.log(error)
       return <div>ERROR - open console</div>
     }
 
-    if (searchItems.edges.length === 0) {
-      return 'asd'
+    if (allItems.edges.length === 0) {
+      return 'empty'
     }
 
     const {
       pageInfo: { hasNextPage },
-    } = searchItems
+    } = allItems
 
     return (
       <section>
@@ -46,9 +51,10 @@ class ResultSet extends Component {
 
 export default graphql(getItems, {
   // options: (props) => {}
-  options: props => ({
+  options: ({ first, filter }) => ({
     variables: {
-      ...props,
+      first,
+      filter,
     },
     notifyOnNetworkStatusChange: true,
     //fetchPolicy: 'cache-and-network',
@@ -56,26 +62,26 @@ export default graphql(getItems, {
   // This function re-runs every time `data` changes, including after `updateQuery`,
   // meaning our loadMoreEntries function will always have the right cursor
   props: ({ data, ownProps: { updating, ...ownProps } }) => {
-    const { loading, cursor, searchItems, fetchMore } = data
+    const { loading, cursor, allItems, fetchMore } = data
     console.log(data)
     data.loadMoreEntries = () => {
       return fetchMore({
         query: getItems,
         variables: {
-          cursor: searchItems.pageInfo.endCursor,
+          cursor: allItems.pageInfo.endCursor,
           ...ownProps,
         },
         updateQuery: (previousResult, { fetchMoreResult }) => {
-          const newEdges = fetchMoreResult.searchItems.edges
-          const pageInfo = fetchMoreResult.searchItems.pageInfo
+          const newEdges = fetchMoreResult.allItems.edges
+          const pageInfo = fetchMoreResult.allItems.pageInfo
 
           return newEdges.length
             ? {
               // Put the new comments at the end of the list and update `pageInfo`
               // so we have the new `endCursor` and `hasNextPage` values
-              searchItems: {
-                __typename: previousResult.searchItems.__typename,
-                edges: [...previousResult.searchItems.edges, ...newEdges],
+              allItems: {
+                __typename: previousResult.allItems.__typename,
+                edges: [...previousResult.allItems.edges, ...newEdges],
                 pageInfo,
               },
             }

@@ -1,112 +1,158 @@
 import React, { Component } from 'react'
 
+import { withStyles } from '@material-ui/core/styles'
+
 import Colors from '../../Colors'
 
 import Property from './Property'
 import Requirement from './Requirement'
 import Mod from './Mod'
 import Unmet from './Unmet'
+import Experience from './Experience'
 
-import Divider from 'material-ui/Divider'
-import FlatButton from 'material-ui/FlatButton'
-import {
-  Card,
-  CardActions,
-  CardHeader,
-  CardMedia,
-  CardTitle,
-  CardText,
-} from 'material-ui/Card'
+import Divider from '@material-ui/core/Divider'
+import Button from '@material-ui/core/Button'
+import Grid from '@material-ui/core/Grid'
+import Card from '@material-ui/core/Card'
+import CardContent from '@material-ui/core/CardContent'
+import CardMedia from '@material-ui/core/CardMedia'
+import Typography from '@material-ui/core/Typography'
+import IconButton from '@material-ui/core/IconButton'
 
-export default class Item extends Component {
+const styles = theme => ({
+  card: {
+    textAlign: 'center',
+    marginTop: theme.spacing.unit * 3,
+  },
+  heading: {},
+  content: {
+    minHeight: 100,
+  },
+  media: {
+    width: 'auto',
+    height: '100%',
+    backgroundSize: 'unset',
+  },
+})
+
+class Item extends Component {
   constructor(props) {
     super(props)
 
-    this.handleCopyToClipboard = this.handleCopyToClipboard.bind(this)
+    //this.handleCopyToClipboard = this.handleCopyToClipboard.bind(this)
   }
 
-  handleCopyToClipboard() {
-    const {
-      typeLine,
-      league,
-      x,
-      y,
-      note,
-      stashByStashId: { stashName },
-      accountByAccountName: { lastCharacterName },
-    } = this.props.node
+  // handleCopyToClipboard() {
+  //   const {
+  //     typeLine,
+  //     league,
+  //     x,
+  //     y,
+  //     note,
+  //     stashByStashId: { stashName },
+  //     accountByAccountName: { lastCharacterName },
+  //   } = this.props.node
 
-    const temporaryElement = document.createTextNode(
-      `@${lastCharacterName} Hi, I would like to buy your ${typeLine} listed for ${note} in ${league} (stash tab "${stashName}"; position: left: ${x}, top: ${y})`
-    )
-    document.body.appendChild(temporaryElement)
-    const selection = window.getSelection()
-    const range = document.createRange()
-    range.selectNodeContents(temporaryElement)
-    selection.removeAllRanges()
-    selection.addRange(range)
+  //   const temporaryElement = document.createTextNode(
+  //     `@${lastCharacterName} Hi, I would like to buy your ${typeLine} listed for ${note} in ${league} (stash tab "${stashName}"; position: left: ${x}, top: ${y})`
+  //   )
+  //   document.body.appendChild(temporaryElement)
+  //   const selection = window.getSelection()
+  //   const range = document.createRange()
+  //   range.selectNodeContents(temporaryElement)
+  //   selection.removeAllRanges()
+  //   selection.addRange(range)
 
-    document.execCommand('copy')
-    selection.removeAllRanges()
-    temporaryElement.remove()
-  }
+  //   document.execCommand('copy')
+  //   selection.removeAllRanges()
+  //   temporaryElement.remove()
+  // }
 
   render() {
     const {
-      itemId,
-      name,
-      typeLine,
-      frameType,
-      accountName,
-      icon,
-      ilvl,
-      note,
-      corrupted,
-      identified,
-      requirementsByItemId: { nodes: requirements },
-      propertiesByItemId: { nodes: properties },
-      modsByItemId: { nodes: mods },
-    } = this.props.node
-
-    const expfind = properties.find(
-      property => property.propertyName === 'Experience'
-    )
-    const exp = expfind !== undefined ? expfind.propertyProgress : null
+      classes,
+      node: {
+        item_id,
+        name,
+        type_line,
+        frame_type,
+        account_name,
+        icon,
+        ilvl,
+        note,
+        corrupted,
+        identified,
+        requirementsByItemId: requirements,
+        propertiesByItemId: properties,
+        modsByItemId: mods,
+      },
+    } = this.props
 
     return (
-      <Card style={{ margin: '1rem 0' }}>
-        <CardHeader
-          title={name}
-          subtitle={typeLine}
-          actAsExpander={true}
-          titleStyle={{
-            color: `${Colors.FrameTypes[frameType]}`,
-          }}
-        />
+      <Card className={classes.card}>
+        <Grid container spacing={24}>
+          <Grid item xs={3}>
+            <CardMedia className={classes.media} image={icon} />
+          </Grid>
 
-        <CardText style={{ textAlign: 'center' }}>
-          <div style={{ display: 'inline-block', width: '20%' }}>
-            <img src={icon} alt="" />
-          </div>
+          <Grid item xs={9}>
+            <CardContent>
+              <div className={classes.heading}>
+                <Typography variant="headline">{name}</Typography>
+                <Typography variant="subheading" color="textSecondary">
+                  {type_line}
+                </Typography>
+              </div>
+              <div className={classes.content}>
+                {Property(properties)}
+                <Divider />
+                {Requirement(requirements)}
+                <Divider />
 
-          <div style={{ display: 'inline-block', width: '80%' }}>
-            {Property(properties)}
-            <Divider />
-            {Requirement(requirements)}
-            <Divider />
+                {Mod(mods)}
+                <Divider />
 
-            {Mod(mods)}
-            <Divider />
-
-            {Unmet(identified, corrupted, exp)}
-          </div>
-        </CardText>
-        <CardActions>
-          <FlatButton label="Whisper" />
-          <FlatButton label="Refresh" />
-        </CardActions>
+                {Unmet(identified, corrupted)}
+                {Experience(properties)}
+              </div>
+            </CardContent>
+          </Grid>
+        </Grid>
       </Card>
     )
+
+    // <Card style={{ margin: '1rem 0' }}>
+    //   <CardHeader
+    //     title={name}
+    //     subtitle={typeLine}
+    //     actAsExpander={true}
+    //     titleStyle={{
+    //       color: `${Colors.FrameTypes[frameType]}`,
+    //     }}
+    //   />
+
+    //   <CardText style={{ textAlign: 'center' }}>
+    //     <div style={{ display: 'inline-block', width: '20%' }}>
+    //       <img src={icon} alt="" />
+    //     </div>
+
+    //     <div style={{ display: 'inline-block', width: '80%' }}>
+    //       {Property(properties)}
+    //       <Divider />
+    //       {Requirement(requirements)}
+    //       <Divider />
+
+    //       {Mod(mods)}
+    //       <Divider />
+
+    //       {Unmet(identified, corrupted)}
+    //     </div>
+    //   </CardText>
+    //   <CardActions>
+    //     <Button flatPrimary label="Whisper" />
+    //     <Button flatSecondary label="Refresh" />
+    //   </CardActions>
+    // </Card>
     /**return (
       <article>
         <Row
@@ -196,3 +242,5 @@ export default class Item extends Component {
     )*/
   }
 }
+
+export default withStyles(styles)(Item)

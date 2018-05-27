@@ -6,51 +6,50 @@ const REQUIREMENT_ORDER = ['Level', 'Str', 'Dex', 'Int']
 
 const formatRequirements = (
   {
-    nodeId,
-    requirementName,
-    requirementValue,
-    requirementValueType,
-    requirementDisplayMode,
+    requirement_name,
+    requirement_value,
+    requirement_value_type,
+    requirement_display_mode,
   },
   index,
   array
 ) => {
   const last = array.length - 1 > index ? false : true
-  const value = colorFormat(requirementValue, requirementValueType)
+  const value = colorFormat(requirement_value, requirement_value_type)
 
-  if (requirementDisplayMode === 0) {
+  if (requirement_display_mode === 0) {
     if (last)
       return (
-        <span key={nodeId}>
-          {requirementName} {value}
+        <span key={index}>
+          {requirement_name} {value}
         </span>
       )
 
     return (
-      <span key={nodeId}>
-        {requirementName} {value},{' '}
+      <span key={index}>
+        {requirement_name} {value},{' '}
       </span>
     )
   }
 
-  if (requirementDisplayMode === 1) {
+  if (requirement_display_mode === 1) {
     if (last)
       return (
-        <span key={nodeId}>
-          {value} {requirementName}
+        <span key={index}>
+          {value} {requirement_name}
         </span>
       )
 
     return (
-      <span key={nodeId}>
-        {value} {requirementName},{' '}
+      <span key={index}>
+        {value} {requirement_name},{' '}
       </span>
     )
   }
 
   return (
-    <div key={nodeId}>
-      <span>{requirementName}</span>
+    <div key={index}>
+      <span>{requirement_name}</span>
     </div>
   )
 
@@ -58,13 +57,13 @@ const formatRequirements = (
 }
 
 const Requirement = requirements => {
-  if (requirements.length === 0) return
+  if (typeof requirements === 'undefined' || requirements.length === 0) return
 
   // APOLLO IS IMMUTABLE, DO - ARRAY OF
   const sortedList = Array.of(...requirements).sort(
     (a, b) =>
-      REQUIREMENT_ORDER.indexOf(a.requirementName) -
-      REQUIREMENT_ORDER.indexOf(b.requirementName)
+      REQUIREMENT_ORDER.indexOf(a.requirement_name) -
+      REQUIREMENT_ORDER.indexOf(b.requirement_name)
   )
 
   return sortedList.map(formatRequirements)

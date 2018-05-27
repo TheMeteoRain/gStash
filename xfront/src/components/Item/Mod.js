@@ -2,28 +2,28 @@ import React from 'react'
 
 import { colorFormat } from './utils'
 
-const formatMods = ({
-  nodeId,
-  modName,
-  modValue1,
-  modValue2,
-  modValue3,
-  modValue4,
-}) => {
+const formatMods = (
+  { mod_name, mod_value1, mod_value2, mod_value3, mod_value4 },
+  index
+) => {
   let i = 0
-  const mod = modName.replace(/#/g, () => {
+  const mod = mod_name.replace(/#/g, () => {
     i++
-    if (i === 1) return modValue1
-    if (i === 2) return modValue2
-    if (i === 3) return modValue3
-    if (i === 4) return modValue4
+    if (i === 1) return mod_value1
+    if (i === 2) return mod_value2
+    if (i === 3) return mod_value3
+    if (i === 4) return mod_value4
   })
 
-  return <div key={nodeId}>{colorFormat(mod, 1)}</div>
+  return (
+    <div key={index} style={{ alignSelf: 'center' }}>
+      {colorFormat(mod, 1)}
+    </div>
+  )
 }
 
 const Mod = mods => {
-  if (mods.length === 0) return
+  if (typeof mods === 'undefined' || mods.length === 0) return
 
   return mods.map(formatMods)
 }

@@ -1,16 +1,27 @@
 import React, { Component } from 'react'
 
-import { Container } from './css'
-import { Header, MainPage } from './containers'
+import { withStyles } from '@material-ui/core/styles'
+
+import { MainPage } from './containers'
+
+const styles = theme => ({
+  root: {
+    width: '80%',
+    margin: `0 auto`,
+    marginTop: theme.spacing.unit * 5,
+  },
+})
 
 class App extends Component {
   render() {
+    const { classes } = this.props
+
     return (
-      <Container>
+      <main className={classes.root}>
         <MainPage />
-      </Container>
+      </main>
     )
   }
 }
 
-export default App
+export default withStyles(styles)(App)

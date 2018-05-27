@@ -1,29 +1,18 @@
 import gql from 'graphql-tag'
-
+const test = gql`
+  query {
+    __typename
+  }
+`
 const getFilters = gql`
   query allFilters {
-    allLeagues {
+    allLeagues(first: null) {
       nodes {
-        leagueName
+        league_name
         active
-        nodeId
       }
     }
-    allFrameTypes {
-      nodes {
-        frameTypeValue
-        id
-        nodeId
-      }
-    }
-    allStatsData {
-      nodes {
-        id
-        text
-        type
-      }
-    }
-    allItemsData {
+    allItemsData(first: null) {
       nodes {
         name
         type
@@ -31,46 +20,26 @@ const getFilters = gql`
         text
       }
     }
+    allStatsData(first: null) {
+      nodes {
+        id
+        text
+        type
+      }
+    }
+    allFrameTypes(first: null) {
+      nodes {
+        id
+        frame_type_value
+      }
+    }
   }
 `
 
 const getItems = gql`
-  query allItemsQuery(
-    $search: String
-    $leagueName: String
-    $frameType: Int
-    $socketAmountMin: Int
-    $socketAmountMax: Int
-    $linkAmountMin: Int
-    $linkAmountMax: Int
-    $itemLvlMin: Int
-    $itemLvlMax: Int
-    $isIdentified: Boolean
-    $isVerified: Boolean
-    $isEnchanted: Boolean
-    $isCrafted: Boolean
-    $isCorrupted: Boolean
-    $first: Int
-    $cursor: Cursor
-  ) {
-    searchItems(
-      search: $search
-      leagueName: $leagueName
-      frametype: $frameType
-      socketAmountMin: $socketAmountMin
-      socketAmountMax: $socketAmountMax
-      linkAmountMin: $linkAmountMin
-      linkAmountMax: $linkAmountMax
-      itemLvlMin: $itemLvlMin
-      itemLvlMax: $itemLvlMax
-      isIdentified: $isIdentified
-      isVerified: $isVerified
-      isEnchanted: $isEnchanted
-      isCrafted: $isCrafted
-      isCorrupted: $isCorrupted
-      first: $first
-      after: $cursor
-    ) {
+  query allItemsQuery($first: Int = 10, $filter: JSON) {
+    allItems(first: $first, filter: $filter) {
+      totalCount
       pageInfo {
         startCursor
         endCursor
@@ -80,69 +49,53 @@ const getItems = gql`
       edges {
         cursor
         node {
-          nodeId
+          account_name
+          added_ts
+          corrupted
+          crafted
+          document
+          enchanted
+          frame_type
+          h
           icon
+          identified
+          ilvl
+          inventory_id
+          item_id
+          league
           name
-          typeLine
-          frameType
+          stash_id
+          type_line
+          updated_ts
+          verfied
+          w
           x
           y
-          inventoryId
-          addedTs
-          updatedTs
-          enchanted
-          crafted
-          accountName
-          w
-          h
-          nodeId
-          ilvl
-          league
-          itemId
-          identified
-          verified
-          corrupted
-          variableData
-          stashByStashId {
-            stashName
-          }
-          accountByAccountName {
-            lastCharacterName
-          }
+          variable_data
           requirementsByItemId {
-            nodes {
-              nodeId
-              requirementName
-              requirementValue
-              requirementValueType
-              requirementDisplayMode
-            }
+            requirement_name
+            requirement_value
+            requirement_value_type
+            requirement_display_mode
           }
           modsByItemId {
-            nodes {
-              modName
-              modValue1
-              modValue2
-              modValue3
-              modValue4
-              modType
-            }
+            mod_name
+            mod_type
+            mod_value1
+            mod_value2
+            mod_value3
+            mod_value4
           }
           socketsByItemId {
-            nodes {
-              socketOrder
-              socketGroup
-              socketAttr
-            }
+            socket_order
+            socket_attr
+            socket_group
           }
           propertiesByItemId {
-            nodes {
-              nodeId
-              propertyName
-              propertyValues
-              propertyDisplayMode
-              propertyProgress
-            }
+            property_name
+            property_values
+            property_display_mode
+            property_progress
           }
         }
       }
@@ -175,4 +128,4 @@ const items = gql`
   }
 `
 
-export { getFilters, getItems, items }
+export { getFilters, getItems, items, test }

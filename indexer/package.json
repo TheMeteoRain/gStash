@@ -9,7 +9,6 @@
     "start-indexer-read-stash": "ts-node ./src/reader/stash_tab/app.ts",
     "start-indexer-read-data": "ts-node ./src/reader/data/app.ts",
     "start-indexer-write": "ts-node ./src/writer/app.ts",
-    "start-indexer-write-csv": "node ./src/writer/app2.js",
     "test-indexer-read": "ts-node inspect ./src/reader/app.ts",
     "test-indexer-write": "ts-node inspect ./src/writer/app.ts"
   },

@@ -11,7 +11,7 @@ import { parseFileName, findFilesWithId, deleteFile } from './util'
 
 // @ts-ignore
 const pool: Pool = new Pool({
-  user: 'Mete',
+  user: 'akash.singh',
   host: 'localhost',
   database: 'poe',
   password: null,

@@ -1,5 +1,8 @@
 # Path of Exile API
 
+TODO
+Fix properties %0 names
+
 items has category property
 http://api.pathofexile.com/leagues?type=main&compact=1
 postgraphile -c postgres://localhost:5432/poe --watch
@@ -21,11 +24,12 @@ ChangeId : Contains the next changeId and wether it was processed by the indexer
 Accounts : Which stores every account name, the last character used with this account and the last time seen online
 
 Useful information
-1. The "name" field sometimes contains a custom markup to support localisation in other languages. If you're only interested in English, then it's safe to strip the markup out (anything between "<" and ">" should suffice).
-2. The Public Stash Tab API contains no historical data, everything you receive is in it's current state. You can assume that any item you retrieve through the API is verified, at least until the stash tab itself is present in a future update. "w" and "h" do indeed refer to the items size when in your inventory.
-3. The "sockets" field is an array of sockets, which in turn belong to a group. All sockets in the same group are linked. The "attr" in the group refers to the attribute of the socket, "D" standing for "Dexterity" in this case (a green socket). "I" (blue), "S" (red), and "G" (white) are the other ones you'll find here.
-4. It's safe to ignore the "lockedToCharacter" field. It should probably be removed from the output it if it's false... A good point!
-5. There's a few parts to this one! "displayMode" can be four things: 0 means name should go before the values. 1 means name should go after the values. 2 is a progress bar (for skill gem experience). 3 means that the name should have occurances of %1, %2, etc replaced with the values. "type" is an internal thing to keep track of what the property is actually referencing (name can be localised). The last value in "values" is the display style, which dictates which colour should be used when displaying the value. I've included all the relevant information here before. 0 = Default #FFFFFF 1 = Augmented #8888FF 2 = Unmet #D20000 3 = Physical Damage #FFFFFF 4 = Fire Damage #960000 5 = Cold Damage #366492 6 = Lightning Damage #FFD700 7 = Chaos Damage #D02090 "frameType" is reasonably self explanatory, the "x" and "y" is the location of the item inside the stash tab. 0 = Normal 1 = Magic 2 = Rare 3 = Unique 4 = Gem 5 = Currency 6 = Divination Card 7 = Quest 8 = Prophecy
+
+1.  The "name" field sometimes contains a custom markup to support localisation in other languages. If you're only interested in English, then it's safe to strip the markup out (anything between "<" and ">" should suffice).
+2.  The Public Stash Tab API contains no historical data, everything you receive is in it's current state. You can assume that any item you retrieve through the API is verified, at least until the stash tab itself is present in a future update. "w" and "h" do indeed refer to the items size when in your inventory.
+3.  The "sockets" field is an array of sockets, which in turn belong to a group. All sockets in the same group are linked. The "attr" in the group refers to the attribute of the socket, "D" standing for "Dexterity" in this case (a green socket). "I" (blue), "S" (red), and "G" (white) are the other ones you'll find here.
+4.  It's safe to ignore the "lockedToCharacter" field. It should probably be removed from the output it if it's false... A good point!
+5.  There's a few parts to this one! "displayMode" can be four things: 0 means name should go before the values. 1 means name should go after the values. 2 is a progress bar (for skill gem experience). 3 means that the name should have occurances of %1, %2, etc replaced with the values. "type" is an internal thing to keep track of what the property is actually referencing (name can be localised). The last value in "values" is the display style, which dictates which colour should be used when displaying the value. I've included all the relevant information here before. 0 = Default #FFFFFF 1 = Augmented #8888FF 2 = Unmet #D20000 3 = Physical Damage #FFFFFF 4 = Fire Damage #960000 5 = Cold Damage #366492 6 = Lightning Damage #FFD700 7 = Chaos Damage #D02090 "frameType" is reasonably self explanatory, the "x" and "y" is the location of the item inside the stash tab. 0 = Normal 1 = Magic 2 = Rare 3 = Unique 4 = Gem 5 = Currency 6 = Divination Card 7 = Quest 8 = Prophecy
 
 When a change is made to a stash, the entire stash is sent in an update. If you wish to track historical items, you will need to compare the previous items in the stash to the current items in the stash, otherwise you can simply delete any items matching the stash id and insert the new items.
 
@@ -69,7 +73,7 @@ http://www.pathofexile.com/image/Art/2DItems/Divination/Images/DivinationCard.pn
 **next_level_requirements**: [See requirements](#requirements). <br />
 **note**: Item note. People can set a note to item in stash. This is a typical way to set itemThere are two local tags: `~b/o` which specifies buyout price and `~price` which specifies a non-negotiable buyout price. <br />
 **properties**: Array of properties. See properties(#properties). <br />
-**prophecy_diff_text**: Prophecy difficulty text	??? <br />
+**prophecy_diff_text**: Prophecy difficulty text ??? <br />
 **prophecy_text**: Self explanatory. <br />
 **requirements**: [See requirements](#requirements). <br />
 **sec_description_text**: Skill gem description. <br />
@@ -86,6 +90,7 @@ http://www.pathofexile.com/image/Art/2DItems/Divination/Images/DivinationCard.pn
 **y**: Item Y coordinate in stash tab. <br />
 
 ## Requirements
+
 **_item_id_**: Self explanatory. <br />
 **requirement_name**: Name of the requirement (Level/Str/Dex/Int). <br />
 **requirement_value**: Value representation of requirement condition. <br />
@@ -95,17 +100,19 @@ http://www.pathofexile.com/image/Art/2DItems/Divination/Images/DivinationCard.pn
 **~~requirement_type~~**: "type" is an internal thing to keep track of what the property is actually referencing (name can be localised). <br />
 
 ## Properties
+
 **_item_id_**: Self explanatory. <br />
 **property_name**: Name of the property. <br />
 **property_value1**: First value of property (always present). <br />
 **property_value2**: Second value of property (not always present). <br />
 **property_value_types**: Array of [value types](#value-type). Display style, which dictates which colour should be used when displaying the value. <br />
 **property_display_mode**: Dictates how requirement is displayed. [See display mode](#display-mode). <br />
-**property_progress**: Additional properties's Experience	. <br />
+**property_progress**: Additional properties's Experience . <br />
 **_property_key_**: Property's unique id. <br />
 **~~requirement_type~~**: "type" is an internal thing to keep track of what the property is actually referencing (name can be localised). <br />
 
 ## Mods
+
 **_item_id_**: Self explanatory. <br />
 **mod_name**: Name of the modifier. <br />
 **mod_value1**: First value of modifier. <br />
@@ -116,13 +123,16 @@ http://www.pathofexile.com/image/Art/2DItems/Divination/Images/DivinationCard.pn
 **mod_key**: Modifier's uique id. <br />
 
 ## Sockets
+
 **_item_id_**: Self explanatory. <br />
 **socket_group**: . <br />
 **socket_attr**: First character of socket's attribute color (S/D/I/G). <br />
 **socket_key**: Socket's unique id. <br />
 
 #### Value type
+
 0 = Default #FFFFFF 1 = Augmented #8888FF 2 = Unmet #D20000 3 = Physical Damage #FFFFFF 4 = Fire Damage #960000 5 = Cold Damage #366492 6 = Lightning Damage #FFD700 7 = Chaos Damage #D02090
 
 #### Display mode
+
 0 means name should go before the values. 1 means name should go after the values. 2 is a progress bar (for skill gem experience). 3 means that the name should have occurances of %1, %2, etc replaced with the values.

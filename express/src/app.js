@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require('express')
 
 // Body parser
@@ -10,7 +11,7 @@ const { graphiqlExpress, graphqlExpress } = require('apollo-server-express')
 const { ApolloEngine } = require('apollo-engine')
 
 // GraphQL Schema
-const schema = require('./schema')
+const { schema } = require('./schema')
 
 const app = express()
 
@@ -34,9 +35,9 @@ app.use(
 // GraphiQL, a visual editor for queries
 app.use('/graphiql', graphiqlExpress({ endpointURL: '/graphql' }))
 
-// Initialize engine with  API key
+// Initialize engine
 const engine = new ApolloEngine({
-  apiKey: 'service:MeteoRain:YqY-wiu0JQMHWXLJqCFAAQ',
+  apiKey: process.env.APOLLO_API_KEY,
   frontends: [
     {
       overrideGraphqlResponseHeaders: {
@@ -70,9 +71,9 @@ const engine = new ApolloEngine({
 // Call engine.listen instead of app.listen(port)
 engine.listen(
   {
-    port: 4000,
+    port: process.env.PORT,
     expressApp: app,
     launcherOptions: {},
   },
-  () => console.log('Now browse to localhost:4000/graphql')
+  () => console.log('Express server up and running.')
 )

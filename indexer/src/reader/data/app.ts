@@ -1,3 +1,5 @@
+import 'dotenv/config'
+
 import { pgp, db } from '../../db'
 import { sqlFile } from '../create'
 import downloadAndParse from '../downloadAndParse'

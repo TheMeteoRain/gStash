@@ -1,75 +1,10 @@
 import React, { Component } from 'react'
 
+import { Mutation, Query } from 'react-apollo'
+
 import { Search, ResultSet } from '../../components'
-
-const setBooleanFilter = (name, value) => ({
-  name: name.toLocaleLowerCase(),
-  value: value != null ? value : null,
-})
-
-const setTextFilter = (name, value) => ({
-  name: name.toLocaleLowerCase(),
-  value: value ? value : null,
-})
-
-const setNumericFilter = (name, filterName, value) => {
-  filterName = filterName.toLocaleLowerCase()
-  const numericFilter = {
-    name: name.toLocaleLowerCase(),
-    min: filterName.includes('min') ? Number(value) : null,
-    max: filterName.includes('max') ? Number(value) : null,
-  }
-
-  return numericFilter
-}
-
-const names = [
-  'Alternate Art',
-  'Corrupted',
-  'Crafted',
-  'Elder Item',
-  'Enchanted',
-  'Identified',
-  'Shaper Item',
-]
-
-const setReqFilter = (filterArray, newFilterItem) => {
-  const filterIndex = Object.values(filterArray).findIndex(
-    ({ name }) => name === newFilterItem.name
-  )
-
-  const oldFilterItem = filterIndex !== -1 ? filterArray[filterIndex] : null
-
-  // NEW filter
-  if (
-    !oldFilterItem &&
-    (newFilterItem.value != null || newFilterItem.min || newFilterItem.max)
-  ) {
-    filterArray.push(newFilterItem)
-    return filterArray
-  }
-
-  // MODIFY old filter
-  if (newFilterItem.min === 0) {
-    newFilterItem.min = null
-  } else if (newFilterItem.min) {
-  } else {
-    newFilterItem.min = oldFilterItem.min
-  }
-  if (newFilterItem.max === 0) {
-    newFilterItem.max = null
-  } else if (newFilterItem.max) {
-  } else {
-    newFilterItem.max = oldFilterItem.max
-  }
-  filterArray[filterIndex] = newFilterItem
-
-  // Remove
-  if (!newFilterItem.min && !newFilterItem.max)
-    filterArray.splice(filterIndex, 1)
-
-  return filterArray
-}
+import { modifiers } from '../../utils'
+import filters from './filters'
 
 class MainPage extends Component {
   constructor(props) {
@@ -111,9 +46,10 @@ class MainPage extends Component {
       requirements: 'asd',
       itemFilter: [{ name: 'league', value: 'Standard' }],
       reqFilter: [],
+      proFilter: [],
       filter: {},
-      positiveValues: [],
-      negativeValues: [],
+      wantedModifiers: [],
+      unWantedModifiers: [],
     }
   }
 
@@ -196,34 +132,44 @@ class MainPage extends Component {
   ) => {
     const state = this.state
 
+    if (filterCategory === 'pro') {
+      const value = event.target.value ? Number(event.target.value) : ''
+      state[propertyName] = value
+      state.proFilter = filters.setFilter(
+        state.proFilter,
+        filters.NumericFilter(filterName, propertyName, value)
+      )
+      return this.setState(state)
+    }
+
     if (filterCategory === 'req') {
       const value = event.target.value ? Number(event.target.value) : ''
       state[propertyName] = value
-      state.reqFilter = setReqFilter(
-        this.state.reqFilter,
-        setNumericFilter(filterName, propertyName, value)
+      state.reqFilter = filters.setFilter(
+        state.reqFilter,
+        filters.NumericFilter(filterName, propertyName, value)
       )
       return this.setState(state)
     }
 
     if (propertyName === 'search') {
       state[propertyName] = autoComplete.newValue
-      state.itemFilter = this.setFilter(
+      state.itemFilter = filters.setFilter(
         state.itemFilter,
-        setTextFilter(filterName, autoComplete.newValue)
+        filters.TextFilter(filterName, autoComplete.newValue)
       )
     } else if (propertyName === 'leagueName') {
       const value = event.target.value
       state[propertyName] = value
-      state.itemFilter = this.setFilter(
+      state.itemFilter = filters.setFilter(
         state.itemFilter,
-        setTextFilter(filterName, value)
+        filters.TextFilter(filterName, value)
       )
     } else {
       const value = event.target.value ? Number(event.target.value) : ''
-      state.itemFilter = this.setFilter(
+      state.itemFilter = filters.setFilter(
         state.itemFilter,
-        setNumericFilter(filterName, propertyName, value)
+        filters.NumericFilter(filterName, propertyName, value)
       )
       state[propertyName] = value
     }
@@ -232,62 +178,68 @@ class MainPage extends Component {
   }
 
   multiValueCheck = state => {
-    const { positiveValues, negativeValues, itemFilter } = state
-    let newItemFilter = []
+    const { wantedModifiers, unWantedModifiers } = state
 
-    names.forEach(name => {
-      if (!positiveValues.includes(name) && !negativeValues.includes(name)) {
-        state[`is${name}`] = null
-        newItemFilter = this.setFilter(itemFilter, setBooleanFilter(name, null))
-      }
-
-      if (positiveValues.includes(name)) {
-        state[`is${name}`] = true
-        newItemFilter = this.setFilter(itemFilter, setBooleanFilter(name, true))
-      }
-      if (negativeValues.includes(name)) {
-        state[`is${name}`] = false
-        newItemFilter = this.setFilter(
-          itemFilter,
-          setBooleanFilter(name, false)
+    modifiers.forEach(modifier => {
+      if (
+        !wantedModifiers.includes(modifier) &&
+        !unWantedModifiers.includes(modifier)
+      ) {
+        state[`is${modifier}`] = null
+        state.itemFilter = filters.setFilter(
+          state.itemFilter,
+          filters.BooleanFilter(modifier, null)
+        )
+      } else if (wantedModifiers.includes(modifier)) {
+        state[`is${modifier}`] = true
+        state.itemFilter = filters.setFilter(
+          state.itemFilter,
+          filters.BooleanFilter(modifier, true)
+        )
+      } else if (unWantedModifiers.includes(modifier)) {
+        state[`is${modifier}`] = false
+        state.itemFilter = filters.setFilter(
+          state.itemFilter,
+          filters.BooleanFilter(modifier, false)
         )
       }
     })
 
-    state.itemFilter = newItemFilter
-
     this.setState(state)
   }
 
-  handlePositiveMultiValue = event => {
+  handleWantedModifiers = event => {
     const value = event.target.value
     const state = this.state
 
-    state.negativeValues = state.negativeValues.filter(
+    state.unWantedModifiers = state.unWantedModifiers.filter(
       modifier => !value.includes(modifier)
     )
-    state.positiveValues = value
+    state.wantedModifiers = value
     //state.isVerified = state.find(property => property === 'Corrupted') ? true : null
     this.multiValueCheck(state)
   }
 
-  handleNegativeMultiValue = event => {
+  handleUnWantedModifiers = event => {
     const value = event.target.value
     const state = this.state
 
-    state.positiveValues = state.positiveValues.filter(
+    state.wantedModifiers = state.wantedModifiers.filter(
       modifier => !value.includes(modifier)
     )
-    state.negativeValues = value
+    state.unWantedModifiers = value
     //state.isVerified = state.find(property => property === 'Corrupted') ? true : null
     this.multiValueCheck(state)
   }
 
-  handleSearch = e => {
+  handleSubmit = e => {
     e.preventDefault()
 
-    const { itemFilter } = this.state
-    const filter = { item: itemFilter }
+    const { itemFilter, reqFilter } = this.state
+    const filter = {
+      item: itemFilter,
+      req: reqFilter.length > 0 ? reqFilter : null,
+    }
 
     this.setState({
       hasSearched: true,
@@ -302,10 +254,10 @@ class MainPage extends Component {
       <section>
         <article>
           <Search
-            onSearch={this.handleSearch}
+            onSubmit={this.handleSubmit}
             onChange={this.handleChange}
-            onPositiveMultiValue={this.handlePositiveMultiValue}
-            onNegativeMultiValue={this.handleNegativeMultiValue}
+            onWantedModifiers={this.handleWantedModifiers}
+            onUnWantedModifiers={this.handleUnWantedModifiers}
             {...this.state}
           />
         </article>

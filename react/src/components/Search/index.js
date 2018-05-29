@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-import { graphql } from 'react-apollo'
+import { Query, graphql } from 'react-apollo'
 import { getFilters, test } from '../../queries'
 
 import { AsyncSelect, RequirementField, SocketField } from '../Form'
@@ -33,15 +33,7 @@ import {
   CardText,
 } from '@material-ui/core/Card'
 
-const names = [
-  'Alternate Art',
-  'Corrupted',
-  'Crafted',
-  'Elder Item',
-  'Enchanted',
-  'Identified',
-  'Shaper Item',
-]
+import { modifiers } from '../../utils'
 
 const styles = theme => ({
   root: {
@@ -120,10 +112,10 @@ class Search extends Component {
   }
 
   menuItems(values) {
-    return names.map(name => (
-      <MenuItem key={name} value={name}>
-        <Checkbox checked={values.indexOf(name) > -1} />
-        <ListItemText primary={name} />
+    return modifiers.map(modifier => (
+      <MenuItem key={modifier} value={modifier}>
+        <Checkbox checked={values.indexOf(modifier) > -1} />
+        <ListItemText primary={modifier} />
       </MenuItem>
     ))
   }
@@ -137,7 +129,7 @@ class Search extends Component {
 
     return (
       <Paper className={classes.root}>
-        <form onSubmit={this.props.onSearch}>
+        <form onSubmit={this.props.onSubmit}>
           <Grid container spacing={24}>
             <Grid container>
               <Grid item xs={12} className={classes.formControlParent}>
@@ -187,15 +179,15 @@ class Search extends Component {
                 </InputLabel>
                 <Select
                   multiple
-                  value={this.props.positiveValues}
-                  onChange={this.props.onPositiveMultiValue}
+                  value={this.props.wantedModifiers}
+                  onChange={this.props.onWantedModifiers}
                   renderValue={selected => selected.join(', ')}
                   inputProps={{
                     name: 'wantedModifier',
                     id: 'wantedModifierSelect',
                   }}
                 >
-                  {this.menuItems(this.props.positiveValues)}
+                  {this.menuItems(this.props.wantedModifiers)}
                 </Select>
               </FormControl>
               <FormControl className={classes.formControlMultiValue}>
@@ -204,15 +196,15 @@ class Search extends Component {
                 </InputLabel>
                 <Select
                   multiple
-                  value={this.props.negativeValues}
-                  onChange={this.props.onNegativeMultiValue}
+                  value={this.props.unWantedModifiers}
+                  onChange={this.props.onUnWantedModifiers}
                   renderValue={selected => selected.join(', ')}
                   inputProps={{
                     name: 'unwantedModifier',
                     id: 'unwantedModifierSelect',
                   }}
                 >
-                  {this.menuItems(this.props.negativeValues)}
+                  {this.menuItems(this.props.unWantedModifiers)}
                 </Select>
               </FormControl>
             </Grid>
@@ -306,22 +298,22 @@ class Search extends Component {
                 <Grid item xs={6}>
                   <RequirementField
                     name={'Armour'}
-                    propertyName={'reqLevel'}
-                    filterName={'Level'}
-                    filterCategory={'req'}
-                    value1={this.props.reqLevelMin}
-                    value2={this.props.reqLevelMax}
+                    propertyName={'proArmour'}
+                    filterName={'Armour'}
+                    filterCategory={'pro'}
+                    value1={this.props.proArmourMin}
+                    value2={this.props.proArmourMax}
                     onChange={this.props.onChange}
                   />
                 </Grid>
                 <Grid item xs={6}>
                   <RequirementField
                     name={'Evasion'}
-                    propertyName={'reqStr'}
-                    filterName={'Str'}
-                    filterCategory={'req'}
-                    value1={this.props.reqStrMin}
-                    value2={this.props.reqStrMax}
+                    propertyName={'proEvasion'}
+                    filterName={'Evasion'}
+                    filterCategory={'pro'}
+                    value1={this.props.proEvasionMin}
+                    value2={this.props.proEvasionMax}
                     onChange={this.props.onChange}
                   />
                 </Grid>
@@ -329,22 +321,22 @@ class Search extends Component {
                 <Grid item xs={6}>
                   <RequirementField
                     name={'Energy Shield'}
-                    propertyName={'reqDex'}
-                    filterName={'Dex'}
-                    filterCategory={'req'}
-                    value1={this.props.reqDexMin}
-                    value2={this.props.reqDexMax}
+                    propertyName={'proEnergyShield'}
+                    filterName={'Energy Shield'}
+                    filterCategory={'pro'}
+                    value1={this.props.proEnergyShieldMin}
+                    value2={this.props.proEnergyShieldMax}
                     onChange={this.props.onChange}
                   />
                 </Grid>
                 <Grid item xs={6}>
                   <RequirementField
                     name={'Block'}
-                    propertyName={'reqInt'}
-                    filterName={'Int'}
-                    filterCategory={'req'}
-                    value1={this.props.reqIntMin}
-                    value2={this.props.reqIntMax}
+                    propertyName={'proBlock'}
+                    filterName={'Block'}
+                    filterCategory={'pro'}
+                    value1={this.props.proBlockMin}
+                    value2={this.props.proBlockMax}
                     onChange={this.props.onChange}
                   />
                 </Grid>

@@ -1,9 +1,5 @@
 import gql from 'graphql-tag'
-const test = gql`
-  query {
-    __typename
-  }
-`
+
 const getFilters = gql`
   query allFilters {
     allLeagues(first: null) {
@@ -37,8 +33,8 @@ const getFilters = gql`
 `
 
 const getItems = gql`
-  query allItemsQuery($first: Int = 10, $filter: JSON) {
-    allItems(first: $first, filter: $filter) {
+  query allItemsQuery($first: Int = 10, $cursor: String, $filter: JSON) {
+    allItems(first: $first, after: $cursor, filter: $filter) {
       totalCount
       pageInfo {
         startCursor

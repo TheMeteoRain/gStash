@@ -63,8 +63,8 @@ const defaultReturn = ({ data, first, last, after, before, attributeName }) => {
   const endCursor =
     edges.length > 0
       ? pagination.convertNodeToCursor(
-        edges[edges.length - 1].node[attributeName]
-      )
+          edges[edges.length - 1].node[attributeName]
+        )
       : null
   const hasNextPage = data.length > sliceIndex + first
   const hasPreviousPage = data.length < sliceIndex + first

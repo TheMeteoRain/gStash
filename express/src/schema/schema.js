@@ -270,13 +270,14 @@ const RootQuery = new GraphQLObjectType({
 
         if (req) {
           query += initializeFilterCategory(query)
-          req.forEach(
-            ({ name, min = 0, max = 999 }, index) =>
-              (query += addLogicalOperatorIfNotFirst(
-                `EXISTS(SELECT 1 FROM requirements WHERE item_id=items.item_id AND requirement_name = '${name}' AND requirement_value BETWEEN ${min} AND ${max})`,
-                index
-              ))
-          )
+          req.forEach(({ name, min, max }, index) => {
+            if (!min) min = 0
+            if (!max) max = 999
+            query += addLogicalOperatorIfNotFirst(
+              `EXISTS(SELECT 1 FROM requirements WHERE item_id=items.item_id AND requirement_name = '${name}' AND requirement_value BETWEEN ${min} AND ${max})`,
+              index
+            )
+          })
           query += ')'
         }
 

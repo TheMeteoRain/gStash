@@ -25,7 +25,7 @@ export const parseItemData = ({ data: { result } }: { data: any, result: any[] }
 
   result.forEach(({ label, entries }: { label: string, entries: any[] }) => {
     entries.forEach(({ name, type, text, disc, flags }: { name: string, type: string, text: string, disc: string, flags: any[] }) =>
-      itemsData.push(new ItemData({ name, type, text, disc, flags })))
+      itemsData.push(new ItemData({ label, name, type, text, disc, flags })))
   })
 
   return itemsData

@@ -5,27 +5,18 @@ const getFilters = gql`
     allLeagues(first: null) {
       nodes {
         league_name
-        active
       }
+    }
+    allItemCategories {
+      category: label
     }
     allItemsData(first: null) {
       nodes {
-        name
-        type
-        disc
         text
-      }
-    }
-    allStatsData(first: null) {
-      nodes {
-        id
-        text
-        type
       }
     }
     allFrameTypes(first: null) {
       nodes {
-        id
         frame_type_value
       }
     }

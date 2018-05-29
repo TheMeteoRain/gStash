@@ -98,7 +98,12 @@ class Item extends Component {
           <Grid item xs={9}>
             <CardContent>
               <div className={classes.heading}>
-                <Typography variant="headline">{name}</Typography>
+                <Typography
+                  variant="headline"
+                  style={{ color: COLORS.FrameTypes[frame_type] }}
+                >
+                  {name}
+                </Typography>
                 <Typography variant="subheading" color="textSecondary">
                   {type_line}
                 </Typography>
@@ -109,7 +114,7 @@ class Item extends Component {
                 {Requirement(requirements)}
                 <Divider />
 
-                {Mod(mods)}
+                <Mod mods={mods} />
                 <Divider />
 
                 {Unmet(identified, corrupted)}

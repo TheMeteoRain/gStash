@@ -1,2 +1,7 @@
 body {
+  margin: 0 auto;
+  width: 80%;
+  background: linear-gradient(135deg, orange, orange 60%, cyan);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }

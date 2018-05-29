@@ -2,7 +2,7 @@ import { db, pgp } from '../../db'
 import { StatData, ItemData, LeagueData } from './class'
 
 const COLUMN_SET_STATS_DATA = new pgp.helpers.ColumnSet(['id', 'text', 'type'], { table: 'stats_data' })
-const COLUMN_SET_ITEMS_DATA = new pgp.helpers.ColumnSet(['name', 'type', 'disc', 'text'], { table: 'items_data' })
+const COLUMN_SET_ITEMS_DATA = new pgp.helpers.ColumnSet(['label', 'name', 'type', 'disc', 'text'], { table: 'items_data' })
 const COLUMN_SET_LEAGUES_DATA = new pgp.helpers.ColumnSet(['league_name', 'active'], { table: 'leagues' })
 
 const queries = {

@@ -33,7 +33,6 @@ const filters = {
     return numericFilter
   },
   setFilter: (filterArray, filterItem) => {
-    console.log(filterItem.hasOwnProperty('min'))
     if (filterItem.hasOwnProperty('min') || filterItem.hasOwnProperty('max'))
       return filters.setNumericFilter(filterArray, filterItem)
     const { filterIndex, oldFilterItem } = findFilter(filterArray, filterItem)
@@ -59,7 +58,7 @@ const filters = {
   },
   setNumericFilter: (filterArray, filterItem) => {
     if (filterItem.hasOwnProperty('value'))
-      return this.setFilter(filterArray, filterItem)
+      return filters.setFilter(filterArray, filterItem)
     const { filterIndex, oldFilterItem } = findFilter(filterArray, filterItem)
 
     // NEW filter

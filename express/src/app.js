@@ -21,7 +21,6 @@ app.use(
   cors(),
   bodyParser.json(),
   graphqlExpress((req, res) => {
-    console.log(req)
     return {
       schema,
       tracing: true,

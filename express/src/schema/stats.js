@@ -12,6 +12,7 @@ const LeagueType = new GraphQLObjectType({
 const ItemDataType = new GraphQLObjectType({
   name: 'ItemData',
   fields: () => ({
+    label: { type: GraphQLString },
     name: { type: GraphQLString },
     type: { type: GraphQLString },
     disc: { type: GraphQLString },

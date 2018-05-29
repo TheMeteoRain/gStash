@@ -7,6 +7,18 @@ CREATE DATABASE poe;
 SET DEFAULT_TEXT_SEARCH_CONFIG = 'english';
 SET CLIENT_ENCODING TO 'UTF8';
 
+CREATE TABLE value_type (
+  id SMALLINT PRIMARY KEY,
+  value_type VARCHAR(25) NOT NULL
+);
+INSERT INTO value_type VALUES (0, 'Default'), (1, 'Augmented'), (2, 'Unmet'), (3, 'Physical'), (4, 'Fire'), (5, 'Cold'), (6, 'Lightning'), (7, 'Chaos');
+
+CREATE TABLE frame_type (
+  id SMALLINT PRIMARY KEY,
+  frame_type_value VARCHAR(50) NOT NULL
+);
+INSERT INTO frame_type(id, frame_type_value)
+VALUES (0, 'Normal'), (1, 'Magic'), (2, 'Rare'), (3, 'Unique'), (4, 'Gem'), (5,'Currency'), (6, 'Divination card'), (7,'Quest item'), (8, 'Prophecy'), (9, 'Relic');
 
 CREATE TABLE change_id (
   id BIGSERIAL,
@@ -24,6 +36,7 @@ CREATE UNLOGGED TABLE leagues (
 );
 
 CREATE UNLOGGED TABLE items_data (
+  label VARCHAR(128) NOT NULL,
   name VARCHAR(128) DEFAULT NULL,
   type VARCHAR(128) NOT NULL,
   disc VARCHAR(128) DEFAULT NULL,
@@ -47,7 +60,7 @@ CREATE TYPE stash_type AS ENUM ('NormalStash','PremiumStash','QuadStash','Essenc
 CREATE UNLOGGED TABLE stashes (
   stash_id VARCHAR(128) PRIMARY KEY,
   stash_name VARCHAR(128) DEFAULT NULL,
-  stash_type stash_type DEFAULT 'NormalStash',
+  stash_type VARCHAR(128) DEFAULT 'NormalStash',
   stash_public BOOLEAN DEFAULT 'FALSE'
 );
 
@@ -59,6 +72,7 @@ CREATE UNLOGGED TABLE items (
   crafted BOOLEAN NOT NULL,
   document TSVECTOR DEFAULT NULL,
   enchanted BOOLEAN NOT NULL,
+  elder BOOLEAN NOT NULL,
   frame_type SMALLINT NOT NULL,
   h SMALLINT NOT NULL,
   icon VARCHAR(1024) DEFAULT NULL,
@@ -68,6 +82,7 @@ CREATE UNLOGGED TABLE items (
   item_id VARCHAR(128) NOT NULL,
   league VARCHAR(128) DEFAULT NULL,
   name VARCHAR(128) DEFAULT NULL,
+  shaper BOOLEAN NOT NULL,
   stash_id VARCHAR(128) DEFAULT NULL,
   type_line VARCHAR(128) DEFAULT NULL,
   updated_ts BIGINT DEFAULT NULL,
@@ -115,6 +130,7 @@ CREATE UNLOGGED TABLE sockets (
   socket_group SMALLINT NOT NULL
 );
 
+-- 
 --  CREATE INDEX idx_fts_search ON items USING gin(document)
 --  WHERE document IS NOT NULL;
 --  CREATE INDEX idx_variable_data ON items USING gin (variable_data)

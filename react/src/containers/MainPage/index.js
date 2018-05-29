@@ -14,7 +14,8 @@ class MainPage extends Component {
       first: 50,
       hasSearched: false,
       leagueName: 'Standard',
-      frameType: null,
+      category: '',
+      rarity: '',
       reqLevelMin: '',
       reqLevelMax: '',
       reqStrMin: '',
@@ -158,7 +159,11 @@ class MainPage extends Component {
         state.itemFilter,
         filters.TextFilter(filterName, autoComplete.newValue)
       )
-    } else if (propertyName === 'leagueName') {
+    } else if (
+      propertyName === 'leagueName' ||
+      propertyName === 'rarity' ||
+      propertyName === 'category'
+    ) {
       const value = event.target.value
       state[propertyName] = value
       state.itemFilter = filters.setFilter(
@@ -216,7 +221,7 @@ class MainPage extends Component {
       modifier => !value.includes(modifier)
     )
     state.wantedModifiers = value
-    //state.isVerified = state.find(property => property === 'Corrupted') ? true : null
+
     this.multiValueCheck(state)
   }
 
@@ -228,7 +233,7 @@ class MainPage extends Component {
       modifier => !value.includes(modifier)
     )
     state.unWantedModifiers = value
-    //state.isVerified = state.find(property => property === 'Corrupted') ? true : null
+
     this.multiValueCheck(state)
   }
 

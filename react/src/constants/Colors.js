@@ -1,4 +1,11 @@
 const COLORS = {
+  //
+  MODS: {
+    EXPLICIT: '#8888FF',
+    IMPLICIT: '#8888FF',
+    CRAFTED: '#B4B4FF',
+    ENCHANTED: '#B4B4FF',
+  },
   // Default, Augmented, Unmet, Physical Damage, Fire Damage, Cold Damage, Lightning Damage, Chaos Damage
   ValueTypes: [
     '#FFFFFF',

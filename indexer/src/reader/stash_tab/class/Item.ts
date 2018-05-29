@@ -13,6 +13,7 @@ export default class Item {
   public crafted: boolean
   public document: null
   public enchanted: boolean
+  public elder: boolean
   public frame_type: number
   public h: number
   public icon: string
@@ -22,6 +23,7 @@ export default class Item {
   public item_id: string
   public league: string
   public name: string
+  public shaper: boolean
   public stash_id: string
   public type_line: string
   public updated_ts: number
@@ -40,7 +42,8 @@ export default class Item {
     this.corrupted = props.corrupted ? true : false
     this.crafted = props.craftedMods ? true : false
     this.document = null
-    this.enchanted = props.enchantedMods ? true : false
+    this.enchanted = props.enchantMods ? true : false
+    this.elder = props.elder ? true : false
     this.frame_type = props.frameType
     this.h = props.h
     this.icon = props.icon
@@ -51,6 +54,7 @@ export default class Item {
     this.league = props.league
     this.name = cleanName(props.name)
     this.stash_id = stashId
+    this.shaper = props.shaper ? true : false
     this.type_line = cleanName(props.typeLine)
     this.updated_ts = 0
     this.verified = props.verified
@@ -63,7 +67,6 @@ export default class Item {
       category: props.category,
       descr_text: props.descrText,
       duplicated: props.duplicated,
-      elder: props.elder,
       flavour_text: JSON.stringify(props.flavourText),
       is_relic: props.isRelic,
       link_amount: props.sockets ? this.setLinkAmount(props.sockets) : undefined,
@@ -72,7 +75,6 @@ export default class Item {
       prophecy_diff_text: props.prophecyDiffText,
       prophecy_text: props.prophecy_text,
       sec_decription_text: props.secDescrText,
-      shaper: props.shaper,
       socket_amount: props.sockets ? props.sockets.length : undefined,
       support: props.support,
       talisman_tier: props.talismanTier,

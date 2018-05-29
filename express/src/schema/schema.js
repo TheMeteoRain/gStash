@@ -184,7 +184,7 @@ const RootQuery = new GraphQLObjectType({
         const { first, last, after, before, filter } = args
         const { item, mod, req, pro } = filter
         let afterIndex = 0
-        console.log(parentValue, args)
+
         let query = `SELECT * FROM items`
         if (Object.entries(filter)[0][1].length > 0) {
           if (mod) query += ` INNER JOIN mods ON mods.item_id=items.item_id`
@@ -224,6 +224,13 @@ const RootQuery = new GraphQLObjectType({
                 if (!max) max = 6
                 return (itemQuery += addLogicalOperatorIfNotFirst(
                   `(variable_data->>'${name}')::numeric BETWEEN ${min} AND ${max}`,
+                  index
+                ))
+              }
+
+              if (typeof value === 'number') {
+                return (itemQuery += addLogicalOperatorIfNotFirst(
+                  `${name} = ${value}`,
                   index
                 ))
               }
@@ -341,6 +348,18 @@ const RootQuery = new GraphQLObjectType({
               attributeName: 'league_name',
             })
           )
+          .catch(err => {
+            return 'The error is', err
+          })
+      },
+    },
+    allItemCategories: {
+      type: GraphQLList(ItemDataType),
+      resolve(parentValue, args) {
+        let query = `SELECT label FROM items_data GROUP BY label ORDER BY label`
+        return db
+          .manyOrNone(query)
+          .then(data => data)
           .catch(err => {
             return 'The error is', err
           })

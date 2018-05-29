@@ -37,52 +37,14 @@ import { MODIFIERS } from '../../constants'
 
 const styles = theme => ({
   root: {
-    flexGrow: 1,
-  },
-  formControlParent: {
-    margin: theme.spacing.unit, // keeps search bar within parent
-    display: 'flex',
-    alignItems: 'flex-end',
-    width: '100%',
-  },
-  formControl: {
-    margin: theme.spacing.unit,
-
-    flex: '1 1 auto',
-  },
-  formControlBig: {
-    margin: theme.spacing.unit,
-    flex: '3 1 auto',
+    padding: theme.spacing.unit,
   },
 
-  fullWidth: {
-    margin: theme.spacing.unit,
-    width: '100%',
-  },
-
-  formControlMultiValueParent: {
-    display: 'flex',
-    justifyContent: 'space-around',
-  },
-  formControlMultiValue: {
-    margin: theme.spacing.unit,
-    flex: 1,
-  },
-
-  selectEmpty: {
+  marginTop: {
     marginTop: theme.spacing.unit * 2,
   },
-  textField: {
-    marginLeft: theme.spacing.unit,
-    marginRight: theme.spacing.unit,
-    maxWidth: 50,
-  },
+  formControl: {},
 
-  reserveSpace: {
-    margin: theme.spacing.unit,
-    minWidth: '10%',
-    maxWidth: '10%',
-  },
   margin: {
     margin: theme.spacing.unit,
   },
@@ -111,6 +73,26 @@ class Search extends Component {
     ))
   }
 
+  setRarityList = () => {
+    const { networkStatus, allFrameTypes } = this.props.data
+
+    if (networkStatus !== 7) return []
+
+    return allFrameTypes.nodes.map(({ frame_type_value }, index) => (
+      <MenuItem value={index}>{frame_type_value}</MenuItem>
+    ))
+  }
+
+  setCategoryList = () => {
+    const { networkStatus, allItemCategories } = this.props.data
+
+    if (networkStatus !== 7) return []
+
+    return allItemCategories.map(({ category }) => (
+      <MenuItem value={category}>{category}</MenuItem>
+    ))
+  }
+
   menuItems(values) {
     return MODIFIERS.map(modifier => (
       <MenuItem key={modifier} value={modifier}>
@@ -131,82 +113,128 @@ class Search extends Component {
       <Paper className={classes.root}>
         <form onSubmit={this.props.onSubmit}>
           <Grid container spacing={24}>
-            <Grid container>
-              <Grid item xs={12} className={classes.formControlParent}>
-                <FormControl className={classes.formControlBig}>
-                  <InputLabel htmlFor="searchSelect" />
-                  <AutoComplete
-                    value={this.props.search}
-                    suggestions={this.setSearchList()}
-                    onChange={this.props.onChange('search', 'search')}
-                    placeholder={`Type 'Helmet' to search helmets`}
-                    inputProps={{
-                      name: 'search',
-                      id: 'searchSelect',
-                    }}
-                  />
-                </FormControl>
-                <FormControl className={classes.formControl}>
-                  <InputLabel htmlFor="leagueSelect">League</InputLabel>
-                  <Select
-                    value={this.props.leagueName}
-                    onChange={this.props.onChange('leagueName', 'league')}
-                    inputProps={{
-                      name: 'league',
-                      id: 'leagueSelect',
-                    }}
-                  >
-                    {this.setLeagueList()}
-                  </Select>
-                </FormControl>
-                <FormControl className={classes.formControl}>
-                  <InputLabel htmlFor="statusSelect">Status</InputLabel>
-                  <Select
-                    value={true}
-                    inputProps={{ name: 'status', id: 'statusSelect' }}
-                  >
-                    <MenuItem value={true}>Online Only</MenuItem>
-                    <MenuItem value={null}>Any</MenuItem>
-                  </Select>
-                </FormControl>
+            <Grid item xs={12}>
+              <Grid container spacing={24}>
+                <Grid item xs={8}>
+                  <FormControl fullWidth className={classes.marginTop}>
+                    <InputLabel htmlFor="searchSelect" />
+                    <AutoComplete
+                      className={classes.formControl}
+                      value={this.props.search}
+                      suggestions={this.setSearchList()}
+                      onChange={this.props.onChange('search', 'search')}
+                      placeholder={`Type 'Helmet' to search helmets`}
+                      inputProps={{
+                        name: 'search',
+                        id: 'searchSelect',
+                      }}
+                    />
+                  </FormControl>
+                </Grid>
+                <Grid item xs={2}>
+                  <FormControl fullWidth>
+                    <InputLabel htmlFor="leagueSelect">League</InputLabel>
+                    <Select
+                      defaultValue={'Standard'}
+                      value={this.props.leagueName}
+                      onChange={this.props.onChange('leagueName', 'league')}
+                      inputProps={{
+                        name: 'league',
+                        id: 'leagueSelect',
+                      }}
+                    >
+                      {this.setLeagueList()}
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={2}>
+                  <FormControl fullWidth>
+                    <InputLabel htmlFor="statusSelect">Status</InputLabel>
+                    <Select
+                      value={true}
+                      inputProps={{ name: 'status', id: 'statusSelect' }}
+                    >
+                      <MenuItem value={true}>Online Only</MenuItem>
+                      <MenuItem value={null}>Any</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
               </Grid>
             </Grid>
 
-            <Grid item xs={12} className={classes.formControlMultiValueParent}>
-              <FormControl className={classes.formControlMultiValue}>
-                <InputLabel htmlFor="wantedModifierSelect">
-                  Wanted Modifiers
-                </InputLabel>
-                <Select
-                  multiple
-                  value={this.props.wantedModifiers}
-                  onChange={this.props.onWantedModifiers}
-                  renderValue={selected => selected.join(', ')}
-                  inputProps={{
-                    name: 'wantedModifier',
-                    id: 'wantedModifierSelect',
-                  }}
-                >
-                  {this.menuItems(this.props.wantedModifiers)}
-                </Select>
-              </FormControl>
-              <FormControl className={classes.formControlMultiValue}>
-                <InputLabel htmlFor="unwantedModifierSelect">
-                  Unwanted Modifiers
-                </InputLabel>
-                <Select
-                  multiple
-                  value={this.props.unWantedModifiers}
-                  onChange={this.props.onUnWantedModifiers}
-                  renderValue={selected => selected.join(', ')}
-                  inputProps={{
-                    name: 'unwantedModifier',
-                    id: 'unwantedModifierSelect',
-                  }}
-                >
-                  {this.menuItems(this.props.unWantedModifiers)}
-                </Select>
-              </FormControl>
+            <Grid item xs={12}>
+              <Grid container spacing={24}>
+                <Grid item xs={3}>
+                  <FormControl fullWidth>
+                    <InputLabel htmlFor="categorySelect">Category</InputLabel>
+                    <Select
+                      fullWidth
+                      value={this.props.category}
+                      onChange={this.props.onChange('category', 'category')}
+                      inputProps={{
+                        name: 'category',
+                        id: 'categorySelect',
+                      }}
+                    >
+                      {this.setCategoryList()}
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={3}>
+                  <FormControl fullWidth>
+                    <InputLabel htmlFor="raritySelect">Rarity</InputLabel>
+                    <Select
+                      fullWidth
+                      value={this.props.rarity}
+                      onChange={this.props.onChange('rarity', 'frame_type')}
+                      inputProps={{
+                        name: 'rarity',
+                        id: 'raritySelect',
+                      }}
+                    >
+                      {this.setRarityList()}
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={3}>
+                  <FormControl fullWidth>
+                    <InputLabel htmlFor="wantedModifierSelect">
+                      Wanted Modifiers
+                    </InputLabel>
+                    <Select
+                      multiple
+                      value={this.props.wantedModifiers}
+                      onChange={this.props.onWantedModifiers}
+                      renderValue={selected => selected.join(', ')}
+                      inputProps={{
+                        name: 'wantedModifier',
+                        id: 'wantedModifierSelect',
+                      }}
+                    >
+                      {this.menuItems(this.props.wantedModifiers)}
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={3}>
+                  <FormControl fullWidth>
+                    <InputLabel htmlFor="unwantedModifierSelect">
+                      Unwanted Modifiers
+                    </InputLabel>
+                    <Select
+                      multiple
+                      value={this.props.unWantedModifiers}
+                      onChange={this.props.onUnWantedModifiers}
+                      renderValue={selected => selected.join(', ')}
+                      inputProps={{
+                        name: 'unwantedModifier',
+                        id: 'unwantedModifierSelect',
+                      }}
+                    >
+                      {this.menuItems(this.props.unWantedModifiers)}
+                    </Select>
+                  </FormControl>
+                </Grid>
+              </Grid>
             </Grid>
 
             <Grid item xs={6}>

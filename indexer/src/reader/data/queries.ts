@@ -6,11 +6,11 @@ const COLUMN_SET_ITEMS_DATA = new pgp.helpers.ColumnSet(['name', 'type', 'disc',
 const COLUMN_SET_LEAGUES_DATA = new pgp.helpers.ColumnSet(['league_name', 'active'], { table: 'leagues' })
 
 const queries = {
-  insertStatsData: (data: StatData[]) => pgp.helpers.insert(data, COLUMN_SET_STATS_DATA) +
+  insertStatsData: (data: StatData[]): string => pgp.helpers.insert(data, COLUMN_SET_STATS_DATA) +
     ' ON CONFLICT (id) DO NOTHING',
-  insertItemsData: (data: ItemData[]) => pgp.helpers.insert(data, COLUMN_SET_ITEMS_DATA) +
+  insertItemsData: (data: ItemData[]): string => pgp.helpers.insert(data, COLUMN_SET_ITEMS_DATA) +
     ' ON CONFLICT (text) DO NOTHING',
-  insertLeaguesData: (data: LeagueData[]) => pgp.helpers.insert(data, COLUMN_SET_LEAGUES_DATA) +
+  insertLeaguesData: (data: LeagueData[]): string => pgp.helpers.insert(data, COLUMN_SET_LEAGUES_DATA) +
     ' ON CONFLICT (league_name) DO UPDATE SET active = EXCLUDED.active',
 }
 

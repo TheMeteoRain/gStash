@@ -12,15 +12,29 @@ module.exports = {
       args: 'run-script start',
       watch: true,
     },*/
+    {
+      script: 'npm',
+      name: 'GraphQL',
+      cwd: './express',
+      args: 'run-script start',
+      watch: true,
+    },
+    {
+      script: 'npm',
+      name: 'React',
+      cwd: './react',
+      args: 'run-script start',
+      watch: false,
+    },
 
     // Second application
-    {
+    /* {
       script: 'npm',
       name: 'indexer',
       cwd: './indexer',
       args: 'run-script start',
       watch: true,
-    },
+    }, */
 
     // Front application
     /* {

@@ -7,4 +7,4 @@ const options = {
 pgMonitor.attach(options, ['task', 'error', 'disconnect', 'connect'])
 
 export const pgp = pgPromise(options)
-export const db = pgp(/* process.env.DATABASE */'postgres://Mete@localhost:5432/poe')
+export const db = pgp(process.env.DATABASE)

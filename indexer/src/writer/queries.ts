@@ -1,13 +1,15 @@
 const queries = {
-  updateCurrentNextChangeId: (t: any, next_change_id: string, uploaded: boolean = false): Promise<string> =>
-    t.one(`
-    UPDATE changeid
-    SET uploaded = $<uploaded>
-    WHERE next_change_id = $<next_change_id> AND downloaded = TRUE
-    RETURNING next_change_id`, { next_change_id, uploaded }).catch((error: any) => {
-        console.error(`ERROR: next_change_id: ${next_change_id} download was not confirmed in database`)
-        throw error
-      }),
+  updateCurrentNextChangeId: (client, nextChangeId: string, uploaded: boolean = false) =>
+    client.query({
+      name: 'update-change-id',
+      text: 'UPDATE change_id SET uploaded = $1 WHERE next_change_id = $2 AND downloaded IS TRUE',
+      values: [uploaded, nextChangeId],
+    }),
+  getLatestNextChangeId: (client) =>
+    client.query({
+      name: 'get-change-id',
+      text: 'SELECT next_change_id FROM change_id WHERE downloaded IS TRUE AND uploaded IS FALSE ORDER BY id LIMIT 1',
+    }),
 }
 
 export default queries

@@ -77,8 +77,8 @@ export default class Item {
       support: props.support,
       talisman_tier: props.talismanTier,
     }
-    // this.locked_to_character = props.lockedToCharacter
-    // Custom properties
+
+    this.variable_data = JSON.stringify(this.variable_data)
   }
 
   private setNote(itemNote: string, stashNote: string) {

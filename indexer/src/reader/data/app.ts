@@ -1,4 +1,6 @@
-import { db } from '../../db'
+import 'dotenv/config'
+
+import { pgp, db } from '../../db'
 import { sqlFile } from '../create'
 import downloadAndParse from '../downloadAndParse'
 
@@ -38,7 +40,7 @@ export const parseLeagueData = ({ data: [...leagues] }: { data: any[], leagues: 
   return leaguesData
 }
 
-export const pollServer = async () => {
+(async function main() {
   try {
     const statsData: StatData[] = await downloadAndParse({
       url: 'https://www.pathofexile.com/api/trade/data/stats',
@@ -53,7 +55,16 @@ export const pollServer = async () => {
       parser: parseLeagueData,
     })
 
-    console.time('Sql file creation took')
+    await db.task('Inserting data', (t) =>
+      t.batch([
+        t.result(queries.insertStatsData(statsData)),
+        t.result(queries.insertItemsData(itemsData)),
+        t.result(queries.insertLeaguesData(leagueData)),
+      ]))
+      .then((events) => console.log)
+      .then((error) => console.error)
+
+    /* console.time('Sql file creation took')
     const sql = sqlFile({
       title: 'data',
       directory: 'sql',
@@ -65,9 +76,9 @@ export const pollServer = async () => {
 
     if (creationSuccessful) {
       console.timeEnd('Sql file creation took')
-    }
+    } */
 
-    setTimeout(pollServer, POLL_SERVER_REPEAT_CYCLE)
+    setTimeout(main, POLL_SERVER_REPEAT_CYCLE)
   } catch (error) {
     if (error.response) {
       // The request was made and the server responded with a status code
@@ -86,8 +97,6 @@ export const pollServer = async () => {
     }
     console.log(error.config)
 
-    setTimeout(pollServer, 5000)
+    setTimeout(main, 5000)
   }
-}
-
-pollServer()
+})()

@@ -2,8 +2,6 @@ import * as fs from 'fs'
 
 import { pgp } from '../db'
 
-const concatQueries = (queryArray: string[]): string => pgp.helpers.concat([...queryArray])
-
 export const checkArrayLength = (array: any[] | undefined, method: any) => {
   if (Array.isArray(array)) {
     return array.length > 0 ? method(array) : ''
@@ -20,7 +18,7 @@ export const sqlFile = ({ title, directory = 'sql' }: { title: string, directory
       sqlQueryArray.push(checkArrayLength(array, method))
     },
     createFile: () => {
-      const sqlQueryString: string = concatQueries(sqlQueryArray)
+      const sqlQueryString: string = pgp.helpers.concat([...sqlQueryArray])
 
       const fileName = `${title}.sql`
       const filePath = directory + '/' + fileName
@@ -54,12 +52,7 @@ export const csvFile = ({ directory = 'csv' }: { directory: string }) => {
 
       const headers = Object.keys(data[0])
 
-      data = data.map((element: any, index: number) => headers.map((header) => {
-        if (header === 'variable_data')
-          return JSON.stringify(element[header])
-
-        return element[header]
-      }).join('|'))
+      data = data.map((element: any, index: number) => headers.map((header) => element[header]).join('|'))
 
       const fileName = `${title}.csv`
       const filePath = directory + '/' + fileName

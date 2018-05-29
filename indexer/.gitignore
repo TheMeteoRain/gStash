@@ -1,0 +1,4 @@
+# Unwanted file extensions
+*.js
+*.csv
+*.sql

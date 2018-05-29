@@ -49,14 +49,14 @@ const queries = {
   insertMods: (data: Mod[]) => pgp.helpers.insert(data, COLUMN_SET_MODS),
   removeStashes: (data: Stash[]) => 'DELETE FROM stashes WHERE stash_id in (' + pgp.helpers.values(data, COLUMN_SET_REMOVE_STASHES).replace(/[\(\)]/g, '') + ');',
 
-  upsertCurrentNextchange_id: (next_change_id: string, downloaded: boolean = false): Promise<string> =>
+  upsertCurrentNextChangeId: (next_change_id: string, downloaded: boolean = false): Promise<string> =>
     db.one(`
     INSERT INTO change_id(next_change_id, downloaded) VALUES($<next_change_id>, $<downloaded>)
     ON CONFLICT (next_change_id)
     DO UPDATE SET downloaded = EXCLUDED.downloaded
     RETURNING next_change_id`, { next_change_id, downloaded }),
 
-  getLatestNextchangeId: (): Promise<string> =>
+  getLatestNextChangeId: (): Promise<string> =>
     db.one(`
     SELECT next_change_id
     FROM change_id

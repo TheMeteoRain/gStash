@@ -5,27 +5,13 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Unwanted file extensions
-indexer/*.js
-
-# Unwanted directories
-sql/
-csv/
-my-app/
-
 # Idea configuration
 .idea/
-.vscode/
 
 .DS_STORE
 
 # Dependency directories
 node_modules/
-
-# build directories
-dist
-build
-.next
 
 # dotenv environment variables file
 .env

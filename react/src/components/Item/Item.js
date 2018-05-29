@@ -16,6 +16,7 @@ import Grid from '@material-ui/core/Grid'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
 import CardMedia from '@material-ui/core/CardMedia'
+import CardActions from '@material-ui/core/CardActions'
 import Typography from '@material-ui/core/Typography'
 import IconButton from '@material-ui/core/IconButton'
 
@@ -32,6 +33,14 @@ const styles = theme => ({
     width: 'auto',
     height: '100%',
     backgroundSize: 'unset',
+  },
+  relative: {
+    position: 'relative',
+  },
+  absolute: {
+    position: 'absolute',
+    left: 0,
+    bottom: 0,
   },
 })
 
@@ -67,6 +76,16 @@ class Item extends Component {
   //   selection.removeAllRanges()
   //   temporaryElement.remove()
   // }
+  openWikiLink = () => {
+    const {
+      node: { name },
+    } = this.props
+
+    window.open(
+      `https://pathofexile.gamepedia.com/${name.split(' ').join('_')}`,
+      '_blank'
+    )
+  }
 
   render() {
     const {
@@ -123,6 +142,21 @@ class Item extends Component {
             </CardContent>
           </Grid>
         </Grid>
+        <CardActions>
+          <Button size="small" color="primary">
+            Whisper
+          </Button>
+          <Button size="small" color="primary">
+            Refresh
+          </Button>
+
+          {name &&
+            frame_type === 3 && (
+              <Button size="small" color="primary" onClick={this.openWikiLink}>
+                Wiki
+              </Button>
+            )}
+        </CardActions>
       </Card>
     )
 

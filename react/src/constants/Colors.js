@@ -1,4 +1,4 @@
-const Colors = {
+const COLORS = {
   // Default, Augmented, Unmet, Physical Damage, Fire Damage, Cold Damage, Lightning Damage, Chaos Damage
   ValueTypes: [
     '#FFFFFF',
@@ -24,4 +24,4 @@ const Colors = {
   ],
 }
 
-export default Colors
+export default COLORS

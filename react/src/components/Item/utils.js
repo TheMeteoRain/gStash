@@ -1,7 +1,7 @@
 import React from 'react'
 
-import Colors from '../../Colors'
+import { COLORS } from '../../constants'
 
 export const colorFormat = (value, valueType) => (
-  <span style={{ color: Colors.ValueTypes[valueType] }}>{value}</span>
+  <span style={{ color: COLORS.ValueTypes[valueType] }}>{value}</span>
 )

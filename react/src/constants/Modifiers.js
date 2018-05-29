@@ -1,4 +1,4 @@
-export default [
+const MODIFIERS = [
   'Alternate Art',
   'Corrupted',
   'Crafted',
@@ -7,3 +7,5 @@ export default [
   'Identified',
   'Shaper',
 ]
+
+export default MODIFIERS

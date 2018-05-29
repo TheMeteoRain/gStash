@@ -33,7 +33,7 @@ import {
   CardText,
 } from '@material-ui/core/Card'
 
-import { modifiers } from '../../utils'
+import { MODIFIERS } from '../../constants'
 
 const styles = theme => ({
   root: {
@@ -112,7 +112,7 @@ class Search extends Component {
   }
 
   menuItems(values) {
-    return modifiers.map(modifier => (
+    return MODIFIERS.map(modifier => (
       <MenuItem key={modifier} value={modifier}>
         <Checkbox checked={values.indexOf(modifier) > -1} />
         <ListItemText primary={modifier} />

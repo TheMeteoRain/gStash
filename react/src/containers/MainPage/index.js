@@ -3,7 +3,7 @@ import React, { Component } from 'react'
 import { Mutation, Query } from 'react-apollo'
 
 import { Search, ResultSet } from '../../components'
-import { modifiers } from '../../utils'
+import { MODIFIERS } from '../../constants'
 import filters from './filters'
 
 class MainPage extends Component {
@@ -180,7 +180,7 @@ class MainPage extends Component {
   multiValueCheck = state => {
     const { wantedModifiers, unWantedModifiers } = state
 
-    modifiers.forEach(modifier => {
+    MODIFIERS.forEach(modifier => {
       if (
         !wantedModifiers.includes(modifier) &&
         !unWantedModifiers.includes(modifier)

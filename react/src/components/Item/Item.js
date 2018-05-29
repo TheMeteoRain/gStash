@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 
 import { withStyles } from '@material-ui/core/styles'
 
-import Colors from '../../Colors'
+import { COLORS } from '../../constants'
 
 import Property from './Property'
 import Requirement from './Requirement'

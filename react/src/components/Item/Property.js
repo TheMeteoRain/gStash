@@ -66,8 +66,8 @@ const formatProperties = (
 }
 
 const Property = properties => {
-  if (typeof property === 'undefined' || properties.length === 0) return
-  console.log(properties)
+  if (typeof properties === 'undefined' || properties.length === 0) return
+
   return properties.map(formatProperties)
 }
 

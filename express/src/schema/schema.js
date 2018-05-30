@@ -97,13 +97,9 @@ const ItemType = new GraphQLObjectType({
         let query = `SELECT * FROM requirements WHERE item_id = '${
           parentValue.item_id
         }'`
-        console.log(query)
         return db
           .manyOrNone(query)
-          .then(data => {
-            console.log(data)
-            return data
-          })
+          .then(data => data)
           .catch(err => {
             return 'The error is', err
           })
@@ -214,7 +210,7 @@ const RootQuery = new GraphQLObjectType({
               if (name === 'category') {
                 const map = find.map(i => `"${i}"`)
                 return (itemQuery += addLogicalOperatorIfNotFirst(
-                  `variable_data @> '{"${name}": {"${value}": [${map}]}}'`,
+                  `variable_data @> '{"${name}": {"${value.toLocaleLowerCase()}": [${map}]}}'`,
                   index
                 ))
               }

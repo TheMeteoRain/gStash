@@ -38,7 +38,7 @@ class Mods extends React.Component {
   render() {
     const { mods } = this.props
 
-    if (typeof mods === 'undefined' || mods.length === 0) return
+    if (typeof mods === 'undefined' || mods.length === 0) return null
 
     // APOLLO IS IMMUTABLE, DO - ARRAY OF
     const sortedList = Array.of(...mods).sort(

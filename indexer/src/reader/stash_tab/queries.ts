@@ -40,11 +40,11 @@ const REMOVE_STASH_BY_ID = (stash: Stash) =>
   ({ query: 'DELETE FROM stashes WHERE stash_id = $<stash_id>', values: stash })
 
 const queries = {
-  insertAccounts: (data: Account[]) => pgp.helpers.insert(data, COLUMN_SET_ACCOUNTS) + ' ON CONFLICT (account_name) DO UPDATE SET last_seen = EXCLUDED.last_seen, last_character_name = EXCLUDED.last_character_name',
-  insertStashes: (data: Stash[]) => pgp.helpers.insert(data, COLUMN_SET_STASHES) + ' ON CONFLICT (stash_id) DO UPDATE SET stash_name = EXCLUDED.stash_name, stash_type = EXCLUDED.stash_type, stash_public = EXCLUDED.stash_public',
-  insertItems: (data: Item[]) => pgp.helpers.insert(data, COLUMN_SET_ITEMS) + ' ON CONFLICT (item_id) DO UPDATE SET account_name = EXCLUDED.account_name, art_filename = EXCLUDED.art_filename, corrupted = EXCLUDED.corrupted, crafted = EXCLUDED.crafted, descr_text = EXCLUDED.descr_text, enchanted = EXCLUDED.enchanted, flavour_text = EXCLUDED.flavour_text, h = EXCLUDED.h, icon = EXCLUDED.icon, identified = EXCLUDED.identified, ilvl = EXCLUDED.ilvl, inventory_id = EXCLUDED.inventory_id, league = EXCLUDED.league, link_amount = EXCLUDED.link_amount, note = EXCLUDED.note, sec_decription_text = EXCLUDED.sec_decription_text, socket_amount = EXCLUDED.socket_amount, stack_size = EXCLUDED.stack_size, stash_id = EXCLUDED.stash_id, updated_ts = EXCLUDED.added_ts, w = EXCLUDED.w, x = EXCLUDED.x, y = EXCLUDED.y',
+  insertAccounts: (data: Account[]) => pgp.helpers.insert(data, COLUMN_SET_ACCOUNTS) + ' ON CONFLICT (account_name) DO UPDATE SET ' + COLUMN_SET_ACCOUNTS.assignColumns({from: 'EXCLUDED', skip: 'account_name'}),
+  insertStashes: (data: Stash[]) => pgp.helpers.insert(data, COLUMN_SET_STASHES) + ' ON CONFLICT (stash_id) DO UPDATE SET ' + COLUMN_SET_STASHES.assignColumns({from: 'EXCLUDED', skip: 'stash_id'}),
+  insertItems: (data: Item[]) => pgp.helpers.insert(data, COLUMN_SET_ITEMS) + ' ON CONFLICT (item_id) DO UPDATE SET ' + COLUMN_SET_ITEMS.assignColumns({from: 'EXCLUDED', skip: 'item_id'}),
   insertSockets: (data: Socket[]) => pgp.helpers.insert(data, COLUMN_SET_SOCKETS),
-  insertProperties: (data: Property[]) => pgp.helpers.insert(data, COLUMN_SET_PROPERTIES) + 'ON CONFLICT (item_id, property_name) DO UPDATE SET property_value1 = EXCLUDED.property_value1, property_value2 = EXCLUDED.property_value2, property_progress = EXCLUDED.property_progress',
+  insertProperties: (data: Property[]) => pgp.helpers.insert(data, COLUMN_SET_PROPERTIES) + 'ON CONFLICT (item_id, property_name) DO UPDATE SET ' + COLUMN_SET_PROPERTIES.assignColumns({from: 'EXCLUDED', skip: ['item_id', 'property_name', 'property_value_type', 'property_display_mode']}),
   insertRequirements: (data: Requirement[]) => pgp.helpers.insert(data, COLUMN_SET_REQUIREMENTS) + ' ON CONFLICT (item_id, requirement_name) DO UPDATE SET requirement_value = EXCLUDED.requirement_value',
   insertMods: (data: Mod[]) => pgp.helpers.insert(data, COLUMN_SET_MODS),
   removeStashes: (data: Stash[]) => 'DELETE FROM stashes WHERE stash_id in (' + pgp.helpers.values(data, COLUMN_SET_REMOVE_STASHES).replace(/[\(\)]/g, '') + ');',

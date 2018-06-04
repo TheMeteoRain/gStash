@@ -15,7 +15,7 @@ ALTER TABLE requirements SET UNLOGGED;
 ALTER TABLE mods SET UNLOGGED;
 
 -- Fill document attributes
-UPDATE items SET document = to_tsvector(name || '. ' || type_line);
+UPDATE items SET document = TO_TSVECTOR(COALESCE(name, '') || '. ' || COALESCE(type_line, ''));
 
 -- Create special indexes
 CREATE INDEX idx_fts_search ON items USING gin(document) WHERE document IS NOT NULL;

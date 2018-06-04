@@ -8,11 +8,6 @@ const styles = theme => ({
   root: {
     flexGrow: 1,
   },
-  textField: {
-    marginLeft: theme.spacing.unit,
-    marginRight: theme.spacing.unit,
-    maxWidth: '80%',
-  },
 })
 
 const RequirementField = props => {
@@ -27,11 +22,11 @@ const RequirementField = props => {
   } = props
 
   return (
-    <Grid container alignItems={'baseline'}>
-      <Grid item xs={4}>
+    <Grid container alignItems={'baseline'} spacing={16}>
+      <Grid item xs={6}>
         {name}
       </Grid>
-      <Grid item xs={4}>
+      <Grid item xs={3}>
         <TextField
           id={`${propertyName}Min`}
           label="Min"
@@ -42,10 +37,10 @@ const RequirementField = props => {
             filterCategory
           )}
           type="number"
-          className={classes.textField}
+          fullWidth
         />
       </Grid>
-      <Grid item xs={4}>
+      <Grid item xs={3}>
         <TextField
           id={`${propertyName}Max`}
           label="Max"
@@ -56,7 +51,7 @@ const RequirementField = props => {
             filterCategory
           )}
           type="number"
-          className={classes.textField}
+          fullWidth
         />
       </Grid>
     </Grid>

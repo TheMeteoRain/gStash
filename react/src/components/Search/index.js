@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 
 import { Query, graphql } from 'react-apollo'
-import { getFilters, test } from '../../queries'
+import { QUERY_FILTERS, test } from '../../queries'
 
 import { AsyncSelect, RequirementField, SocketField } from '../Form'
 import { withStyles } from '@material-ui/core/styles'
@@ -16,6 +16,7 @@ import ListItemText from '@material-ui/core/ListItemText'
 import Checkbox from '@material-ui/core/Checkbox'
 import Grid from '@material-ui/core/Grid'
 import Paper from '@material-ui/core/Paper'
+import Typography from '@material-ui/core/Typography'
 
 import Input from '@material-ui/core/Input'
 import InputLabel from '@material-ui/core/InputLabel'
@@ -135,7 +136,6 @@ class Search extends Component {
                   <FormControl fullWidth>
                     <InputLabel htmlFor="leagueSelect">League</InputLabel>
                     <Select
-                      defaultValue={'Standard'}
                       value={this.props.leagueName}
                       onChange={this.props.onChange('leagueName', 'league')}
                       inputProps={{
@@ -238,7 +238,161 @@ class Search extends Component {
             </Grid>
 
             <Grid item xs={6}>
-              <Grid container className={classes.margin}>
+              <Typography variant="title">Offence</Typography>
+              <Grid container>
+                <Grid item xs={6}>
+                  <RequirementField
+                    name={'Damage'}
+                    propertyName={'proDamage'}
+                    filterName={'Damage'}
+                    filterCategory={'pro'}
+                    value1={this.props.proDamageMin}
+                    value2={this.props.proDamageMax}
+                    onChange={this.props.onChange}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <RequirementField
+                    name={'Attacks per Second'}
+                    propertyName={'proAttackSpeed'}
+                    filterName={'Attacks per Second'}
+                    filterCategory={'pro'}
+                    value1={this.props.proAttackSpeedMin}
+                    value2={this.props.proAttackSpeedMax}
+                    onChange={this.props.onChange}
+                  />
+                </Grid>
+
+                <Grid item xs={6}>
+                  <RequirementField
+                    name={'Critical Chance'}
+                    propertyName={'proCriticalChance'}
+                    filterName={'Critical Strike Chance'}
+                    filterCategory={'pro'}
+                    value1={this.props.proCriticalChanceMin}
+                    value2={this.props.proCriticalChanceMax}
+                    onChange={this.props.onChange}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <RequirementField
+                    name={'Damage per Second'}
+                    propertyName={'proDps'}
+                    filterName={'Damage per Second'}
+                    filterCategory={'pro'}
+                    value1={this.props.proDpsMin}
+                    value2={this.props.proDpsMax}
+                    onChange={this.props.onChange}
+                  />
+                </Grid>
+
+                <Grid item xs={6}>
+                  <RequirementField
+                    name={'Physical DPS'}
+                    propertyName={'proPhysicalDps'}
+                    filterName={'Physical Damage'}
+                    filterCategory={'pro'}
+                    value1={this.props.proPhysicalDpsMin}
+                    value2={this.props.proPhysicalDpsMax}
+                    onChange={this.props.onChange}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <RequirementField
+                    name={'Elemental Dps'}
+                    propertyName={'proElementalDps'}
+                    filterName={'Elemental Damage'}
+                    filterCategory={'pro'}
+                    value1={this.props.proElementalDpsMin}
+                    value2={this.props.proElementalDpsMax}
+                    onChange={this.props.onChange}
+                  />
+                </Grid>
+              </Grid>
+            </Grid>
+
+            <Grid item xs={6}>
+              <Typography variant="title">Defence</Typography>
+              <Grid container>
+                <Grid item xs={6}>
+                  <RequirementField
+                    name={'Armour'}
+                    propertyName={'proArmour'}
+                    filterName={'Armour'}
+                    filterCategory={'pro'}
+                    value1={this.props.proArmourMin}
+                    value2={this.props.proArmourMax}
+                    onChange={this.props.onChange}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <RequirementField
+                    name={'Evasion'}
+                    propertyName={'proEvasion'}
+                    filterName={'Evasion'}
+                    filterCategory={'pro'}
+                    value1={this.props.proEvasionMin}
+                    value2={this.props.proEvasionMax}
+                    onChange={this.props.onChange}
+                  />
+                </Grid>
+
+                <Grid item xs={6}>
+                  <RequirementField
+                    name={'Energy Shield'}
+                    propertyName={'proEnergyShield'}
+                    filterName={'Energy Shield'}
+                    filterCategory={'pro'}
+                    value1={this.props.proEnergyShieldMin}
+                    value2={this.props.proEnergyShieldMax}
+                    onChange={this.props.onChange}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <RequirementField
+                    name={'Block'}
+                    propertyName={'proBlock'}
+                    filterName={'Block'}
+                    filterCategory={'pro'}
+                    value1={this.props.proBlockMin}
+                    value2={this.props.proBlockMax}
+                    onChange={this.props.onChange}
+                  />
+                </Grid>
+              </Grid>
+            </Grid>
+
+            <Grid item xs={6}>
+              <Typography variant="title">Sockets</Typography>
+              <Grid container>
+                <Grid item xs={12}>
+                  <SocketField
+                    name={'Sockets'}
+                    propertyName={'socketAmount'}
+                    filterName={'socket_amount'}
+                    filterCategory={'item'}
+                    value1={this.props.socketAmountMin}
+                    value2={this.props.socketAmountMax}
+                    onChange={this.props.onChange}
+                  />
+                </Grid>
+
+                <Grid item xs={12}>
+                  <SocketField
+                    name={'Links'}
+                    propertyName={'linkAmount'}
+                    filterName={'link_amount'}
+                    filterCategory={'item'}
+                    value1={this.props.linkAmountMin}
+                    value2={this.props.linkAmountMax}
+                    onChange={this.props.onChange}
+                  />
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid item xs={6}>
+              <Typography variant="title">Requirements</Typography>
+              <Grid container>
                 <Grid item xs={6}>
                   <RequirementField
                     name={'Level'}
@@ -288,83 +442,50 @@ class Search extends Component {
             </Grid>
 
             <Grid item xs={6}>
-              shello
-            </Grid>
-
-            <Grid item xs={6}>
-              <Grid container className={classes.margin}>
-                <Grid item xs={12}>
-                  <SocketField
-                    name={'Sockets'}
-                    propertyName={'socketAmount'}
-                    filterName={'socket_amount'}
+              <Typography variant="title">Other</Typography>
+              <Grid container>
+                <Grid item xs={6}>
+                  <RequirementField
+                    name={'Quality'}
+                    propertyName={'proQuality'}
+                    filterName={'Quality'}
+                    filterCategory={'pro'}
+                    value1={this.props.proQualityMin}
+                    value2={this.props.proQualityMax}
+                    onChange={this.props.onChange}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <RequirementField
+                    name={'Item Level'}
+                    propertyName={'ilvl'}
+                    filterName={'ilvl'}
                     filterCategory={'item'}
-                    value1={this.props.socketAmountMin}
-                    value2={this.props.socketAmountMax}
-                    onChange={this.props.onChange}
-                  />
-                </Grid>
-
-                <Grid item xs={12}>
-                  <SocketField
-                    name={'Links'}
-                    propertyName={'linkAmount'}
-                    filterName={'link_amount'}
-                    filterCategory={'item'}
-                    value1={this.props.linkAmountMin}
-                    value2={this.props.linkAmountMax}
-                    onChange={this.props.onChange}
-                  />
-                </Grid>
-              </Grid>
-            </Grid>
-            <Grid item xs={6}>
-              shello
-            </Grid>
-            <Grid item xs={6}>
-              <Grid container className={classes.margin}>
-                <Grid item xs={6}>
-                  <RequirementField
-                    name={'Armour'}
-                    propertyName={'proArmour'}
-                    filterName={'Armour'}
-                    filterCategory={'pro'}
-                    value1={this.props.proArmourMin}
-                    value2={this.props.proArmourMax}
-                    onChange={this.props.onChange}
-                  />
-                </Grid>
-                <Grid item xs={6}>
-                  <RequirementField
-                    name={'Evasion'}
-                    propertyName={'proEvasion'}
-                    filterName={'Evasion'}
-                    filterCategory={'pro'}
-                    value1={this.props.proEvasionMin}
-                    value2={this.props.proEvasionMax}
+                    value1={this.props.ilvlMin}
+                    value2={this.props.ilvlMax}
                     onChange={this.props.onChange}
                   />
                 </Grid>
 
                 <Grid item xs={6}>
                   <RequirementField
-                    name={'Energy Shield'}
-                    propertyName={'proEnergyShield'}
-                    filterName={'Energy Shield'}
+                    name={'Gem Level'}
+                    propertyName={'proGemLevel'}
+                    filterName={'Level'}
                     filterCategory={'pro'}
-                    value1={this.props.proEnergyShieldMin}
-                    value2={this.props.proEnergyShieldMax}
+                    value1={this.props.proGemLevelMin}
+                    value2={this.props.proGemLevelMax}
                     onChange={this.props.onChange}
                   />
                 </Grid>
                 <Grid item xs={6}>
                   <RequirementField
-                    name={'Block'}
-                    propertyName={'proBlock'}
-                    filterName={'Block'}
+                    name={'Gem Experience %'}
+                    propertyName={'proExperience'}
+                    filterName={'Experience'}
                     filterCategory={'pro'}
-                    value1={this.props.proBlockMin}
-                    value2={this.props.proBlockMax}
+                    value1={this.props.proExperienceMin}
+                    value2={this.props.proExperienceMax}
                     onChange={this.props.onChange}
                   />
                 </Grid>
@@ -380,4 +501,4 @@ class Search extends Component {
   }
 }
 
-export default graphql(getFilters)(withStyles(styles)(Search))
+export default graphql(QUERY_FILTERS)(withStyles(styles)(Search))

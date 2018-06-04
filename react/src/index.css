@@ -1,7 +1,9 @@
 body {
   margin: 0 auto;
   width: 80%;
-  background: linear-gradient(135deg, orange, orange 60%, cyan);
+  background: mediumslateblue
+    url('https://web.poecdn.com/public/news/2017-10-19/TopTen/aquallix.jpg');
+  /**background: linear-gradient(135deg, orange, orange 60%, cyan);*/
   background-repeat: no-repeat;
   background-attachment: fixed;
 }

@@ -91,6 +91,7 @@ class Item extends Component {
     const {
       classes,
       node: {
+        cursor,
         item_id,
         name,
         type_line,
@@ -108,7 +109,7 @@ class Item extends Component {
     } = this.props
 
     return (
-      <Card className={classes.card}>
+      <Card key={cursor} className={classes.card}>
         <Grid container spacing={24}>
           <Grid item xs={3}>
             <CardMedia className={classes.media} image={icon} />
@@ -119,7 +120,7 @@ class Item extends Component {
               <div className={classes.heading}>
                 <Typography
                   variant="headline"
-                  style={{ color: COLORS.FrameTypes[frame_type] }}
+                  style={{ color: COLORS.FRAME_TYPE[frame_type] }}
                 >
                   {name}
                 </Typography>
@@ -159,126 +160,6 @@ class Item extends Component {
         </CardActions>
       </Card>
     )
-
-    // <Card style={{ margin: '1rem 0' }}>
-    //   <CardHeader
-    //     title={name}
-    //     subtitle={typeLine}
-    //     actAsExpander={true}
-    //     titleStyle={{
-    //       color: `${Colors.FrameTypes[frameType]}`,
-    //     }}
-    //   />
-
-    //   <CardText style={{ textAlign: 'center' }}>
-    //     <div style={{ display: 'inline-block', width: '20%' }}>
-    //       <img src={icon} alt="" />
-    //     </div>
-
-    //     <div style={{ display: 'inline-block', width: '80%' }}>
-    //       {Property(properties)}
-    //       <Divider />
-    //       {Requirement(requirements)}
-    //       <Divider />
-
-    //       {Mod(mods)}
-    //       <Divider />
-
-    //       {Unmet(identified, corrupted)}
-    //     </div>
-    //   </CardText>
-    //   <CardActions>
-    //     <Button flatPrimary label="Whisper" />
-    //     <Button flatSecondary label="Refresh" />
-    //   </CardActions>
-    // </Card>
-    /**return (
-      <article>
-        <Row
-          style={{
-            textAlign: 'center',
-          }}
-        >
-          <Col
-            style={{
-              color: `${Colors.FrameTypes[frameType]}`,
-              backgroundColor: '#3F3F3F',
-            }}
-          >
-            <h6>
-              <div>{name}</div>
-              <div>{typeLine}</div>
-            </h6>
-          </Col>
-        </Row>
-
-        <Row style={{ textAlign: 'center' }}>
-          <Col>
-            <img
-              src={icon}
-              style={{
-                position: 'absolute',
-                top: '0',
-                bottom: '0',
-                left: '0',
-                right: '0',
-                margin: 'auto',
-              }}
-            />
-          </Col>
-
-          <Col
-            xs={{ size: 12 }}
-            lg={{ size: 6 }}
-            style={{
-              backgroundColor: '#222222',
-              color: '#FFFFFF',
-            }}
-          >
-            <Row>
-              <Col>{Property(properties)}</Col>
-            </Row>
-            <Row>
-              <Col>
-                <div>Item level: {ilvl}</div>
-                {Requirement(requirements)}
-              </Col>
-            </Row>
-            <Row>
-              <Col>{Mod(mods)}</Col>
-            </Row>
-            <Row>
-              <Col>{Unmet(identified, corrupted, exp)}</Col>
-            </Row>
-          </Col>
-          <Col>
-            <Row>
-              <Col>
-                <div>{note}</div>
-              </Col>
-              <Col>{accountName}</Col>
-              <Col>
-                <span type="text" value="a" id={`${itemId}whisper`} />
-                <Button
-                  onClick={this.handleCopyToClipboard}
-                  id={itemId}
-                  name="asd"
-                >
-                  Whisper
-                </Button>
-                <Button>
-                  <a
-                    href={`https://www.pathofexile.com/account/view-profile/${accountName}`}
-                  >
-                    Profile
-                  </a>
-                </Button>
-              </Col>
-            </Row>
-          </Col>
-        </Row>
-      </article>
-    )*/
   }
 }
 

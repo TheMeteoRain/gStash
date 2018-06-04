@@ -1,6 +1,6 @@
 import gql from 'graphql-tag'
 
-const getFilters = gql`
+const QUERY_FILTERS = gql`
   query allFilters {
     allLeagues(first: null) {
       nodes {
@@ -23,7 +23,7 @@ const getFilters = gql`
   }
 `
 
-const getItems = gql`
+const QUERY_ITEMS = gql`
   query allItemsQuery($first: Int = 10, $cursor: String, $filter: JSON) {
     allItems(first: $first, after: $cursor, filter: $filter) {
       totalCount
@@ -90,29 +90,4 @@ const getItems = gql`
   }
 `
 
-const items = gql`
-  query {
-    allItems(first: 10) {
-      edges {
-        node {
-          addedTs
-          document
-          icon
-          ilvl
-          inventoryId
-          league
-          name
-          stashId
-          typeLine
-          updatedTs
-          w
-          x
-          y
-          variableData
-        }
-      }
-    }
-  }
-`
-
-export { getFilters, getItems, items, test }
+export { QUERY_FILTERS, QUERY_ITEMS }

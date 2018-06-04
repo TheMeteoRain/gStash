@@ -7,18 +7,18 @@ const COLORS = {
     ENCHANTED: '#B4B4FF',
   },
   // Default, Augmented, Unmet, Physical Damage, Fire Damage, Cold Damage, Lightning Damage, Chaos Damage
-  ValueTypes: [
-    '#FFFFFF',
+  VALUE_TYPE: [
+    '#000000',
     '#8888FF',
     '#D20000',
-    '#FFFFFF',
+    '#000000',
     '#960000',
     '#366492',
     '#FFD700',
     'D02090',
   ],
   // normal, magical, rare, unique, gem, currency, divination card, quest, prophecy, relic
-  FrameTypes: [
+  FRAME_TYPE: [
     '#C8C8C8',
     '#8888FF',
     '#FFFF77',

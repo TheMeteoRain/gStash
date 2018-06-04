@@ -10,7 +10,7 @@ const formatProperties = (
 ) => {
   if (BAN_WORDS.find(word => word === property_name)) return
 
-  let property = <span>{property_name}</span>
+  let property = <span key={index}>{property_name}</span>
 
   // name: value or name: value-value
   if (property_display_mode === 0 && property_values.length > 0) {
@@ -19,21 +19,29 @@ const formatProperties = (
         if (value1 && value2) {
           // last
           if (index === property_values.length - 1)
-            return <span>{colorFormat(`${value1}-${value2}`, valueType)}</span>
+            return (
+              <span key={index}>
+                {colorFormat(`${value1}-${value2}`, valueType)}
+              </span>
+            )
 
           // not last
-          return <span>{colorFormat(`${value1}-${value2}, `, valueType)}</span>
+          return (
+            <span key={index}>
+              {colorFormat(`${value1}-${value2}, `, valueType)}
+            </span>
+          )
         }
 
         if (value1 && !value2)
-          return <span>{colorFormat(value1, valueType)}</span>
+          return <span key={index}>{colorFormat(value1, valueType)}</span>
 
         return
       }
     )
 
     property = (
-      <span>
+      <span key={index}>
         {property_name}: {values}
       </span>
     )
@@ -55,7 +63,7 @@ const formatProperties = (
       if (i === 2) return colorFormat(value2, valueType)
     })
 
-    property = <span>{name}</span>
+    property = <span key={index}>{name}</span>
   }
 
   return (

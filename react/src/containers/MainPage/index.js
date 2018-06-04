@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 
 import { Mutation, Query } from 'react-apollo'
 
+import Button from '@material-ui/core/Button'
+
 import { Search, ResultSet } from '../../components'
 import { MODIFIERS } from '../../constants'
 import filters from './filters'
@@ -11,7 +13,7 @@ class MainPage extends Component {
     super(props)
 
     this.state = {
-      first: 50,
+      first: 10,
       hasSearched: false,
       leagueName: 'Standard',
       category: '',
@@ -240,24 +242,28 @@ class MainPage extends Component {
   handleSubmit = e => {
     e.preventDefault()
 
-    const { itemFilter, reqFilter } = this.state
+    const { itemFilter, reqFilter, proFilter } = this.state
     const filter = {
       item: itemFilter,
       req: reqFilter.length > 0 ? reqFilter : null,
+      pro: proFilter.length > 0 ? proFilter : null,
     }
 
-    this.setState({
-      hasSearched: true,
-      filter,
-    })
+    this.setState(
+      {
+        hasSearched: false,
+        filter,
+      },
+      () => this.setState({ hasSearched: true })
+    )
   }
 
   render() {
     const { hasSearched, first, filter } = this.state
 
     return (
-      <section>
-        <article>
+      <React.Fragment>
+        <section>
           <Search
             onSubmit={this.handleSubmit}
             onChange={this.handleChange}
@@ -265,14 +271,12 @@ class MainPage extends Component {
             onUnWantedModifiers={this.handleUnWantedModifiers}
             {...this.state}
           />
-        </article>
+        </section>
 
-        {hasSearched && (
-          <article>
-            <ResultSet first={first} filter={filter} />
-          </article>
-        )}
-      </section>
+        <section>
+          {hasSearched && <ResultSet first={first} filter={filter} />}
+        </section>
+      </React.Fragment>
     )
   }
 }

@@ -9,8 +9,6 @@ const styles = theme => ({
     flexGrow: 1,
   },
   textField: {
-    marginLeft: theme.spacing.unit,
-    marginRight: theme.spacing.unit,
     maxWidth: '80%',
   },
 })
@@ -28,10 +26,10 @@ const SocketField = props => {
 
   return (
     <Grid container alignItems={'baseline'}>
-      <Grid item xs={4}>
+      <Grid item xs={6}>
         {name}
       </Grid>
-      <Grid item xs={4}>
+      <Grid item xs={3}>
         <TextField
           id={`${propertyName}Min`}
           label="Min"
@@ -45,7 +43,7 @@ const SocketField = props => {
           className={classes.textField}
         />
       </Grid>
-      <Grid item xs={4}>
+      <Grid item xs={3}>
         <TextField
           id={`${propertyName}Max`}
           label="Max"

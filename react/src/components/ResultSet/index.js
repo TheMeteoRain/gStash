@@ -1,113 +1,79 @@
-import React, { Component } from 'react'
+import React from 'react'
 
 import { withStyles } from '@material-ui/core/styles'
 import CircularProgress from '@material-ui/core/CircularProgress'
-import Paper from '@material-ui/core/Paper'
 
-import { Query, graphql } from 'react-apollo'
-import { getItems } from '../../queries'
+import { Query } from 'react-apollo'
+import { QUERY_ITEMS } from '../../queries'
 
 import ItemList from '../ItemList'
 
+/** Apollo network status constants */
+import { APOLLO } from '../../constants'
+
 const styles = theme => ({
-  marginTop: {
+  loading: {
     textAlign: 'center',
     marginTop: theme.spacing.unit * 3,
-  },
-  paper: {
-    textAlign: 'center',
-    marginTop: theme.spacing.unit * 3,
-    padding: theme.spacing.unit * 5,
   },
 })
 
-class ResultSet extends Component {
-  constructor(props) {
-    super(props)
-  }
+const ResultSet = ({ classes, filter, first }) => (
+  <Query
+    query={QUERY_ITEMS}
+    variables={{ filter, first }}
+    notifyOnNetworkStatusChange
+  >
+    {({ networkStatus, loading, error, fetchMore, data }) => {
+      if (loading && networkStatus === APOLLO.NETWORK_STATUS.LOADING)
+        return (
+          <div className={classes.loading}>
+            <CircularProgress size={100} />
+          </div>
+        )
+      if (error) {
+        console.log(error)
+        return `Error! ${error.message}`
+      }
 
-  render() {
-    const {
-      classes,
-      data,
-      data: { loading, networkStatus, error, allItems, loadMoreEntries },
-    } = this.props
+      const fetchingMore =
+        networkStatus === APOLLO.NETWORK_STATUS.FETCH_MORE ? true : false
 
-    if (error) {
-      console.log(data)
-      console.log(error)
-      return <div>ERROR - open console</div>
-    }
+      const handleLoadMore = () => {
+        fetchMore({
+          variables: {
+            filter,
+            first,
+            cursor: data.allItems.pageInfo.endCursor,
+          },
+          updateQuery: (prev, { fetchMoreResult }) => {
+            const next = fetchMoreResult.allItems
 
-    if (networkStatus === 6) {
+            return next.edges.length
+              ? {
+                // Put the new items at the end of the list and update `pageInfo`
+                // so we have the new `endCursor` and `hasNextPage` values
+                allItems: {
+                  __typename: prev.allItems.__typename,
+                  edges: [...prev.allItems.edges, ...next.edges],
+                  pageInfo: next.pageInfo,
+                  totalCount: next.totalCount,
+                },
+              }
+              : prev
+          },
+        })
+      }
+
       return (
-        <div className={classes.marginTop}>
-          <CircularProgress variant="static" value={75} size={100} />
-        </div>
+        <ItemList
+          allItems={data.allItems}
+          onLoadMore={handleLoadMore}
+          loading={fetchingMore}
+        />
       )
-    } else if (networkStatus < 7) {
-      return (
-        <div className={classes.marginTop}>
-          <CircularProgress size={100} />
-        </div>
-      )
-    } else if (typeof allItems === 'undefined' || allItems.edges.length === 0) {
-      return (
-        <Paper className={classes.paper}>
-          No items were found. Try again with different options.
-        </Paper>
-      )
-    }
+    }}
+  </Query>
+)
 
-    const {
-      pageInfo: { hasNextPage },
-    } = allItems
-
-    return <ItemList {...this.props} />
-  }
-}
-
-export default graphql(getItems, {
-  // options: (props) => {}
-  options: ({ first, filter }) => ({
-    variables: {
-      first,
-      filter,
-    },
-    notifyOnNetworkStatusChange: true,
-    //fetchPolicy: 'cache-and-network',
-  }),
-  // This function re-runs every time `data` changes, including after `updateQuery`,
-  // meaning our loadMoreEntries function will always have the right cursor
-  props: ({ data, ownProps: { updating, ...ownProps } }) => {
-    const { loading, cursor, allItems, fetchMore } = data
-    console.log('#####', data, updating, ownProps, cursor)
-    data.loadMoreEntries = () => {
-      console.log(allItems.pageInfo.endCursor)
-      return fetchMore({
-        query: getItems,
-        variables: {
-          cursor: allItems.pageInfo.endCursor,
-          ...ownProps,
-        },
-        updateQuery: (previousResult, { fetchMoreResult }) => {
-          const newEdges = fetchMoreResult.allItems.edges
-          const pageInfo = fetchMoreResult.allItems.pageInfo
-          console.log('####')
-          return newEdges.length
-            ? {
-              // Put the new comments at the end of the list and update `pageInfo`
-              // so we have the new `endCursor` and `hasNextPage` values
-              allItems: {
-                __typename: previousResult.allItems.__typename,
-                edges: [...previousResult.allItems.edges, ...newEdges],
-                pageInfo,
-              },
-            }
-            : previousResult
-        },
-      })
-    }
-    return (data = { data })
-  },
-})(withStyles(styles)(ResultSet))
+export default withStyles(styles)(ResultSet)

@@ -24,36 +24,72 @@ const defaultArgs = {
 }
 
 const defaultReturn = ({ data, first, last, after, before, attributeName }) => {
-  let afterIndex = 0
+  if (data.length === 0) return
+
+  let atIndex = 0
 
   if (typeof after === 'string' || typeof before === 'string') {
     const item_id = pagination.convertCursorToNodeId(after)
+
     if (typeof item_id === 'string') {
       const matchingIndex = data.findIndex(
         element => element[attributeName] === item_id
       )
       if (typeof matchingIndex === 'number') {
-        afterIndex = matchingIndex
+        atIndex = matchingIndex
       }
     }
   }
 
   let edges = null
-  const sliceIndex = afterIndex + 1
-
-  if (first === null) {
-    edges = data.map(node => ({
-      node,
-      cursor: pagination.convertNodeToCursor(node[attributeName]),
-    }))
-    // console.log(Object.getOwnPropertyNames(data[0]).map(e => e.replace()))
-  } else {
+  if (after) {
     // Add 1 to exclude item matching after index.
-    edges = data.slice(sliceIndex, sliceIndex + first).map(node => ({
-      node,
-      cursor: pagination.convertNodeToCursor(node[attributeName]),
-    }))
-    data = data.slice(sliceIndex, sliceIndex + first)
+    atIndex += 1
+
+    if (last) {
+      edges = data
+        .slice(atIndex)
+        .slice(-last)
+        .map(node => ({
+          node,
+          cursor: pagination.convertNodeToCursor(node[attributeName]),
+        }))
+    } else {
+      edges = data.slice(atIndex, atIndex + first).map(node => ({
+        node,
+        cursor: pagination.convertNodeToCursor(node[attributeName]),
+      }))
+    }
+  } else if (before) {
+    if (last) {
+      edges = data
+        .slice(0, atIndex)
+        .slice(-last)
+        .map(node => ({
+          node,
+          cursor: pagination.convertNodeToCursor(node[attributeName]),
+        }))
+    } else {
+      edges = data
+        .slice(0, atIndex)
+        .slice(0, first)
+        .map(node => ({
+          node,
+          cursor: pagination.convertNodeToCursor(node[attributeName]),
+        }))
+    }
+  } else {
+    if (last) {
+      edges = data.slice(-last).map(node => ({
+        node,
+        cursor: pagination.convertNodeToCursor(node[attributeName]),
+      }))
+    } else {
+      edges = data.slice(atIndex, atIndex + first).map(node => ({
+        node,
+        cursor: pagination.convertNodeToCursor(node[attributeName]),
+      }))
+    }
   }
 
   const startCursor =
@@ -66,8 +102,12 @@ const defaultReturn = ({ data, first, last, after, before, attributeName }) => {
           edges[edges.length - 1].node[attributeName]
         )
       : null
-  const hasNextPage = data.length > sliceIndex + first
-  const hasPreviousPage = data.length < sliceIndex + first
+
+  const hasNextPage =
+    pagination.convertNodeToCursor(data[data.length - 1][attributeName]) !==
+    endCursor
+  const hasPreviousPage =
+    pagination.convertNodeToCursor(data[0][attributeName]) !== startCursor
 
   return {
     totalCount: data.length,

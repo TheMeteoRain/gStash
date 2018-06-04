@@ -46,7 +46,7 @@ const convertNodeToCursor = node => {
 }
 
 const bota = input => {
-  return new Buffer(input.toString(), 'binary').toString('base64')
+  return Buffer.from(input.toString(), 'ascii').toString('base64')
 }
 
 const convertCursorToNodeId = cursor => {
@@ -54,7 +54,7 @@ const convertCursorToNodeId = cursor => {
 }
 
 const atob = input => {
-  return new Buffer(input, 'base64').toString('binary')
+  return new Buffer(input, 'base64').toString('ascii')
 }
 
 module.exports = {

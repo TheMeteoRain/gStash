@@ -182,7 +182,10 @@ const RootQuery = new GraphQLObjectType({
         let afterIndex = 0
 
         let query = `SELECT * FROM items`
-        if (Object.entries(filter)[0][1].length > 0) {
+        if (
+          typeof filter !== 'undefined' &&
+          Object.entries(filter)[0][1].length > 0
+        ) {
           if (mod) query += ` INNER JOIN mods ON mods.item_id=items.item_id`
 
           query += ` WHERE`
@@ -286,13 +289,14 @@ const RootQuery = new GraphQLObjectType({
 
         if (pro) {
           query += initializeFilterCategory(query)
-          pro.forEach(
-            ({ name, min, max }, index) =>
-              (query += addLogicalOperatorIfNotFirst(
-                `EXISTS(SELECT 1 FROM properties WHERE item_id=items.item_id AND property_name ILIKE '%${name}%' AND SUBSTRING(property_values->0->>'value1' from '[0-9]+')::numeric BETWEEN ${min} AND ${max})`,
-                index
-              ))
-          )
+          pro.forEach(({ name, min, max }, index) => {
+            if (!min) min = 0
+            if (!max) max = 999
+            query += addLogicalOperatorIfNotFirst(
+              `EXISTS(SELECT 1 FROM properties WHERE item_id=items.item_id AND property_name ILIKE '%${name}%' AND SUBSTRING(property_values->0->>'value1' from '[0-9]+')::numeric BETWEEN ${min} AND ${max})`,
+              index
+            )
+          })
           query += ')'
         }
 
